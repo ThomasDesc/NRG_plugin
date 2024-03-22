@@ -57,8 +57,10 @@ def make_dialog():
 
     uifile = os.path.join(os.path.dirname(__file__), 'demowidget.ui')
     getcleft_path = os.path.join(os.path.dirname(__file__), 'bin', 'GetCleft')
-    plugin_tmp_output_path = os.path.join(os.path.expanduser('~'), 'Documents', 'GetCleft_tmp')
-    getcleft_output_path = os.path.join(plugin_tmp_output_path, 'get_cleft_output')
+    plugin_tmp_output_path = os.path.join(os.path.expanduser('~'), 'Documents', 'NRGSuite_Qt')
+    temp_path = os.path.join(plugin_tmp_output_path, 'temp')
+    getcleft_output_path = os.path.join(temp_path, 'GetCleft')
+    cleft_save_path = os.path.join(getcleft_output_path, 'Clefts')
     color_list = ['red', 'br8', 'tv_red', 'oxygen', 'iron', 'tv_orange', 'sulfur', 'gold', 'yelloworange', 'neodymium',
                   'limon', 'chartreuse', 'tv_green', 'limegreen', 'teal', 'rhodium', 'slate', 'tv_blue', 'blue',
                   'density']
@@ -66,25 +68,29 @@ def make_dialog():
     if os.path.isdir(plugin_tmp_output_path):
         shutil.rmtree(plugin_tmp_output_path)
     os.mkdir(plugin_tmp_output_path)
+    os.mkdir(temp_path)
     os.mkdir(getcleft_output_path)
+    os.mkdir(cleft_save_path)
     form = loadUi(uifile, dialog)
 
     def select_object():
         list_pymol_objects = cmd.get_names('all')
         form.select_object.clear()
         form.select_object.addItems(list_pymol_objects)
-        form.select_object.setCurrentText(list_pymol_objects[0])
+        if len(list_pymol_objects) > 0:
+            form.select_object.setCurrentText(list_pymol_objects[0])
 
     def get_arg_str(getcleft_path, object_path):
         min_radius = form.input_min_radii.text()
         max_radius = form.input_max_radii.text()
         resnumc = form.input_residue_in_contact.text()
         max_cleft_show = form.input_max_cleft_show.text()
-        print('getcleft output path: ', getcleft_path)
-        getcleft_output_name = os.path.join(getcleft_output_path, 'receptor')
+        print('getcleft output path: ', cleft_save_path)
+        getcleft_output_name = os.path.join(cleft_save_path, 'receptor')
         arg_string = f'{getcleft_path} -p "{object_path}" -l {min_radius} -u {max_radius} -t {max_cleft_show} -o "{getcleft_output_name}" -s'
+        # TODO: Check if correct
         if resnumc != "":
-            arg_string += f' -a {resnumc}'
+            arg_string += f' -a {resnumc}-'
         return arg_string
 
     def create_number_list(pTotColor, pTotalColorList):
@@ -104,14 +110,14 @@ def make_dialog():
         number_list.sort()
         return [int(i) for i in number_list]
 
-    def load_show_cleft(getcleft_output_path, color_list):
+    def load_show_cleft(cleft_save_path, color_list):
         auto_zoom = cmd.get("auto_zoom")
         cmd.set("auto_zoom", 0)
-        all_files = os.listdir(getcleft_output_path)
+        all_files = os.listdir(cleft_save_path)
         sph_file_list = []
         for filename in all_files:
             if filename.find('sph') != -1:
-                sph_file_list.append({'path': os.path.join(getcleft_output_path, filename),
+                sph_file_list.append({'path': os.path.join(cleft_save_path, filename),
                                       'name': filename.split('.')[0]})
         # for Cleft in self.TempBindingSite.listClefts:
         sph_file_list = sorted(sph_file_list, key=lambda d: d['name'])
@@ -134,7 +140,6 @@ def make_dialog():
     def run_getcleft(getcleft_path):
         pymol_object = form.select_object.currentText()
         if pymol_object != '':
-
             object_save_path = os.path.join(plugin_tmp_output_path, 'tmp.pdb')
             cmd.save(object_save_path, pymol_object)
         else:
@@ -143,7 +148,7 @@ def make_dialog():
         getcleft_command = f"{get_arg_str(getcleft_path, object_save_path)}"
         print(getcleft_command)
         subprocess.run(getcleft_command, shell=True)
-        load_show_cleft(getcleft_output_path, color_list)
+        load_show_cleft(cleft_save_path, color_list)
 
     # Refresh object dropdown menu
     select_object()
