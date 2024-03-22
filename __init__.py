@@ -134,7 +134,8 @@ def make_dialog():
     def run_getcleft(getcleft_path):
         pymol_object = form.select_object.currentText()
         if pymol_object != '':
-            object_save_path = os.path.join(os.path.dirname(__file__), 'temp_files', 'tmp.pdb')
+
+            object_save_path = os.path.join(plugin_tmp_output_path, 'tmp.pdb')
             cmd.save(object_save_path, pymol_object)
         else:
             print('No object selected')
@@ -144,8 +145,9 @@ def make_dialog():
         subprocess.run(getcleft_command, shell=True)
         load_show_cleft(getcleft_output_path, color_list)
 
+    # Refresh object dropdown menu
     select_object()
-    # hook up button callbacks
+
     form.button_refresh.clicked.connect(select_object)
     form.button_start.clicked.connect(lambda: run_getcleft(getcleft_path))
 
