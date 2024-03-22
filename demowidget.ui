@@ -57,7 +57,7 @@
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;PyMOL objects/selections: &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
         </widget>
-        <widget class="QComboBox" name="select_object">
+        <widget class="QComboBox" name="cleft_select_object">
          <property name="geometry">
           <rect>
            <x>280</x>
@@ -232,7 +232,7 @@
           <set>Qt::AlignCenter</set>
          </property>
         </widget>
-        <widget class="QPushButton" name="button_refresh">
+        <widget class="QPushButton" name="cleft_button_refresh">
          <property name="geometry">
           <rect>
            <x>420</x>
@@ -260,7 +260,7 @@
         <attribute name="title">
          <string>FlexAID</string>
         </attribute>
-        <widget class="QPushButton" name="button_refresh_2">
+        <widget class="QPushButton" name="flexaid_target_refresh">
          <property name="geometry">
           <rect>
            <x>420</x>
@@ -273,7 +273,7 @@
           <string>Refresh</string>
          </property>
         </widget>
-        <widget class="QComboBox" name="select_target">
+        <widget class="QComboBox" name="flexaid_select_target">
          <property name="geometry">
           <rect>
            <x>280</x>
@@ -296,7 +296,7 @@
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Target: &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
         </widget>
-        <widget class="QPushButton" name="button_refresh_3">
+        <widget class="QPushButton" name="flexaid_ligand_refresh">
          <property name="geometry">
           <rect>
            <x>420</x>
@@ -322,7 +322,7 @@
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Ligand: &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
         </widget>
-        <widget class="QComboBox" name="select_ligand">
+        <widget class="QComboBox" name="flexaid_select_ligand">
          <property name="geometry">
           <rect>
            <x>280</x>
@@ -364,7 +364,7 @@
           <set>Qt::AlignCenter</set>
          </property>
         </widget>
-        <widget class="QPushButton" name="button_refresh_4">
+        <widget class="QPushButton" name="flexaid_binding_site_refresh">
          <property name="geometry">
           <rect>
            <x>420</x>
@@ -390,7 +390,7 @@
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Binding site:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
         </widget>
-        <widget class="QComboBox" name="select_target_2">
+        <widget class="QComboBox" name="flexaid_select_binding_site">
          <property name="geometry">
           <rect>
            <x>280</x>
@@ -416,7 +416,7 @@
           <set>Qt::AlignCenter</set>
          </property>
         </widget>
-        <widget class="QPushButton" name="button_start_flexaid">
+        <widget class="QPushButton" name="flexaid_button_start">
          <property name="geometry">
           <rect>
            <x>200</x>
