@@ -5,7 +5,7 @@ import subprocess
 
 
 def count_flex(ligand_inp_file_path):
-    with open('ligands/{}.inp'.format(ligand_inp_file_path), 'r') as t:
+    with open(ligand_inp_file_path, 'r') as t:
         texto = t.readlines()
         count = 0
         for line in texto:
@@ -14,29 +14,28 @@ def count_flex(ligand_inp_file_path):
     return count
 
 
-def write_config(target,cleft,mol_id, save_res, Path_to_workdir):
+def write_config(path_to_target_inp, cleft, path_to_ligand_inp, save_res, flexaid_output_path):
     with open("template_CONFIG.inp", "r") as t1:
-        texto = t1.readlines()
-        count = 0
-    with open("config/{}_CONFIG.inp".format(mol_id), "w") as t2:
-        for line in texto:
-            if count == 1:
-                t2.write('INPLIG {}/ligands/{}.inp\n'.format(Path_to_workdir, mol_id))
-            elif count== 0:
-                t2.write('PDBNAM {}/target/{}.inp.pdb\n'.format(Path_to_workdir,target.split('/')[-1][:-4]))
-            elif count==3:
+        lines = t1.readlines()
+    config_file_output_path = os.path.join(flexaid_output_path, 'config.inp')
+    with open(config_file_output_path, "w") as t2:
+        for line_counter, line in enumerate(lines):
+            if line_counter == 1:
+                t2.write(f'INPLIG {path_to_ligand_inp}')
+            elif line_counter == 0:
+                t2.write(f'PDBNAM {path_to_target_inp}\n')
+            elif line_counter == 3:
                 t2.write("RNGOPT LOCCLF {}\n".format(cleft))
-            elif count==6:
-                for flex in range(count_flex(mol_id)):
-                    t2.write('OPTIMZ 9999 - {}\n'.format(str(flex + 1)))
+            elif line_counter == 6:
+                for flex in range(count_flex(path_to_ligand_inp)):
+                    t2.write(f'OPTIMZ 9999 - {str(flex + 1)}\n')
                 t2.write(line)
-            elif count== 7:
-                t2.write('STATEP "{}"\n'.format(Path_to_workdir))
-            elif count == 18:
+            elif line_counter == 7:
+                t2.write(f'STATEP "{flexaid_output_path}"\n')
+            elif line_counter == 18:
                 t2.write('MAXRES {}\n'.format(save_res))
             else:
                 t2.write(line)
-            count += 1
 
 
 def process_ligand(process_ligand_path, input_path, process_ligand_output, istarget=False):
