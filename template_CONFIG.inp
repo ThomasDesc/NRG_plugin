@@ -1,7 +1,7 @@
-PDBNAM /home/gabrielt/scratch/MOR-HTPS/target/mu_active.inp.pdb
-INPLIG /home/gabrielt/scratch/MOR-HTPS/ligands/6-B-naltrexol.inp
+PDBNAM
+INPLIG
 COMPLF VCT
-RNGOPT LOCCLF /home/gabrielt/scratch/MOR-HTPS/target/mu_active_sph_1.pdb
+RNGOPT LOCCLF
 OPTIMZ 9999 - -1
 OPTIMZ 9999 - 0
 PERMEA 0.9
