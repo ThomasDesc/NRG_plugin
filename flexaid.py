@@ -15,7 +15,7 @@ def count_flex(ligand_inp_file_path):
 
 
 def write_config(target_inp_path, cleft, ligand_inp_path, max_results, flexaid_output_path):
-    with open("template_CONFIG.inp", "r") as t1:
+    with open(os.path.join(os.path.dirname(__file__), 'template_config.inp'), "r") as t1:
         lines = t1.readlines()
     config_file_output_path = os.path.join(flexaid_output_path, 'config.inp')
     with open(config_file_output_path, "w") as t2:
@@ -71,6 +71,6 @@ def run_flexaid(flexaid_output_path, form, cleft_save_path, process_ligand_path,
     process_ligand(process_ligand_path, target_save_path, process_ligand_output, istarget=True)
     process_ligand(process_ligand_path, ligand_save_path, process_ligand_output)
     target_inp_path = os.path.splitext(target_save_path)[0] + '.inp.pdb'
-    ligand_inp_path = os.path.splitext(target_save_path)[0] + '.inp'
+    ligand_inp_path = os.path.splitext(ligand_save_path)[0] + '.inp'
     write_config(target_inp_path, binding_site_path, ligand_inp_path, max_results, flexaid_output_path)
     print('Done')
