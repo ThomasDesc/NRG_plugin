@@ -53,7 +53,7 @@ def make_dialog():
 
     dialog = QtWidgets.QDialog()
 
-    uifile = os.path.join(os.path.dirname(__file__), 'demowidget.ui')
+    uifile = os.path.join(os.path.dirname(__file__), 'demowidget2.ui')
     getcleft_path = os.path.join(os.path.dirname(__file__), 'bin', 'GetCleft')
     flexaid_path = os.path.join(os.path.dirname(__file__), 'bin', 'FlexAID')
     process_ligand_path = os.path.join(os.path.dirname(__file__), 'bin', 'Process_ligand')
@@ -62,6 +62,7 @@ def make_dialog():
     getcleft_output_path = os.path.join(temp_path, 'GetCleft')
     flexaid_output_path = os.path.join(temp_path, 'FlexAID')
     cleft_save_path = os.path.join(getcleft_output_path, 'Clefts')
+    simulation_folder_path = os.path.join(flexaid_output_path, 'Simulation')
     color_list = ['red', 'br8', 'tv_red', 'oxygen', 'iron', 'tv_orange', 'sulfur', 'gold', 'yelloworange', 'neodymium',
                   'limon', 'chartreuse', 'tv_green', 'limegreen', 'teal', 'rhodium', 'slate', 'tv_blue', 'blue',
                   'density']
@@ -73,16 +74,18 @@ def make_dialog():
     os.mkdir(getcleft_output_path)
     os.mkdir(cleft_save_path)
     os.mkdir(flexaid_output_path)
+    os.mkdir(simulation_folder_path)
     form = loadUi(uifile, dialog)
 
     # Refresh object dropdown menu
     general_functions.refresh_dropdown(form.cleft_select_object)
-
+    form.button_getcleft.clicked.connect(lambda: form.stackedWidget.setCurrentIndex(0))
+    form.button_flexaid.clicked.connect(lambda: form.stackedWidget.setCurrentIndex(1))
     form.cleft_button_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.cleft_select_object))
     form.button_start.clicked.connect(lambda: getcleft.run_getcleft(form, getcleft_path, getcleft_output_path,
                                                                     cleft_save_path, color_list))
     form.flexaid_target_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.flexaid_select_target))
     form.flexaid_ligand_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.flexaid_select_ligand))
     form.flexaid_binding_site_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.flexaid_select_binding_site, filter_for='_sph_'))
-    form.flexaid_button_start.clicked.connect(lambda: flexaid.run_flexaid(flexaid_output_path, form, cleft_save_path, process_ligand_path, flexaid_path))
+    form.flexaid_button_start.clicked.connect(lambda: flexaid.run_flexaid(flexaid_output_path, form, cleft_save_path, process_ligand_path, flexaid_path, simulation_folder_path))
     return dialog

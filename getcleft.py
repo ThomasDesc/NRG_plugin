@@ -1,7 +1,7 @@
 import os
 import subprocess
 from pymol import cmd
-
+import time
 
 def get_arg_str(form, getcleft_path, object_path, cleft_save_path):
     min_radius = form.input_min_radii.text()
@@ -72,6 +72,9 @@ def run_getcleft(form, getcleft_path, getcleft_output_path, cleft_save_path, col
         print('No object selected')
         return
     getcleft_command = get_arg_str(form, getcleft_path, object_save_path, cleft_save_path)
+    form.output_box.append(f'GetCleft command: {getcleft_command}')
+    form.output_box.append('\nRunning command please wait!')
     print(getcleft_command)
+    time.sleep(1)
     subprocess.run(getcleft_command, shell=True)
     load_show_cleft(cleft_save_path, color_list)

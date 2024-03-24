@@ -6,9 +6,24 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>541</width>
-    <height>452</height>
+    <width>785</width>
+    <height>675</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="baseSize">
+   <size>
+    <width>0</width>
+    <height>0</height>
+   </size>
+  </property>
+  <property name="focusPolicy">
+   <enum>Qt::TabFocus</enum>
   </property>
   <property name="windowTitle">
    <string notr="true">GetCleft v1.0</string>
@@ -16,128 +31,44 @@
   <property name="toolTipDuration">
    <number>-3</number>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
+  <layout class="QHBoxLayout" name="horizontalLayout">
    <item>
     <layout class="QGridLayout" name="gridLayout_3">
-     <item row="0" column="0">
-      <widget class="QTabWidget" name="tabWidget">
-       <property name="mouseTracking">
-        <bool>false</bool>
-       </property>
+     <item row="0" column="1">
+      <widget class="QStackedWidget" name="stackedWidget">
        <property name="currentIndex">
         <number>1</number>
        </property>
-       <widget class="QWidget" name="tab">
-        <attribute name="title">
-         <string>GetCleft</string>
-        </attribute>
-        <widget class="QLabel" name="label">
+       <widget class="QWidget" name="page">
+        <widget class="QPushButton" name="cleft_button_refresh_2">
          <property name="geometry">
           <rect>
-           <x>20</x>
-           <y>20</y>
-           <width>121</width>
-           <height>16</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Select a structure&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-        </widget>
-        <widget class="QLabel" name="label_12">
-         <property name="geometry">
-          <rect>
-           <x>20</x>
-           <y>50</y>
-           <width>161</width>
-           <height>16</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;PyMOL objects/selections: &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-        </widget>
-        <widget class="QComboBox" name="cleft_select_object">
-         <property name="geometry">
-          <rect>
-           <x>280</x>
-           <y>40</y>
-           <width>141</width>
-           <height>32</height>
-          </rect>
-         </property>
-        </widget>
-        <widget class="QLabel" name="label_13">
-         <property name="geometry">
-          <rect>
-           <x>20</x>
-           <y>80</y>
-           <width>121</width>
-           <height>16</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Parameterisation&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-        </widget>
-        <widget class="QLabel" name="label_14">
-         <property name="geometry">
-          <rect>
-           <x>20</x>
-           <y>110</y>
-           <width>161</width>
-           <height>16</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Insert sphere radii:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-        </widget>
-        <widget class="QLabel" name="label_15">
-         <property name="geometry">
-          <rect>
-           <x>20</x>
-           <y>130</y>
-           <width>231</width>
-           <height>16</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Residue in contact (e.g. ALA13A):&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-        </widget>
-        <widget class="QLabel" name="label_16">
-         <property name="geometry">
-          <rect>
-           <x>20</x>
-           <y>150</y>
-           <width>231</width>
-           <height>16</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Number of clefts to show:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-        </widget>
-        <widget class="QPushButton" name="button_start">
-         <property name="geometry">
-          <rect>
-           <x>280</x>
-           <y>240</y>
-           <width>100</width>
+           <x>425</x>
+           <y>82</y>
+           <width>125</width>
            <height>32</height>
           </rect>
          </property>
          <property name="text">
-          <string>Start</string>
+          <string>Refresh</string>
          </property>
         </widget>
-        <widget class="QPushButton" name="button_clear">
+        <widget class="QTextBrowser" name="output_pymol_2">
          <property name="geometry">
           <rect>
-           <x>390</x>
-           <y>240</y>
-           <width>100</width>
+           <x>-12</x>
+           <y>242</y>
+           <width>562</width>
+           <height>370</height>
+          </rect>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="button_clear_2">
+         <property name="geometry">
+          <rect>
+           <x>379</x>
+           <y>622</y>
+           <width>171</width>
            <height>32</height>
           </rect>
          </property>
@@ -145,38 +76,25 @@
           <string>Clear</string>
          </property>
         </widget>
-        <widget class="QLabel" name="label_17">
+        <widget class="QLabel" name="label_24">
          <property name="geometry">
           <rect>
-           <x>280</x>
-           <y>110</y>
-           <width>31</width>
-           <height>16</height>
+           <x>-12</x>
+           <y>211</y>
+           <width>199</width>
+           <height>21</height>
           </rect>
          </property>
          <property name="text">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Min: &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Number of clefts to show:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
         </widget>
-        <widget class="QLabel" name="label_18">
+        <widget class="QLineEdit" name="input_min_radii_2">
          <property name="geometry">
           <rect>
-           <x>390</x>
-           <y>110</y>
-           <width>31</width>
-           <height>16</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Max: &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-        </widget>
-        <widget class="QLineEdit" name="input_min_radii">
-         <property name="geometry">
-          <rect>
-           <x>310</x>
-           <y>110</y>
-           <width>71</width>
+           <x>240</x>
+           <y>149</y>
+           <width>125</width>
            <height>21</height>
           </rect>
          </property>
@@ -187,41 +105,25 @@
           <set>Qt::AlignCenter</set>
          </property>
         </widget>
-        <widget class="QLineEdit" name="input_max_radii">
+        <widget class="QLabel" name="label_10">
          <property name="geometry">
           <rect>
-           <x>420</x>
-           <y>110</y>
-           <width>71</width>
-           <height>21</height>
+           <x>-12</x>
+           <y>53</y>
+           <width>199</width>
+           <height>16</height>
           </rect>
          </property>
          <property name="text">
-          <string>4.00</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Select a structure&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
         </widget>
-        <widget class="QLineEdit" name="input_residue_in_contact">
+        <widget class="QLineEdit" name="input_max_cleft_show_2">
          <property name="geometry">
           <rect>
-           <x>310</x>
-           <y>130</y>
-           <width>181</width>
-           <height>21</height>
-          </rect>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-        </widget>
-        <widget class="QLineEdit" name="input_max_cleft_show">
-         <property name="geometry">
-          <rect>
-           <x>310</x>
-           <y>150</y>
-           <width>181</width>
+           <x>240</x>
+           <y>211</y>
+           <width>310</width>
            <height>21</height>
           </rect>
          </property>
@@ -232,196 +134,51 @@
           <set>Qt::AlignCenter</set>
          </property>
         </widget>
-        <widget class="QPushButton" name="cleft_button_refresh">
+        <widget class="QLineEdit" name="input_max_radii_2">
          <property name="geometry">
           <rect>
-           <x>420</x>
-           <y>40</y>
-           <width>71</width>
-           <height>32</height>
+           <x>425</x>
+           <y>149</y>
+           <width>125</width>
+           <height>21</height>
           </rect>
          </property>
          <property name="text">
-          <string>Refresh</string>
-         </property>
-        </widget>
-        <widget class="QTextBrowser" name="output_pymol">
-         <property name="geometry">
-          <rect>
-           <x>20</x>
-           <y>180</y>
-           <width>471</width>
-           <height>51</height>
-          </rect>
-         </property>
-        </widget>
-       </widget>
-       <widget class="QWidget" name="tab_2">
-        <attribute name="title">
-         <string>FlexAID</string>
-        </attribute>
-        <widget class="QPushButton" name="flexaid_target_refresh">
-         <property name="geometry">
-          <rect>
-           <x>420</x>
-           <y>40</y>
-           <width>71</width>
-           <height>32</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>Refresh</string>
-         </property>
-        </widget>
-        <widget class="QComboBox" name="flexaid_select_target">
-         <property name="geometry">
-          <rect>
-           <x>280</x>
-           <y>40</y>
-           <width>141</width>
-           <height>32</height>
-          </rect>
-         </property>
-        </widget>
-        <widget class="QLabel" name="label_19">
-         <property name="geometry">
-          <rect>
-           <x>20</x>
-           <y>50</y>
-           <width>161</width>
-           <height>16</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Target: &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-        </widget>
-        <widget class="QPushButton" name="flexaid_ligand_refresh">
-         <property name="geometry">
-          <rect>
-           <x>420</x>
-           <y>70</y>
-           <width>71</width>
-           <height>32</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>Refresh</string>
-         </property>
-        </widget>
-        <widget class="QLabel" name="label_20">
-         <property name="geometry">
-          <rect>
-           <x>20</x>
-           <y>80</y>
-           <width>161</width>
-           <height>16</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Ligand: &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-        </widget>
-        <widget class="QComboBox" name="flexaid_select_ligand">
-         <property name="geometry">
-          <rect>
-           <x>280</x>
-           <y>70</y>
-           <width>141</width>
-           <height>32</height>
-          </rect>
-         </property>
-        </widget>
-        <widget class="QLabel" name="label_7">
-         <property name="geometry">
-          <rect>
-           <x>210</x>
-           <y>0</y>
-           <width>91</width>
-           <height>31</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt; font-weight:700;&quot;&gt;Input Files&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>4.00</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
          </property>
         </widget>
-        <widget class="QLabel" name="label_8">
+        <widget class="QComboBox" name="cleft_select_object_2">
          <property name="geometry">
           <rect>
-           <x>200</x>
-           <y>100</y>
-           <width>101</width>
-           <height>31</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt; font-weight:700;&quot;&gt;Binding site&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-        </widget>
-        <widget class="QPushButton" name="flexaid_binding_site_refresh">
-         <property name="geometry">
-          <rect>
-           <x>420</x>
-           <y>130</y>
-           <width>71</width>
-           <height>32</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>Refresh</string>
-         </property>
-        </widget>
-        <widget class="QLabel" name="label_21">
-         <property name="geometry">
-          <rect>
-           <x>20</x>
-           <y>140</y>
-           <width>161</width>
-           <height>16</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Binding site:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-        </widget>
-        <widget class="QComboBox" name="flexaid_select_binding_site">
-         <property name="geometry">
-          <rect>
-           <x>280</x>
-           <y>130</y>
-           <width>141</width>
+           <x>198</x>
+           <y>81</y>
+           <width>216</width>
            <height>32</height>
           </rect>
          </property>
         </widget>
-        <widget class="QLabel" name="label_9">
+        <widget class="QLabel" name="label_25">
          <property name="geometry">
           <rect>
-           <x>200</x>
-           <y>170</y>
-           <width>101</width>
-           <height>31</height>
+           <x>-12</x>
+           <y>149</y>
+           <width>199</width>
+           <height>21</height>
           </rect>
          </property>
          <property name="text">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt; font-weight:700;&quot;&gt;Simulate&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Insert sphere radii:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
         </widget>
-        <widget class="QPushButton" name="flexaid_button_start">
+        <widget class="QPushButton" name="button_start_2">
          <property name="geometry">
           <rect>
-           <x>200</x>
-           <y>220</y>
-           <width>100</width>
+           <x>201</x>
+           <y>622</y>
+           <width>164</width>
            <height>32</height>
           </rect>
          </property>
@@ -429,8 +186,326 @@
           <string>Start</string>
          </property>
         </widget>
+        <widget class="QLabel" name="label_26">
+         <property name="geometry">
+          <rect>
+           <x>-12</x>
+           <y>180</y>
+           <width>199</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Residue in contact (e.g. ALA13A):&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_27">
+         <property name="geometry">
+          <rect>
+           <x>-12</x>
+           <y>83</y>
+           <width>199</width>
+           <height>26</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;PyMOL objects/selections: &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_28">
+         <property name="geometry">
+          <rect>
+           <x>201</x>
+           <y>149</y>
+           <width>29</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Min: &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_29">
+         <property name="geometry">
+          <rect>
+           <x>379</x>
+           <y>149</y>
+           <width>32</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Max: &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_30">
+         <property name="geometry">
+          <rect>
+           <x>-12</x>
+           <y>123</y>
+           <width>199</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Parameterisation&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+        </widget>
+        <widget class="QLineEdit" name="input_residue_in_contact_2">
+         <property name="geometry">
+          <rect>
+           <x>240</x>
+           <y>180</y>
+           <width>310</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </widget>
+       <widget class="QWidget" name="page_2">
+        <widget class="QTabWidget" name="tabWidget_3">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>110</y>
+           <width>347</width>
+           <height>286</height>
+          </rect>
+         </property>
+         <property name="acceptDrops">
+          <bool>false</bool>
+         </property>
+         <property name="layoutDirection">
+          <enum>Qt::LeftToRight</enum>
+         </property>
+         <property name="tabPosition">
+          <enum>QTabWidget::West</enum>
+         </property>
+         <property name="currentIndex">
+          <number>1</number>
+         </property>
+         <property name="usesScrollButtons">
+          <bool>false</bool>
+         </property>
+         <property name="tabsClosable">
+          <bool>false</bool>
+         </property>
+         <widget class="QWidget" name="tab_5">
+          <attribute name="title">
+           <string>Settings</string>
+          </attribute>
+          <widget class="QLabel" name="label_31">
+           <property name="geometry">
+            <rect>
+             <x>10</x>
+             <y>20</y>
+             <width>161</width>
+             <height>16</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Number of chromosomes:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+          </widget>
+          <widget class="QLabel" name="label_32">
+           <property name="geometry">
+            <rect>
+             <x>10</x>
+             <y>50</y>
+             <width>161</width>
+             <height>16</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Number of generations:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+          </widget>
+          <widget class="QLineEdit" name="input_num_chromosomes_2">
+           <property name="geometry">
+            <rect>
+             <x>340</x>
+             <y>20</y>
+             <width>101</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>500</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+          <widget class="QLineEdit" name="input_num_generations_2">
+           <property name="geometry">
+            <rect>
+             <x>340</x>
+             <y>50</y>
+             <width>101</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>500</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </widget>
+         <widget class="QWidget" name="tab_6">
+          <attribute name="title">
+           <string>Simulate</string>
+          </attribute>
+          <layout class="QGridLayout" name="gridLayout_8">
+           <item row="1" column="0">
+            <widget class="QLabel" name="label_33">
+             <property name="text">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Target: &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QComboBox" name="flexaid_select_target_2"/>
+           </item>
+           <item row="4" column="1">
+            <widget class="QComboBox" name="flexaid_select_binding_site_2"/>
+           </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="label_34">
+             <property name="text">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Ligand: &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="2" rowspan="2">
+            <widget class="QPushButton" name="flexaid_ligand_refresh_2">
+             <property name="text">
+              <string>Refresh</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QLabel" name="label_11">
+             <property name="text">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt; font-weight:700;&quot;&gt;Input Files&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="0">
+            <widget class="QLabel" name="label_35">
+             <property name="text">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Binding site:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="1">
+            <widget class="QLabel" name="label_36">
+             <property name="text">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt; font-weight:700;&quot;&gt;Simulate&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="2">
+            <widget class="QPushButton" name="flexaid_binding_site_refresh_2">
+             <property name="text">
+              <string>Refresh</string>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="1">
+            <widget class="QPushButton" name="flexaid_button_start_2">
+             <property name="text">
+              <string>Start</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="2">
+            <widget class="QPushButton" name="flexaid_target_refresh_2">
+             <property name="text">
+              <string>Refresh</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QComboBox" name="flexaid_select_ligand_2"/>
+           </item>
+           <item row="3" column="1">
+            <widget class="QLabel" name="label_37">
+             <property name="text">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt; font-weight:700;&quot;&gt;Binding site&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </widget>
        </widget>
       </widget>
+     </item>
+     <item row="0" column="0">
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <property name="sizeConstraint">
+        <enum>QLayout::SetDefaultConstraint</enum>
+       </property>
+       <item>
+        <widget class="QPushButton" name="pushButton_2">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
+         <property name="text">
+          <string>GetCleft</string>
+         </property>
+         <property name="default">
+          <bool>false</bool>
+         </property>
+         <property name="flat">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton">
+         <property name="text">
+          <string>Flexaid</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
      </item>
     </layout>
    </item>
