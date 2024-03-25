@@ -88,6 +88,45 @@ QPushButton:checked{
      </widget>
     </item>
     <item>
+     <widget class="QPushButton" name="button_nrgdock">
+      <property name="text">
+       <string>NRGDock</string>
+      </property>
+      <property name="checkable">
+       <bool>true</bool>
+      </property>
+      <property name="autoExclusive">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="button_Surfaces">
+      <property name="text">
+       <string>Surfaces</string>
+      </property>
+      <property name="checkable">
+       <bool>true</bool>
+      </property>
+      <property name="autoExclusive">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="button_gpcr">
+      <property name="text">
+       <string>GPCR affinity predictor</string>
+      </property>
+      <property name="checkable">
+       <bool>true</bool>
+      </property>
+      <property name="autoExclusive">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item>
      <spacer name="verticalSpacer">
       <property name="orientation">
        <enum>Qt::Vertical</enum>
@@ -139,15 +178,15 @@ color:rgb(255, 255, 255);</string>
     </rect>
    </property>
    <property name="currentIndex">
-    <number>1</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="page_3">
     <widget class="QGroupBox" name="groupBox_2">
      <property name="geometry">
       <rect>
-       <x>0</x>
+       <x>20</x>
        <y>20</y>
-       <width>621</width>
+       <width>601</width>
        <height>75</height>
       </rect>
      </property>
@@ -182,9 +221,9 @@ font-size:15px;
     <widget class="QGroupBox" name="groupBox_3">
      <property name="geometry">
       <rect>
-       <x>0</x>
+       <x>20</x>
        <y>110</y>
-       <width>621</width>
+       <width>601</width>
        <height>281</height>
       </rect>
      </property>
@@ -228,7 +267,7 @@ font-size:15px;
      <widget class="QLabel" name="label_29">
       <property name="geometry">
        <rect>
-        <x>431</x>
+        <x>420</x>
         <y>100</y>
         <width>32</width>
         <height>16</height>
@@ -309,7 +348,7 @@ font-size:15px;
      <widget class="QLineEdit" name="input_max_radii">
       <property name="geometry">
        <rect>
-        <x>477</x>
+        <x>470</x>
         <y>100</y>
         <width>125</width>
         <height>21</height>
@@ -326,9 +365,9 @@ font-size:15px;
     <widget class="QWidget" name="horizontalLayoutWidget">
      <property name="geometry">
       <rect>
-       <x>0</x>
+       <x>20</x>
        <y>400</y>
-       <width>621</width>
+       <width>601</width>
        <height>41</height>
       </rect>
      </property>
