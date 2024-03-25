@@ -78,7 +78,7 @@ def run_getcleft(form, getcleft_path, getcleft_output_path, cleft_save_path, col
         return
     getcleft_command = get_arg_str(form, getcleft_path, object_save_path, cleft_save_path)
     form.output_box.append(f'GetCleft command: {getcleft_command}')
-    form.output_box.append('\nRunning command please wait!')
+    # form.output_box.append('\nRunning command please wait!')
     print(getcleft_command)
     t1 = threading.Thread(target=submit_command, args=(getcleft_command,))
     t1.start()
