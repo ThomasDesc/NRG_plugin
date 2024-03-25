@@ -1,7 +1,8 @@
 import os
 import subprocess
 from pymol import cmd
-import time
+import threading
+
 
 def get_arg_str(form, getcleft_path, object_path, cleft_save_path):
     min_radius = form.input_min_radii.text()
@@ -63,6 +64,10 @@ def load_show_cleft(cleft_save_path, color_list):
     cmd.set("auto_zoom", auto_zoom)
 
 
+def submit_command(getcleft_command):
+    subprocess.run(getcleft_command, shell=True)
+
+
 def run_getcleft(form, getcleft_path, getcleft_output_path, cleft_save_path, color_list):
     pymol_object = form.cleft_select_object.currentText()
     if pymol_object != '':
@@ -75,6 +80,8 @@ def run_getcleft(form, getcleft_path, getcleft_output_path, cleft_save_path, col
     form.output_box.append(f'GetCleft command: {getcleft_command}')
     form.output_box.append('\nRunning command please wait!')
     print(getcleft_command)
-    time.sleep(1)
-    subprocess.run(getcleft_command, shell=True)
+    t1 = threading.Thread(target=submit_command, args=(getcleft_command,))
+    t1.start()
+    t1.join()
+    # subprocess.run(getcleft_command, shell=True)
     load_show_cleft(cleft_save_path, color_list)
