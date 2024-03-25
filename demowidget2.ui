@@ -100,7 +100,7 @@ QPushButton:checked{
     <item>
      <widget class="QPushButton" name="button_gpcr">
       <property name="text">
-       <string>GPCR affinity predictor</string>
+       <string>GPCR efficacy predictor</string>
       </property>
       <property name="checkable">
        <bool>true</bool>
