@@ -62,18 +62,18 @@ def make_dialog():
         suffix = 'linux'
     elif OS == 'DARWIN':
         OSid = 'MAC'
-        suffix = 'mac'
+        suffix = '_mac'
     elif OS == 'WINDOWS' or OS == 'MICROSOFT' or OS == 'WIN32':
         OSid = 'WIN'
-        suffix = 'windows'
+        suffix = '.exe'
     else:
         OSid = 'UNKNOWN'
 
 
     uifile = os.path.join(os.path.dirname(__file__), 'demowidget2.ui')
-    getcleft_path = os.path.join(os.path.dirname(__file__), 'bin', f'GetCleft_{suffix}')
-    flexaid_path = os.path.join(os.path.dirname(__file__), 'bin', f'FlexAID_{suffix}')
-    process_ligand_path = os.path.join(os.path.dirname(__file__), 'bin', f'Process_ligand_{suffix}')
+    getcleft_path = os.path.join(os.path.dirname(__file__), 'bin', f'GetCleft{suffix}')
+    flexaid_path = os.path.join(os.path.dirname(__file__), 'bin', f'FlexAID{suffix}')
+    process_ligand_path = os.path.join(os.path.dirname(__file__), 'bin', f'Process_ligand{suffix}')
     plugin_tmp_output_path = os.path.join(os.path.expanduser('~'), 'Documents', 'NRGSuite_Qt')
     temp_path = os.path.join(plugin_tmp_output_path, 'temp')
     getcleft_output_path = os.path.join(temp_path, 'GetCleft')
