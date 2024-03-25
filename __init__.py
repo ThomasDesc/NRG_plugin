@@ -50,13 +50,30 @@ def make_dialog():
     import getcleft
     import general_functions
     import flexaid
-
+    import platform
     dialog = QtWidgets.QDialog()
 
+    OS = platform.system().upper()
+    suffix = ''
+    OSid = 'UNKNOWN'
+    # SET the configuration location
+    if OS == 'LINUX' or OS == 'BSD':
+        OSid = 'LINUX'
+        suffix = 'linux'
+    elif OS == 'DARWIN':
+        OSid = 'MAC'
+        suffix = 'mac'
+    elif OS == 'WINDOWS' or OS == 'MICROSOFT' or OS == 'WIN32':
+        OSid = 'WIN'
+        suffix = 'windows'
+    else:
+        OSid = 'UNKNOWN'
+
+
     uifile = os.path.join(os.path.dirname(__file__), 'demowidget2.ui')
-    getcleft_path = os.path.join(os.path.dirname(__file__), 'bin', 'GetCleft')
-    flexaid_path = os.path.join(os.path.dirname(__file__), 'bin', 'FlexAID')
-    process_ligand_path = os.path.join(os.path.dirname(__file__), 'bin', 'Process_ligand')
+    getcleft_path = os.path.join(os.path.dirname(__file__), 'bin', f'GetCleft_{suffix}')
+    flexaid_path = os.path.join(os.path.dirname(__file__), 'bin', f'FlexAID_{suffix}')
+    process_ligand_path = os.path.join(os.path.dirname(__file__), 'bin', f'Process_ligand_{suffix}')
     plugin_tmp_output_path = os.path.join(os.path.expanduser('~'), 'Documents', 'NRGSuite_Qt')
     temp_path = os.path.join(plugin_tmp_output_path, 'temp')
     getcleft_output_path = os.path.join(temp_path, 'GetCleft')
