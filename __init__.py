@@ -99,9 +99,11 @@ def make_dialog():
     # Refresh object dropdown menu
     general_functions.refresh_dropdown(form.cleft_select_object)
     form.button_getcleft.clicked.connect(lambda: form.stackedWidget.setCurrentIndex(0))
-    form.button_flexaid.clicked.connect(lambda: form.stackedWidget.setCurrentIndex(1))
+    form.button_partition_cleft.clicked.connect(lambda: form.stackedWidget.setCurrentIndex(1))
+    form.button_flexaid.clicked.connect(lambda: form.stackedWidget.setCurrentIndex(2))
     form.button_hide.clicked.connect(lambda: general_functions.pymol_hide_structures(form))
     form.cleft_button_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.cleft_select_object))
+    form.cleft_partition_button_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.cleft_partition_select_object))
     form.button_start.clicked.connect(lambda: getcleft.run_getcleft(form, getcleft_path, getcleft_output_path,
                                                                     cleft_save_path, color_list))
     form.flexaid_target_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.flexaid_select_target))
