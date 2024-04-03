@@ -2,7 +2,7 @@ import os
 import subprocess
 from pymol import cmd
 import threading
-
+import shutil
 
 def get_arg_str(form, getcleft_path, object_path, cleft_save_path):
     min_radius = form.input_min_radii.text()
@@ -19,24 +19,31 @@ def get_arg_str(form, getcleft_path, object_path, cleft_save_path):
 
 
 def create_number_list(pTotColor, pTotalColorList):
-    number_list = []
-    modulo = (pTotalColorList - 1) % (pTotColor - 1)
-    partition = (pTotalColorList - modulo - 1) / (pTotColor - 1)
-    step_start = 0
-    step_end = pTotalColorList - 1
-    for i in range(0, pTotColor):
+    if pTotColor == 1:
+        return [0]
+    else:
+        number_list = []
+        modulo = (pTotalColorList - 1) % (pTotColor - 1)
+        partition = (pTotalColorList - modulo - 1) / (pTotColor - 1)
+        step_start = 0
+        step_end = pTotalColorList - 1
+        for i in range(0, pTotColor):
 
-        if ((i % 2) == 0):
-            number_list.append(step_start)
-            step_start = step_start + partition
-        else:
-            number_list.append(step_end)
-            step_end = step_end - partition
-    number_list.sort()
-    return [int(i) for i in number_list]
+            if ((i % 2) == 0):
+                number_list.append(step_start)
+                step_start = step_start + partition
+            else:
+                number_list.append(step_end)
+                step_end = step_end - partition
+        number_list.sort()
+        return [int(i) for i in number_list]
 
 
-def load_show_cleft(cleft_save_path, color_list):
+def load_show_cleft(cleft_save_path, color_list, output_box):
+    errorFormat = '<span style="color:red;">{}</span>'
+    warningFormat = '<span style="color:orange;">{}</span>'
+    validFormat = '<span style="color:green;">{}</span>'
+
     auto_zoom = cmd.get("auto_zoom")
     cmd.set("auto_zoom", 0)
     all_files = os.listdir(cleft_save_path)
@@ -47,6 +54,8 @@ def load_show_cleft(cleft_save_path, color_list):
                                   'name': filename.split('.')[0]})
     # for Cleft in self.TempBindingSite.listClefts:
     sph_file_list = sorted(sph_file_list, key=lambda d: d['name'])
+    if len(sph_file_list) == 0:
+        output_box.append(errorFormat.format(f'No clefts were found'))
     number_color_list = create_number_list(len(sph_file_list), len(color_list))
     for cleft_counter, Cleft in enumerate(sph_file_list):
         try:
@@ -69,6 +78,9 @@ def submit_command(getcleft_command):
 
 
 def run_getcleft(form, getcleft_path, getcleft_output_path, cleft_save_path, color_list):
+    shutil.rmtree(getcleft_output_path)
+    os.mkdir(getcleft_output_path)
+    os.mkdir(cleft_save_path)
     pymol_object = form.cleft_select_object.currentText()
     if pymol_object != '':
         object_save_path = os.path.join(getcleft_output_path, 'tmp.pdb')
@@ -84,4 +96,4 @@ def run_getcleft(form, getcleft_path, getcleft_output_path, cleft_save_path, col
     t1.start()
     t1.join()
     # subprocess.run(getcleft_command, shell=True)
-    load_show_cleft(cleft_save_path, color_list)
+    load_show_cleft(cleft_save_path, color_list, form.output_box)
