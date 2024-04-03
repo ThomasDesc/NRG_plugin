@@ -525,7 +525,7 @@ font-size:14px;
        </spacer>
       </item>
       <item row="0" column="3">
-       <widget class="QComboBox" name="comboBox">
+       <widget class="QComboBox" name="partition_sphere_select">
         <property name="sizePolicy">
          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -557,6 +557,9 @@ font-size:14px;
       </item>
       <item row="1" column="2">
        <widget class="QSlider" name="cleft_partition_radius_slider">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
         <property name="minimum">
          <number>50</number>
         </property>

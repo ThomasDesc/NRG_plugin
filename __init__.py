@@ -98,25 +98,22 @@ def make_dialog():
     form = loadUi(uifile, dialog)
 
     # Refresh object dropdown menu
-    general_functions.refresh_dropdown(form.cleft_select_object)
+    general_functions.refresh_dropdown(form.cleft_select_object, form.output_box, no_warning=True)
     form.button_getcleft.clicked.connect(lambda: form.stackedWidget.setCurrentIndex(0))
     form.button_partition_cleft.clicked.connect(lambda: form.stackedWidget.setCurrentIndex(1))
     form.button_flexaid.clicked.connect(lambda: form.stackedWidget.setCurrentIndex(2))
 
-    form.cleft_partition_button_add.clicked.connect(lambda: spheres.display_sphere(form.cleft_partition_select_object.currentText(), form.cleft_partition_radius_slider))
+    form.cleft_partition_button_add.clicked.connect(lambda: spheres.display_sphere(form.cleft_partition_select_object.currentText(), form.cleft_partition_radius_slider, form.partition_sphere_select))
 
     form.button_hide.clicked.connect(lambda: general_functions.pymol_hide_structures(form))
-    form.cleft_button_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.cleft_select_object))
-    form.cleft_partition_button_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.cleft_partition_select_object, filter_for='_sph_'))
+    form.cleft_button_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.cleft_select_object, form.output_box))
+    form.cleft_partition_button_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.cleft_partition_select_object, form.output_box, filter_for='_sph_'))
     form.button_start.clicked.connect(lambda: getcleft.run_getcleft(form, getcleft_path, getcleft_output_path,
                                                                     cleft_save_path, color_list))
-    form.flexaid_target_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.flexaid_select_target))
-    form.flexaid_ligand_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.flexaid_select_ligand))
-    form.flexaid_binding_site_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.flexaid_select_binding_site, filter_for='_sph_'))
+    form.flexaid_target_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.flexaid_select_target, form.output_box))
+    form.flexaid_ligand_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.flexaid_select_ligand, form.output_box))
+    form.flexaid_binding_site_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.flexaid_select_binding_site, form.output_box, filter_for='_sph_'))
     form.flexaid_button_start.clicked.connect(lambda: flexaid.run_flexaid(flexaid_output_path, form, cleft_save_path, process_ligand_path, flexaid_path, simulation_folder_path))
-    form.cleft_partition_radius_slider.valueChanged.connect(lambda: yo(form))
+    form.cleft_partition_radius_slider.valueChanged.connect(lambda: spheres.resize_sphere(form.partition_sphere_select.currentText(), form.cleft_partition_radius_slider.value()))
 
-
-    def yo(form):
-        print(form.cleft_partition_radius_slider.value())
     return dialog

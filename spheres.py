@@ -17,7 +17,7 @@ def get_max_coords(cleft_coordinates, center):
     return radius
 
 
-def display_sphere(cleft_object_name, slider):
+def display_sphere(cleft_object_name, slider, partition_sphere_select):
     if cleft_object_name == '':
         print('No cleft object selected in step 1')
         return
@@ -37,5 +37,15 @@ def display_sphere(cleft_object_name, slider):
         cmd.show('spheres', sphere_name)
         cmd.refresh()
     slider_max = max_vdw*100
+    slider.setEnabled(True)
     slider.setMaximum(slider_max)
-    slider.setValue(int(slider_max/2))
+    slider.setValue(slider_max)
+    slider.setSingleStep(10)
+    partition_sphere_select.addItem(sphere_name)
+    partition_sphere_select.setCurrentText(sphere_name)
+
+
+def resize_sphere(sphere_name, slider_value):
+    cmd.alter(sphere_name, 'vdw=' + str(slider_value/100))
+    cmd.rebuild(sphere_name)
+    cmd.refresh()
