@@ -36,4 +36,6 @@ def display_sphere(cleft_object_name, slider):
         cmd.hide('everything', sphere_name)
         cmd.show('spheres', sphere_name)
         cmd.refresh()
-    slider.setMaximum(max_vdw*100)
+    slider_max = max_vdw*100
+    slider.setMaximum(slider_max)
+    slider.setValue(int(slider_max/2))

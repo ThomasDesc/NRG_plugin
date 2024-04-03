@@ -103,7 +103,7 @@ def make_dialog():
     form.button_partition_cleft.clicked.connect(lambda: form.stackedWidget.setCurrentIndex(1))
     form.button_flexaid.clicked.connect(lambda: form.stackedWidget.setCurrentIndex(2))
 
-    form.cleft_partition_button_add.clicked.connect(lambda: spheres.display_sphere(form.cleft_partition_select_object.currentText()))
+    form.cleft_partition_button_add.clicked.connect(lambda: spheres.display_sphere(form.cleft_partition_select_object.currentText(), form.cleft_partition_radius_slider))
 
     form.button_hide.clicked.connect(lambda: general_functions.pymol_hide_structures(form))
     form.cleft_button_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.cleft_select_object))
