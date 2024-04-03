@@ -12,6 +12,8 @@ License: BSD-2-Clause
 from __future__ import absolute_import
 from __future__ import print_function
 
+import spheres
+
 
 def __init_plugin__(app=None):
     '''
@@ -51,6 +53,7 @@ def make_dialog():
     import general_functions
     import flexaid
     import platform
+    import spheres
     dialog = QtWidgets.QDialog()
 
     OS = platform.system().upper()
@@ -101,6 +104,9 @@ def make_dialog():
     form.button_getcleft.clicked.connect(lambda: form.stackedWidget.setCurrentIndex(0))
     form.button_partition_cleft.clicked.connect(lambda: form.stackedWidget.setCurrentIndex(1))
     form.button_flexaid.clicked.connect(lambda: form.stackedWidget.setCurrentIndex(2))
+
+    form.cleft_partition_button_add.clicked.connect(lambda: spheres.display_sphere(form.cleft_partition_select_object.currentText()))
+
     form.button_hide.clicked.connect(lambda: general_functions.pymol_hide_structures(form))
     form.cleft_button_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.cleft_select_object))
     form.cleft_partition_button_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.cleft_partition_select_object))
