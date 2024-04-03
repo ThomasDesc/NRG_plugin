@@ -12,8 +12,6 @@ License: BSD-2-Clause
 from __future__ import absolute_import
 from __future__ import print_function
 
-import spheres
-
 
 def __init_plugin__(app=None):
     '''
@@ -109,11 +107,16 @@ def make_dialog():
 
     form.button_hide.clicked.connect(lambda: general_functions.pymol_hide_structures(form))
     form.cleft_button_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.cleft_select_object))
-    form.cleft_partition_button_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.cleft_partition_select_object))
+    form.cleft_partition_button_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.cleft_partition_select_object, filter_for='_sph_'))
     form.button_start.clicked.connect(lambda: getcleft.run_getcleft(form, getcleft_path, getcleft_output_path,
                                                                     cleft_save_path, color_list))
     form.flexaid_target_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.flexaid_select_target))
     form.flexaid_ligand_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.flexaid_select_ligand))
     form.flexaid_binding_site_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.flexaid_select_binding_site, filter_for='_sph_'))
     form.flexaid_button_start.clicked.connect(lambda: flexaid.run_flexaid(flexaid_output_path, form, cleft_save_path, process_ligand_path, flexaid_path, simulation_folder_path))
+    form.cleft_partition_radius_slider.valueChanged.connect(lambda: yo(form))
+
+
+    def yo(form):
+        print(form.cleft_partition_radius_slider.value())
     return dialog
