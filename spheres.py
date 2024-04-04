@@ -54,7 +54,6 @@ def resize_sphere(sphere_name, slider_value):
 def move_sphere(cleft_name):
     cmd.window('hide')
     cmd.orient()
-    cmd.config_mouse('three_button_editing')
     cmd.window('show')
     wiz = wizard.Sphere()
     cmd.set_wizard(wiz)

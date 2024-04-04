@@ -7,10 +7,11 @@ class Sphere(Wizard):
     def __init__(self):
         #print "New instance of flexsphere Wizard"
         Wizard.__init__(self)
-        self.mouse_mode = get_mouse_config()
+        self.original_mouse_mode = get_mouse_config()
+        cmd.config_mouse('three_button_editing')
 
     def done(self):
-        cmd.config_mouse(self.mouse_mode)
+        cmd.config_mouse(self.original_mouse_mode)
         cmd.set_wizard()
 
     def get_prompt(self):
@@ -24,5 +25,5 @@ class Sphere(Wizard):
     def get_panel(self):
         return [
             [1, 'Move sphere', ''],
-            [2, 'Done', 'cmd.set_wizard().done()'],
+            [2, 'Done', 'cmd.get_wizard().done()'],
         ]
