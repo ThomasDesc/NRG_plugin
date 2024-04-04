@@ -1,6 +1,9 @@
 from pymol import cmd
 import numpy as np
 import wizard
+from general_functions import read_coords_cleft
+import os
+
 
 def get_center(cleft_coordinates):
     length = cleft_coordinates.shape[0]
@@ -57,3 +60,16 @@ def move_sphere(cleft_name):
     cmd.window('show')
     wiz = wizard.Sphere()
     cmd.set_wizard(wiz)
+
+
+def crop_cleft(object_name, sphere_vdw, cleft_save_path, cleft_name):
+    # vdw = cmd.get_model(object_name).atom[0].vdw
+    sphere_coords = np.array(cmd.get_model(object_name).atom[0].coord)
+    min_coords = np.array([sphere_coords-sphere_vdw])
+    max_coords = np.array([sphere_coords+sphere_vdw])
+    lines, partition_coords = read_coords_cleft(os.path.join(cleft_save_path, cleft_name))
+    indices = np.where(
+        (partition_coords > min_coords).all(axis=1) & (partition_coords < max_coords).all(axis=1)
+    )[0] + 1
+    lines_to_output = [lines[0]] + [lines[i] for i in indices]
+

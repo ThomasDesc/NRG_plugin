@@ -1,5 +1,5 @@
 from pymol import cmd
-
+import numpy as np
 
 def output_message(output_box, text, type):
     # Type can be error, warning or valid
@@ -61,3 +61,15 @@ def get_mouse_config():
     except:
         return 'three_button_viewing'
 
+
+def read_coords_cleft(cleft_path):
+    coords = []
+    with open(cleft_path, 'r') as f:
+        lines = f.readlines()
+    for line in lines:
+        if line.startswith('AT'):
+            line = line.split()
+            temp_coords = (float(line[6]), float(line[7]), float(line[8]))
+            coords.append(temp_coords)
+    coords = np.array(coords)
+    return lines, coords

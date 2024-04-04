@@ -576,6 +576,19 @@ font-size:14px;
       </item>
      </layout>
     </widget>
+    <widget class="QPushButton" name="cleft_partition_crop_button">
+     <property name="geometry">
+      <rect>
+       <x>260</x>
+       <y>330</y>
+       <width>100</width>
+       <height>32</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Crop Cleft</string>
+     </property>
+    </widget>
    </widget>
    <widget class="QWidget" name="page_4">
     <widget class="QTabWidget" name="tabWidget_3">
