@@ -37,3 +37,27 @@ def pymol_hide_structures(form):
     else:
         form.button_hide.setText('Hide')
         cmd.show('surface', ','.join(list_pymol_objects))
+
+
+def get_mouse_config():
+    config_mouse = ''
+    try:
+        name = cmd.get("button_mode_name")
+        if name[0] == '1':
+            config_mouse += 'one'
+        elif name[0] == '2':
+            config_mouse += 'two'
+        elif name[0] == '3':
+            config_mouse += 'three'
+        config_mouse += '_button'
+        if name[0] != '1':
+            if name[9:] == 'Viewing':
+                config_mouse += '_viewing'
+            elif name[9:] == 'Editing':
+                config_mouse += '_editing'
+            elif name[9:] == 'Motions':
+                config_mouse += '_motions'
+        return config_mouse
+    except:
+        return 'three_button_viewing'
+

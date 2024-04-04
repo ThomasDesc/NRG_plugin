@@ -505,9 +505,9 @@ font-size:14px;
        </widget>
       </item>
       <item row="0" column="6">
-       <widget class="QPushButton" name="cleft_partition_button_edit">
+       <widget class="QPushButton" name="cleft_partition_button_move">
         <property name="text">
-         <string>Edit</string>
+         <string>Move</string>
         </property>
        </widget>
       </item>
