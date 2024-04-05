@@ -41,6 +41,9 @@ QPushButton:checked{
    <layout class="QVBoxLayout" name="verticalLayout_2">
     <item>
      <widget class="QPushButton" name="button_getcleft">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
       <property name="styleSheet">
        <string notr="true"/>
       </property>
@@ -51,7 +54,7 @@ QPushButton:checked{
        <bool>true</bool>
       </property>
       <property name="checked">
-       <bool>false</bool>
+       <bool>true</bool>
       </property>
       <property name="autoExclusive">
        <bool>true</bool>

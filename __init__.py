@@ -96,6 +96,7 @@ def make_dialog():
     os.mkdir(flexaid_output_path)
     os.mkdir(simulation_folder_path)
     form = loadUi(uifile, dialog)
+    form.stackedWidget.setCurrentIndex(0)
 
     # Refresh object dropdown menu
     general_functions.refresh_dropdown(form.cleft_select_object, form.output_box, no_warning=True)

@@ -74,14 +74,16 @@ def crop_cleft(object_name, sphere_vdw, cleft_save_path, cleft_name):
     lines, partition_coords = read_coords_cleft(os.path.join(cleft_save_path, cleft_name + '.pdb'))
     indices = np.where((partition_coords > min_coords).all(axis=1) & (partition_coords < max_coords).all(axis=1))[0] + 1
     lines_to_output = [lines[0]] + [lines[i] for i in indices]
-    partition_path = os.path.join(os.path.dirname(cleft_save_path), cleft_name + '_cropped.pdb')
+    partition_path = os.path.join(cleft_save_path, cleft_name + '_cropped.pdb')
     with open(partition_path, 'w') as f:
         f.writelines(lines_to_output)
     partition_name = os.path.basename(partition_path).split('.')[0]
     cmd.set("auto_zoom", 0)
     cmd.load(partition_path, format='pdb')
-    cmd.hide('everything', partition_name)
+    cmd.hide('everything', f"{partition_name} {cleft_name} {object_name}")
     cmd.show('surface', partition_name)
     cmd.color('grey60', partition_name)
+    cmd.refresh()
+    cmd.show('surface', cleft_name)
     cmd.refresh()
 
