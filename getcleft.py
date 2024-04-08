@@ -3,6 +3,8 @@ import subprocess
 from pymol import cmd
 import threading
 import shutil
+import general_functions
+
 
 def get_arg_str(form, getcleft_path, object_path, cleft_save_path):
     min_radius = form.input_min_radii.text()
@@ -40,10 +42,6 @@ def create_number_list(pTotColor, pTotalColorList):
 
 
 def load_show_cleft(cleft_save_path, color_list, output_box):
-    errorFormat = '<span style="color:red;">{}</span>'
-    warningFormat = '<span style="color:orange;">{}</span>'
-    validFormat = '<span style="color:green;">{}</span>'
-
     auto_zoom = cmd.get("auto_zoom")
     cmd.set("auto_zoom", 0)
     all_files = os.listdir(cleft_save_path)
@@ -55,7 +53,7 @@ def load_show_cleft(cleft_save_path, color_list, output_box):
     # for Cleft in self.TempBindingSite.listClefts:
     sph_file_list = sorted(sph_file_list, key=lambda d: d['name'])
     if len(sph_file_list) == 0:
-        output_box.append(errorFormat.format(f'No clefts were found'))
+        general_functions.output_message(output_box, 'No clefts were found', 'warning')
     number_color_list = create_number_list(len(sph_file_list), len(color_list))
     for cleft_counter, Cleft in enumerate(sph_file_list):
         try:
