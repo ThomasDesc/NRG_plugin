@@ -1,5 +1,8 @@
 from pymol import cmd
 import numpy as np
+from PyQt5.QtCore import QThread
+import subprocess
+
 
 def output_message(output_box, text, type):
     # Type can be error, warning or valid
@@ -31,9 +34,13 @@ def refresh_dropdown(dropdown_to_refresh, output_box, filter_for='', no_warning=
 def pymol_hide_structures(form):
     list_pymol_objects = cmd.get_names('all')
     list_pymol_objects = [x for x in list_pymol_objects if 'sph' in x]
+    print(list_pymol_objects)
     if form.button_hide.isChecked():
-        form.button_hide.setText('Show')
-        cmd.hide('everything', ','.join(list_pymol_objects))
+        if not list_pymol_objects:
+            output_message(form.output_box, 'No clefts to hide', 'warning')
+        else:
+            form.button_hide.setText('Show')
+            cmd.hide('everything', ','.join(list_pymol_objects))
     else:
         form.button_hide.setText('Hide')
         cmd.show('surface', ','.join(list_pymol_objects))
@@ -73,3 +80,19 @@ def read_coords_cleft(cleft_path):
             coords.append(temp_coords)
     coords = np.array(coords)
     return lines, coords
+
+
+class WorkerThread(QThread):
+    def __init__(self, command):
+        super().__init__()
+        self.command = command
+
+    def submit_command(self):
+        subprocess.run(self.command, shell=True)
+
+    def run(self):
+        print("WorkerThread started")
+        print("command: ", self.command)
+        print('submitting command')
+        self.submit_command()
+        self.finished.emit()

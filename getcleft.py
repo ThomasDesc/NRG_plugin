@@ -1,7 +1,6 @@
 import os
 import subprocess
 from pymol import cmd
-import threading
 import shutil
 import general_functions
 
@@ -41,7 +40,7 @@ def create_number_list(pTotColor, pTotalColorList):
         return [int(i) for i in number_list]
 
 
-def load_show_cleft(cleft_save_path, color_list, output_box):
+def load_show_cleft(cleft_save_path, color_list, output_box, pymol_object):
     auto_zoom = cmd.get("auto_zoom")
     cmd.set("auto_zoom", 0)
     all_files = os.listdir(cleft_save_path)
@@ -67,12 +66,9 @@ def load_show_cleft(cleft_save_path, color_list, output_box):
         except:
             print(f"ERROR: Failed to load cleft object  {Cleft['name']}")
             continue
+    cmd.zoom(pymol_object)
     cmd.refresh()
     cmd.set("auto_zoom", auto_zoom)
-
-
-def submit_command(getcleft_command):
-    subprocess.run(getcleft_command, shell=True)
 
 
 def run_getcleft(form, getcleft_path, getcleft_output_path, cleft_save_path, color_list):
@@ -87,11 +83,10 @@ def run_getcleft(form, getcleft_path, getcleft_output_path, cleft_save_path, col
         print('No object selected')
         return
     getcleft_command = get_arg_str(form, getcleft_path, object_save_path, cleft_save_path)
-    form.output_box.append(f'GetCleft command: {getcleft_command}')
-    # form.output_box.append('\nRunning command please wait!')
-    print(getcleft_command)
-    t1 = threading.Thread(target=submit_command, args=(getcleft_command,))
-    t1.start()
-    t1.join()
-    # subprocess.run(getcleft_command, shell=True)
-    load_show_cleft(cleft_save_path, color_list, form.output_box)
+    form.output_box.append(f'Please wait...Running GetCleft with command: \n{getcleft_command}')
+    # submit_command(getcleft_command)
+    # load_show_cleft(cleft_save_path, color_list, form.output_box)
+    worker = general_functions.WorkerThread(getcleft_command)
+    worker.start()
+    worker.finished.connect(worker.quit)
+    worker.finished.connect(lambda: load_show_cleft(cleft_save_path, color_list, form.output_box, pymol_object))

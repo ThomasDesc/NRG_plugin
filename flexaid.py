@@ -3,6 +3,8 @@ from pymol import cmd
 import shutil
 import subprocess
 import datetime
+import general_functions
+
 
 def count_flex(ligand_inp_file_path):
     with open(ligand_inp_file_path, 'r') as t:
@@ -104,6 +106,9 @@ def run_flexaid(flexaid_output_path, form, cleft_save_path, process_ligand_path,
     ga_path = os.path.join(flexaid_output_path, 'ga_inp.dat')
     edit_ga(os.path.join(os.path.dirname(__file__), 'ga_inp.dat'), ga_path, setting_dictionary)
     flexaid_command = f'"{flexaid_path}" "{config_file_path}" "{ga_path}" "{flexaid_result_name_path}"'
-    print(flexaid_command)
-    subprocess.run(flexaid_command, shell=True)
+    form.output_box.append(f'Please wait...Running Flexaid with command: \n{flexaid_command}')
+    worker = general_functions.WorkerThread(flexaid_command)
+    worker.start()
+    worker.finished.connect(worker.quit)
+    # worker.finished.connect(lambda: load_show_cleft(cleft_save_path, color_list, form.output_box, pymol_object))
 
