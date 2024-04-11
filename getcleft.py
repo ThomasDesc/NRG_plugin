@@ -1,5 +1,4 @@
 import os
-import subprocess
 from pymol import cmd
 import shutil
 import general_functions

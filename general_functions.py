@@ -1,7 +1,6 @@
 from pymol import cmd
 import numpy as np
 from PyQt5.QtCore import QThread
-import subprocess
 
 
 def output_message(output_box, text, type):
@@ -83,12 +82,15 @@ def read_coords_cleft(cleft_path):
 
 
 class WorkerThread(QThread):
+
     def __init__(self, command):
         super().__init__()
         self.command = command
 
     def submit_command(self):
-        subprocess.run(self.command, shell=True)
+        import subprocess
+        process = subprocess.Popen(self.command, shell=True)
+        process.wait()
 
     def run(self):
         print("WorkerThread started")

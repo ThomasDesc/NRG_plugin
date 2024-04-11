@@ -3,7 +3,25 @@ from pymol import cmd
 import shutil
 import subprocess
 import datetime
-import general_functions
+from PyQt5.QtCore import QThread
+
+
+class WorkerThread(QThread):
+
+    def __init__(self):
+        super().__init__()
+        # self.command = command
+
+    # def submit_command(self):
+    #     process = subprocess.Popen(self.command, shell=True)
+    #     process.wait()
+
+    def run(self):
+        print("WorkerThread started")
+        print("command: ", self.command)
+        print('submitting command')
+        # self.submit_command()
+        self.finished.emit()
 
 
 def count_flex(ligand_inp_file_path):
@@ -106,9 +124,12 @@ def run_flexaid(flexaid_output_path, form, cleft_save_path, process_ligand_path,
     ga_path = os.path.join(flexaid_output_path, 'ga_inp.dat')
     edit_ga(os.path.join(os.path.dirname(__file__), 'ga_inp.dat'), ga_path, setting_dictionary)
     flexaid_command = f'"{flexaid_path}" "{config_file_path}" "{ga_path}" "{flexaid_result_name_path}"'
+    print(flexaid_command)
     form.output_box.append(f'Please wait...Running Flexaid with command: \n{flexaid_command}')
-    worker = general_functions.WorkerThread(flexaid_command)
+    worker = WorkerThread()
+    # worker = WorkerThread(flexaid_command)
     worker.start()
     worker.finished.connect(worker.quit)
+    print('done')
     # worker.finished.connect(lambda: load_show_cleft(cleft_save_path, color_list, form.output_box, pymol_object))
 
