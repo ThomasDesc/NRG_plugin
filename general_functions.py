@@ -80,21 +80,3 @@ def read_coords_cleft(cleft_path):
     coords = np.array(coords)
     return lines, coords
 
-
-class WorkerThread(QThread):
-
-    def __init__(self, command):
-        super().__init__()
-        self.command = command
-
-    def submit_command(self):
-        import subprocess
-        process = subprocess.Popen(self.command, shell=True)
-        process.wait()
-
-    def run(self):
-        print("WorkerThread started")
-        print("command: ", self.command)
-        print('submitting command')
-        self.submit_command()
-        self.finished.emit()

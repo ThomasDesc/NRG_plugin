@@ -13,7 +13,7 @@ from __future__ import absolute_import
 from __future__ import print_function
 
 
-def __init_plugin__(app=None):
+def __init_plugin__(app):
     '''
     Add an entry to the PyMOL "Plugin" menu
     '''
@@ -40,7 +40,7 @@ def run_plugin_gui():
 def make_dialog():
     from pymol.Qt import QtWidgets
     from pymol.Qt.utils import loadUi
-    from pymol.Qt.utils import getSaveFileNameWithExt
+
     import os
     import sys
     import shutil
@@ -52,6 +52,7 @@ def make_dialog():
     import flexaid
     import platform
     import spheres
+    import thread_test
     dialog = QtWidgets.QDialog()
 
     OS = platform.system().upper()
@@ -73,7 +74,7 @@ def make_dialog():
         OSid = 'UNKNOWN'
 
 
-    uifile = os.path.join(os.path.dirname(__file__), 'demowidget2.ui')
+    uifile = os.path.join(os.path.dirname(__file__), 'demowidget.ui')
     getcleft_path = os.path.join(os.path.dirname(__file__), 'bin', folder, f'GetCleft{suffix}')
     flexaid_path = os.path.join(os.path.dirname(__file__), 'bin', folder, f'FlexAID{suffix}')
     process_ligand_path = os.path.join(os.path.dirname(__file__), 'bin', folder, f'Process_ligand{suffix}')
@@ -103,6 +104,7 @@ def make_dialog():
     form.button_getcleft.clicked.connect(lambda: form.stackedWidget.setCurrentIndex(0))
     form.button_partition_cleft.clicked.connect(lambda: form.stackedWidget.setCurrentIndex(1))
     form.button_flexaid.clicked.connect(lambda: form.stackedWidget.setCurrentIndex(2))
+    form.button_nrgdock.clicked.connect(lambda: form.stackedWidget.setCurrentIndex(3))
 
     form.cleft_partition_button_add.clicked.connect(lambda: spheres.display_sphere(form.cleft_partition_select_object.currentText(), form.cleft_partition_radius_slider, form.partition_sphere_select))
 
@@ -119,5 +121,6 @@ def make_dialog():
     form.flexaid_button_start.clicked.connect(lambda: flexaid.run_flexaid(flexaid_output_path, form, cleft_save_path, process_ligand_path, flexaid_path, simulation_folder_path))
     form.cleft_partition_radius_slider.valueChanged.connect(lambda: spheres.resize_sphere(form.partition_sphere_select.currentText(), form.cleft_partition_radius_slider.value()))
     form.cleft_partition_crop_button.clicked.connect(lambda: spheres.crop_cleft(form.partition_sphere_select.currentText(), form.cleft_partition_radius_slider.value()/100, cleft_save_path, form.cleft_partition_select_object.currentText()))
+    form.class_test.clicked.connect(thread_test.yo)
 
     return dialog
