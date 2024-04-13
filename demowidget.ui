@@ -178,7 +178,7 @@ color:rgb(255, 255, 255);</string>
     </rect>
    </property>
    <property name="currentIndex">
-    <number>3</number>
+    <number>2</number>
    </property>
    <widget class="QWidget" name="page_3">
     <widget class="QGroupBox" name="groupBox_2">
@@ -789,7 +789,7 @@ font-size:14px;
          <x>10</x>
          <y>160</y>
          <width>601</width>
-         <height>111</height>
+         <height>91</height>
         </rect>
        </property>
        <property name="title">
@@ -798,8 +798,8 @@ font-size:14px;
        <widget class="QWidget" name="gridLayoutWidget_2">
         <property name="geometry">
          <rect>
-          <x>19</x>
-          <y>39</y>
+          <x>10</x>
+          <y>30</y>
           <width>571</width>
           <height>51</height>
          </rect>
@@ -841,10 +841,10 @@ font-size:14px;
       <widget class="QWidget" name="horizontalLayoutWidget_2">
        <property name="geometry">
         <rect>
-         <x>9</x>
-         <y>310</y>
+         <x>10</x>
+         <y>290</y>
          <width>601</width>
-         <height>80</height>
+         <height>51</height>
         </rect>
        </property>
        <layout class="QHBoxLayout" name="horizontalLayout_3">
@@ -868,6 +868,48 @@ font-size:14px;
          </widget>
         </item>
        </layout>
+      </widget>
+      <widget class="QWidget" name="horizontalLayoutWidget_3">
+       <property name="geometry">
+        <rect>
+         <x>9</x>
+         <y>339</y>
+         <width>601</width>
+         <height>51</height>
+        </rect>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="QPushButton" name="flexaid_button_stop">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Stop</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="flexaid_abort_button">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Abort</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QLineEdit" name="simulate_folder_path">
+       <property name="geometry">
+        <rect>
+         <x>12</x>
+         <y>260</y>
+         <width>601</width>
+         <height>21</height>
+        </rect>
+       </property>
       </widget>
      </widget>
     </widget>

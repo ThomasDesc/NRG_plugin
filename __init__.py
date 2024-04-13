@@ -119,8 +119,11 @@ def make_dialog():
     form.flexaid_ligand_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.flexaid_select_ligand, form.output_box))
     form.flexaid_binding_site_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.flexaid_select_binding_site, form.output_box, filter_for='_sph_'))
     form.flexaid_button_start.clicked.connect(lambda: flexaid.run_flexaid(flexaid_output_path, form, cleft_save_path, process_ligand_path, flexaid_path, simulation_folder_path))
+
+    form.flexaid_button_stop.clicked.connect(lambda: flexaid.stop_simulation(form))
+    form.flexaid_button_abort.clicked.connect(lambda: flexaid.abort_simulation(form))
+
     form.cleft_partition_radius_slider.valueChanged.connect(lambda: spheres.resize_sphere(form.partition_sphere_select.currentText(), form.cleft_partition_radius_slider.value()))
     form.cleft_partition_crop_button.clicked.connect(lambda: spheres.crop_cleft(form.partition_sphere_select.currentText(), form.cleft_partition_radius_slider.value()/100, cleft_save_path, form.cleft_partition_select_object.currentText()))
-    form.class_test.clicked.connect(thread_test.yo)
-
+    # form.class_test.clicked.connect(thread_test.run_flexaid)
     return dialog

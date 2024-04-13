@@ -4,7 +4,7 @@ import shutil
 import subprocess
 import datetime
 import thread_test
-
+import time
 
 def submit_command(getcleft_command):
     print('submitting command')
@@ -86,35 +86,94 @@ def edit_ga(ga_template_path, ga_write_path, setting_dictionary):
                 ga_write.write(line)
 
 
-def run_flexaid(flexaid_output_path, form, cleft_save_path, process_ligand_path, flexaid_path, simulation_folder_path):
-    max_results = 10
-    setting_dictionary = get_simulation_settings(form)
-    date = datetime.datetime.now()
-    date_time_str = date.strftime("%d-%m-%y-%I-%M-%S")
-    flexaid_result_path = os.path.join(simulation_folder_path, date_time_str)
-    os.mkdir(flexaid_result_path)
-    flexaid_result_name_path = os.path.join(flexaid_result_path, "RESULT")
-    binding_site_path = os.path.join(flexaid_output_path, 'binding_site_sph_.pdb')
-    target_name = form.flexaid_select_target.currentText()
-    target_save_path = os.path.join(flexaid_output_path, 'flexaid_target.pdb')
-    cmd.save(target_save_path, target_name)
-    ligand_name = form.flexaid_select_ligand.currentText()
-    ligand_save_path = os.path.join(flexaid_output_path, 'flexaid_ligand.pdb')
-    cmd.save(ligand_save_path, ligand_name)
-    binding_site_name = form.flexaid_select_binding_site.currentText()
-    shutil.copy(os.path.join(cleft_save_path, binding_site_name + '.pdb'), binding_site_path)
-    process_ligand(process_ligand_path, target_save_path, istarget=True)
-    process_ligand(process_ligand_path, ligand_save_path)
-    target_inp_path = os.path.splitext(target_save_path)[0] + '.inp.pdb'
-    ligand_inp_path = os.path.splitext(ligand_save_path)[0] + '.inp'
-    config_file_path = write_config(target_inp_path, binding_site_path, ligand_inp_path, max_results, flexaid_output_path, flexaid_result_path)
-    ga_path = os.path.join(flexaid_output_path, 'ga_inp.dat')
-    edit_ga(os.path.join(os.path.dirname(__file__), 'ga_inp.dat'), ga_path, setting_dictionary)
-    flexaid_command = f'"{flexaid_path}" "{config_file_path}" "{ga_path}" "{flexaid_result_name_path}"'
-    with open('/Users/thomasdescoteaux/Documents/NRGSuite_Qt/' + 'flex_cmd.txt', 'w') as f:
-        f.write(flexaid_command)
-    print(flexaid_command)
-    form.output_box.append(f'Please wait...Running Flexaid with command: \n{flexaid_command}')
-    thread_test.yo(flexaid_command)
+def toggle_buttons(form, true_false, start_text):
+    form.flexaid_button_start.setText(start_text)
+    form.flexaid_abort_button.setEnabled(true_false)
+    form.flexaid_stop_button.setEnabled(true_false)
+
+
+def run_flexaid_worker(command, form, simulation_folder):
+    worker = thread_test.WorkerThread(command)
+    time.sleep(1)
+    worker.start()
+    worker.finished.connect(worker.quit)
+    worker.finished.connect(lambda: toggle_buttons(form, False, 'Start'))
+    worker.finished.connect(lambda: load_show_flexaid_result(simulation_folder))
     # worker.finished.connect(lambda: load_show_cleft(cleft_save_path, color_list, form.output_box, pymol_object))
+
+
+def pause_simulation(form):
+    simulation_path = form.simulate_folder_path.text()
+    with open(os.path.join(simulation_path, '.pause'), 'a'):
+        pass
+    form.flexaid_button_start.setText('Resume')
+
+
+def abort_simulation(form):
+    simulation_path = form.simulate_folder_path.text()
+    with open(os.path.join(simulation_path, '.abort'), 'a'):
+        pass
+    form.flexaid_button_start.setText('Start')
+
+
+def stop_simulation(form):
+    simulation_path = form.simulate_folder_path.text()
+    with open(os.path.join(simulation_path, '.stop'), 'a'):
+        pass
+    form.flexaid_button_start.setText('Start')
+
+
+def resume_simulation(form):
+    simulation_path = form.simulate_folder_path.text()
+    os.remove(os.path.join(simulation_path, '.pause'))
+    form.flexaid_button_start.setText('Pause')
+
+
+def load_show_flexaid_result(result_path):
+    result_files = next(os.walk(result_path), (None, None, []))[2]
+    result_files = sorted(result_files)
+    cmd.disable('everything')
+    for file in result_files:
+        if file.startswith('RESULT') and not file.endswith('INI.pdb') and file.endswith('.pdb'):
+            file_path = os.path.join(result_path, file)
+            cmd.load(file_path)
+
+
+def run_flexaid(flexaid_output_path, form, cleft_save_path, process_ligand_path, flexaid_path, simulation_folder_path):
+    if form.flexaid_button_start.text() == 'Start':
+        max_results = 10
+        setting_dictionary = get_simulation_settings(form)
+        date = datetime.datetime.now()
+        date_time_str = date.strftime("%d-%m-%y-%I-%M-%S")
+        flexaid_result_path = os.path.join(simulation_folder_path, date_time_str)
+        form.simulate_folder_path.setText(flexaid_result_path)
+        os.mkdir(flexaid_result_path)
+        flexaid_result_name_path = os.path.join(flexaid_result_path, "RESULT")
+        binding_site_path = os.path.join(flexaid_output_path, 'binding_site_sph_.pdb')
+        target_name = form.flexaid_select_target.currentText()
+        target_save_path = os.path.join(flexaid_output_path, 'flexaid_target.pdb')
+        cmd.save(target_save_path, target_name)
+        ligand_name = form.flexaid_select_ligand.currentText()
+        ligand_save_path = os.path.join(flexaid_output_path, 'flexaid_ligand.pdb')
+        cmd.save(ligand_save_path, ligand_name)
+        binding_site_name = form.flexaid_select_binding_site.currentText()
+        shutil.copy(os.path.join(cleft_save_path, binding_site_name + '.pdb'), binding_site_path)
+        process_ligand(process_ligand_path, target_save_path, istarget=True)
+        process_ligand(process_ligand_path, ligand_save_path)
+        target_inp_path = os.path.splitext(target_save_path)[0] + '.inp.pdb'
+        ligand_inp_path = os.path.splitext(ligand_save_path)[0] + '.inp'
+        config_file_path = write_config(target_inp_path, binding_site_path, ligand_inp_path, max_results, flexaid_output_path, flexaid_result_path)
+        ga_path = os.path.join(flexaid_output_path, 'ga_inp.dat')
+        edit_ga(os.path.join(os.path.dirname(__file__), 'ga_inp.dat'), ga_path, setting_dictionary)
+        toggle_buttons(form, True, 'Pause')
+        flexaid_command = f'"{flexaid_path}" "{config_file_path}" "{ga_path}" "{flexaid_result_name_path}"'
+        with open('/Users/thomasdescoteaux/Documents/NRGSuite_Qt/' + 'flex_cmd.txt', 'w') as f:
+            f.write(flexaid_command)
+        print(flexaid_command)
+        form.output_box.append(f'Please wait...Running Flexaid with command: \n{flexaid_command}')
+        run_flexaid_worker(flexaid_command, form, flexaid_result_path)
+    elif form.flexaid_button_start.text() == 'Pause':
+        pause_simulation(form)
+    elif form.flexaid_button_start.text() == 'Resume':
+        resume_simulation(form)
 
