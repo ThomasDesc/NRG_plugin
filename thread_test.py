@@ -8,6 +8,8 @@ import os
 
 
 class FileUpdaterThread(QtCore.QThread):
+    generation_signal = QtCore.pyqtSignal(int)
+
     def __init__(self, folder_path, table_widget, progress_bar, hex_colour_list):
         super(FileUpdaterThread, self).__init__()
         self.folder_path = folder_path
@@ -42,8 +44,9 @@ class FileUpdaterThread(QtCore.QThread):
             for line_counter, line in enumerate(f):
                 if line.startswith("Generation"):
                     generation = int(line[11:].strip())
+                    self.generation_signal.emit(generation)
                     progress_bar.setValue(generation)
-                if line_counter > 1 and generation % 10 == 0:
+                if line_counter > 1 and generation % 100 == 0:
                     line = line.split()
                     top_number = int(line[0]) + 1
                     cf = line[-5]
@@ -57,11 +60,16 @@ class FileUpdaterThread(QtCore.QThread):
 
 
 class WorkerThread(QtCore.QThread):
-    def __init__(self, command, folder_path, table_widget):
+    generation_signal_received = QtCore.pyqtSignal(int)
+
+    def __init__(self, command, folder_path, table_widget,  progress_bar, hex_colour_list):
         super(WorkerThread, self).__init__()
         self.command = command
         self.folder_path = folder_path
-        self.file_updater_thread = FileUpdaterThread(folder_path, table_widget)
+        self.progress_bar = progress_bar
+        self.hex_colour_list = hex_colour_list
+        self.file_updater_thread = FileUpdaterThread(folder_path, table_widget, progress_bar, hex_colour_list)
+        self.file_updater_thread.generation_signal.connect(self.generation_signal_received)
 
     finished = QtCore.pyqtSignal()
 

@@ -96,10 +96,15 @@ def toggle_buttons(form, true_false, start_text):
     form.flexaid_button_stop.setEnabled(true_false)
 
 
-def run_flexaid_worker(command, form, simulation_folder):
-    worker = thread_test.WorkerThread(command, simulation_folder, form.flexaid_result_table)
+def print_lines(lines):
+    print('generation: ', lines)
+
+
+def run_flexaid_worker(command, form, simulation_folder, hex_colour_list):
+    worker = thread_test.WorkerThread(command, simulation_folder, form.flexaid_result_table, form.flexaid_progress, hex_colour_list)
     time.sleep(1)
     worker.start()
+    worker.generation_signal_received.connect(print_lines)
     worker.finished.connect(worker.quit)
     worker.finished.connect(lambda: toggle_buttons(form, False, 'Start'))
     worker.finished.connect(lambda: load_show_flexaid_result(simulation_folder))
@@ -143,7 +148,7 @@ def load_show_flexaid_result(result_path):
             cmd.load(file_path)
 
 
-def run_flexaid(flexaid_output_path, form, cleft_save_path, process_ligand_path, flexaid_path, simulation_folder_path):
+def run_flexaid(flexaid_output_path, form, cleft_save_path, process_ligand_path, flexaid_path, simulation_folder_path, hex_colour_list):
     if form.flexaid_button_start.text() == 'Start':
         max_results = 10
         setting_dictionary = get_simulation_settings(form)
@@ -176,7 +181,7 @@ def run_flexaid(flexaid_output_path, form, cleft_save_path, process_ligand_path,
             f.write(flexaid_command)
         print(flexaid_command)
         form.output_box.append(f'Please wait...Running Flexaid with command: \n{flexaid_command}')
-        run_flexaid_worker(flexaid_command, form, flexaid_result_path)
+        run_flexaid_worker(flexaid_command, form, flexaid_result_path, hex_colour_list)
     elif form.flexaid_button_start.text() == 'Pause':
         pause_simulation(form)
     elif form.flexaid_button_start.text() == 'Resume':
