@@ -890,7 +890,7 @@ font-size:14px;
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="flexaid_abort_button">
+         <widget class="QPushButton" name="flexaid_button_abort">
           <property name="enabled">
            <bool>false</bool>
           </property>

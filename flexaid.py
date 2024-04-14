@@ -47,6 +47,8 @@ def write_config(target_inp_path, cleft, ligand_inp_path, max_results, flexaid_o
                 t2.write(f'DEPSPA {flexaid_deps_path}\n')
             elif line.startswith('MAXRES'):
                 t2.write(f'MAXRES {max_results}\n')
+            elif line.startswith('TEMPOP'):
+                t2.write(f'TEMPOP {os.path.join(flexaid_result_path, "temp")}\n')
             else:
                 t2.write(line)
     return config_file_output_path
@@ -88,12 +90,12 @@ def edit_ga(ga_template_path, ga_write_path, setting_dictionary):
 
 def toggle_buttons(form, true_false, start_text):
     form.flexaid_button_start.setText(start_text)
-    form.flexaid_abort_button.setEnabled(true_false)
-    form.flexaid_stop_button.setEnabled(true_false)
+    form.flexaid_button_abort.setEnabled(true_false)
+    form.flexaid_button_stop.setEnabled(true_false)
 
 
 def run_flexaid_worker(command, form, simulation_folder):
-    worker = thread_test.WorkerThread(command)
+    worker = thread_test.WorkerThread(command, simulation_folder)
     time.sleep(1)
     worker.start()
     worker.finished.connect(worker.quit)
@@ -148,6 +150,7 @@ def run_flexaid(flexaid_output_path, form, cleft_save_path, process_ligand_path,
         flexaid_result_path = os.path.join(simulation_folder_path, date_time_str)
         form.simulate_folder_path.setText(flexaid_result_path)
         os.mkdir(flexaid_result_path)
+        os.mkdir(os.path.join(flexaid_result_path, 'temp'))
         flexaid_result_name_path = os.path.join(flexaid_result_path, "RESULT")
         binding_site_path = os.path.join(flexaid_output_path, 'binding_site_sph_.pdb')
         target_name = form.flexaid_select_target.currentText()
@@ -176,4 +179,5 @@ def run_flexaid(flexaid_output_path, form, cleft_save_path, process_ligand_path,
         pause_simulation(form)
     elif form.flexaid_button_start.text() == 'Resume':
         resume_simulation(form)
+    # TODO: set temp_folder in flexaid config with TEMPOP
 
