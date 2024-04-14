@@ -178,7 +178,7 @@ color:rgb(255, 255, 255);</string>
     </rect>
    </property>
    <property name="currentIndex">
-    <number>2</number>
+    <number>3</number>
    </property>
    <widget class="QWidget" name="page_3">
     <widget class="QGroupBox" name="groupBox_2">
@@ -918,14 +918,79 @@ font-size:14px;
     <widget class="QPushButton" name="class_test">
      <property name="geometry">
       <rect>
-       <x>250</x>
-       <y>170</y>
+       <x>50</x>
+       <y>20</y>
        <width>100</width>
        <height>32</height>
       </rect>
      </property>
      <property name="text">
       <string>PushButton</string>
+     </property>
+    </widget>
+    <widget class="QTableWidget" name="flexaid_result_table">
+     <property name="geometry">
+      <rect>
+       <x>40</x>
+       <y>230</y>
+       <width>521</width>
+       <height>192</height>
+      </rect>
+     </property>
+     <property name="rowCount">
+      <number>5</number>
+     </property>
+     <row/>
+     <row/>
+     <row/>
+     <row/>
+     <row/>
+     <column>
+      <property name="text">
+       <string>Colour</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>TOP</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>CF</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Fitness</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Last RMSD</string>
+      </property>
+     </column>
+    </widget>
+    <widget class="QProgressBar" name="flexaid_progress">
+     <property name="geometry">
+      <rect>
+       <x>47</x>
+       <y>130</y>
+       <width>501</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="autoFillBackground">
+      <bool>false</bool>
+     </property>
+     <property name="maximum">
+      <number>500</number>
+     </property>
+     <property name="value">
+      <number>0</number>
+     </property>
+     <property name="textVisible">
+      <bool>true</bool>
      </property>
     </widget>
    </widget>

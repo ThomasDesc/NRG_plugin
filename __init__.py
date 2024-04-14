@@ -87,6 +87,9 @@ def make_dialog():
     color_list = ['red', 'br8', 'tv_red', 'oxygen', 'iron', 'tv_orange', 'sulfur', 'gold', 'yelloworange', 'neodymium',
                   'limon', 'chartreuse', 'tv_green', 'limegreen', 'teal', 'rhodium', 'slate', 'tv_blue', 'blue',
                   'density']
+    hex_colour_list = ['#FF0000', '#E61A33', '#FF1515', '#FF4D4D', '#E06633', '#FF8C26', '#E6C740', '#FFD124',
+                       '#FFDE5E', '#C7FFC7', '#BFFF40', '#80FF00', '#33FF33', '#00FF80', '#00BFBF', '#0A7DAB',
+                       '#8080FF', '#4D4DFF', '#0000FF', '#1A1A99']
 
     if os.path.isdir(plugin_tmp_output_path):
         shutil.rmtree(plugin_tmp_output_path)
@@ -125,5 +128,5 @@ def make_dialog():
 
     form.cleft_partition_radius_slider.valueChanged.connect(lambda: spheres.resize_sphere(form.partition_sphere_select.currentText(), form.cleft_partition_radius_slider.value()))
     form.cleft_partition_crop_button.clicked.connect(lambda: spheres.crop_cleft(form.partition_sphere_select.currentText(), form.cleft_partition_radius_slider.value()/100, cleft_save_path, form.cleft_partition_select_object.currentText()))
-    # form.class_test.clicked.connect(thread_test.run_flexaid)
+    form.class_test.clicked.connect(lambda: flexaid.read_update(form.flexaid_result_table, form.flexaid_progress, hex_colour_list))
     return dialog

@@ -80,3 +80,22 @@ def read_coords_cleft(cleft_path):
     coords = np.array(coords)
     return lines, coords
 
+
+def create_number_list(length_TotColor, length_TotalColorList):
+    if length_TotColor == 1:
+        return [0]
+    else:
+        number_list = []
+        modulo = (length_TotalColorList - 1) % (length_TotColor - 1)
+        partition = (length_TotalColorList - modulo - 1) / (length_TotColor - 1)
+        step_start = 0
+        step_end = length_TotalColorList - 1
+        for i in range(0, length_TotColor):
+            if ((i % 2) == 0):
+                number_list.append(step_start)
+                step_start = step_start + partition
+            else:
+                number_list.append(step_end)
+                step_end = step_end - partition
+        number_list.sort()
+        return [int(i) for i in number_list]

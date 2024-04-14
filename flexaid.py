@@ -5,6 +5,8 @@ import subprocess
 import datetime
 import thread_test
 import time
+import general_functions
+
 
 def submit_command(getcleft_command):
     print('submitting command')
@@ -95,7 +97,7 @@ def toggle_buttons(form, true_false, start_text):
 
 
 def run_flexaid_worker(command, form, simulation_folder):
-    worker = thread_test.WorkerThread(command, simulation_folder)
+    worker = thread_test.WorkerThread(command, simulation_folder, form.flexaid_result_table)
     time.sleep(1)
     worker.start()
     worker.finished.connect(worker.quit)

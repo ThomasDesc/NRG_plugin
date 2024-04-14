@@ -33,27 +33,6 @@ def get_arg_str(form, getcleft_path, object_path, cleft_save_path):
     return arg_string
 
 
-def create_number_list(pTotColor, pTotalColorList):
-    if pTotColor == 1:
-        return [0]
-    else:
-        number_list = []
-        modulo = (pTotalColorList - 1) % (pTotColor - 1)
-        partition = (pTotalColorList - modulo - 1) / (pTotColor - 1)
-        step_start = 0
-        step_end = pTotalColorList - 1
-        for i in range(0, pTotColor):
-
-            if ((i % 2) == 0):
-                number_list.append(step_start)
-                step_start = step_start + partition
-            else:
-                number_list.append(step_end)
-                step_end = step_end - partition
-        number_list.sort()
-        return [int(i) for i in number_list]
-
-
 def load_show_cleft(cleft_save_path, color_list, output_box, pymol_object):
     auto_zoom = cmd.get("auto_zoom")
     cmd.set("auto_zoom", 0)
@@ -67,7 +46,7 @@ def load_show_cleft(cleft_save_path, color_list, output_box, pymol_object):
     sph_file_list = sorted(sph_file_list, key=lambda d: d['name'])
     if len(sph_file_list) == 0:
         general_functions.output_message(output_box, 'No clefts were found', 'warning')
-    number_color_list = create_number_list(len(sph_file_list), len(color_list))
+    number_color_list = general_functions.create_number_list(len(sph_file_list), len(color_list))
     for cleft_counter, Cleft in enumerate(sph_file_list):
         try:
             cmd.load(Cleft['path'], Cleft['name'], state=1)
