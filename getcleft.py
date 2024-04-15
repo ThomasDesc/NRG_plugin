@@ -15,8 +15,12 @@ class WorkerThread(QtCore.QThread):
     emit_exception = QtCore.pyqtSignal(Exception)
 
     def run(self):
-        submit_command(self.command)
+        self.submit_command()
         self.finished.emit()
+
+    def submit_command(self):
+        print('submitting command')
+        subprocess.run(self.command, shell=True)
 
 
 def get_arg_str(form, getcleft_path, object_path, cleft_save_path):
@@ -62,11 +66,6 @@ def load_show_cleft(cleft_save_path, color_list, output_box, pymol_object):
     cmd.zoom(pymol_object)
     cmd.refresh()
     cmd.set("auto_zoom", auto_zoom)
-
-
-def submit_command(getcleft_command):
-    print('submitting command')
-    subprocess.run(getcleft_command, shell=True)
 
 
 def run_getcleft(form, getcleft_path, getcleft_output_path, cleft_save_path, color_list):
