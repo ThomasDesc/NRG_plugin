@@ -130,5 +130,5 @@ def make_dialog():
 
     form.cleft_partition_radius_slider.valueChanged.connect(lambda: spheres.resize_sphere(form.partition_sphere_select.currentText(), form.cleft_partition_radius_slider.value()))
     form.cleft_partition_crop_button.clicked.connect(lambda: spheres.crop_cleft(form.partition_sphere_select.currentText(), form.cleft_partition_radius_slider.value()/100, cleft_save_path, form.cleft_partition_select_object.currentText()))
-    form.class_test.clicked.connect(lambda: getcleft.submit_command())
+    # form.class_test.clicked.connect(lambda: getcleft.test_submit_command())
     return dialog

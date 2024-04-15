@@ -68,7 +68,7 @@ def load_show_cleft(cleft_save_path, color_list, output_box, pymol_object):
     cmd.set("auto_zoom", auto_zoom)
 
 
-def submit_command():
+def test_submit_command():
     print('submitting command')
     subprocess.run(r"C:\Users\Thomas\Downloads\NRG_plugin-main\bin\win\GetCleft.exe", shell=True)
 
@@ -86,13 +86,13 @@ def run_getcleft(form, getcleft_path, getcleft_output_path, cleft_save_path, col
         return
     getcleft_command = get_arg_str(form, getcleft_path, object_save_path, cleft_save_path)
     form.output_box.append(f'Please wait...Running GetCleft with command: {getcleft_command}')
-    # submit_command(getcleft_command)
-    # load_show_cleft(cleft_save_path, color_list, form.output_box)
+    test_submit_command(getcleft_command)
+    load_show_cleft(cleft_save_path, color_list, form.output_box, pymol_object)
 
-    worker = WorkerThread(getcleft_command)
-    time.sleep(1)
-    worker.start()
-    worker.emit_exception.connect(lambda: print('error'))
-    worker.emit_exception.connect(worker.terminate)
-    worker.finished.connect(worker.quit)
-    worker.finished.connect(lambda: load_show_cleft(cleft_save_path, color_list, form.output_box, pymol_object))
+    # worker = WorkerThread(getcleft_command)
+    # time.sleep(1)
+    # worker.start()
+    # worker.emit_exception.connect(lambda: print('error'))
+    # worker.emit_exception.connect(worker.terminate)
+    # worker.finished.connect(worker.quit)
+    # worker.finished.connect(lambda: load_show_cleft(cleft_save_path, color_list, form.output_box, pymol_object))
