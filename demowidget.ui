@@ -955,7 +955,7 @@ font-size:14px;
        </property>
        <layout class="QGridLayout" name="gridLayout_2">
         <item row="0" column="0">
-         <widget class="QLabel" name="label_3">
+         <widget class="QLabel" name="generation_label">
           <property name="text">
            <string>Generation: 0/500</string>
           </property>

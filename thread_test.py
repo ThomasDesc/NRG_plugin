@@ -8,15 +8,17 @@ import os
 
 
 class FileUpdaterThread(QtCore.QThread):
-    generation_signal = QtCore.pyqtSignal(int)
+    current_generation_signal = QtCore.pyqtSignal(int)
+    generation_str_signal = QtCore.pyqtSignal(str)
     table_signal = QtCore.pyqtSignal(list)
 
-    def __init__(self, folder_path, table_widget, hex_colour_list):
+    def __init__(self, folder_path, table_widget, hex_colour_list, max_generations):
         super(FileUpdaterThread, self).__init__()
         self.folder_path = folder_path
         self.table_widget = table_widget
         self.hex_colour_list = hex_colour_list
         self.current_generation = 0
+        self.max_generation = max_generations
         self.update_file_path = os.path.join(self.folder_path, ".update")
         self.running = True
 
@@ -41,7 +43,8 @@ class FileUpdaterThread(QtCore.QThread):
                     fitness = line[-1]
                     rmsd = 'N/A'
                     data = (hex_colour_list[number_color_list[top_number - 1]], top_number, cf, fitness, rmsd)
-                    self.generation_signal.emit(self.current_generation)
+                    self.current_generation_signal.emit(self.current_generation)
+                    self.generation_str_signal.emit(f"Generation: {self.current_generation}/{self.max_generation}")
                     self.colour_specific_cell(table_widget, data)
 
     def stop(self):
@@ -49,16 +52,18 @@ class FileUpdaterThread(QtCore.QThread):
 
 
 class WorkerThread(QtCore.QThread):
-    generation_signal_received = QtCore.pyqtSignal(int)
+    current_generation_signal_received = QtCore.pyqtSignal(int)
+    generation_str_signal_received = QtCore.pyqtSignal(str)
     table_signal_received = QtCore.pyqtSignal(list)
 
-    def __init__(self, command, folder_path, table_widget, hex_colour_list):
+    def __init__(self, command, folder_path, table_widget, hex_colour_list, max_generations):
         super(WorkerThread, self).__init__()
         self.command = command
         self.folder_path = folder_path
         self.hex_colour_list = hex_colour_list
-        self.file_updater_thread = FileUpdaterThread(folder_path, table_widget, hex_colour_list)
-        self.file_updater_thread.generation_signal.connect(self.generation_signal_received)
+        self.file_updater_thread = FileUpdaterThread(folder_path, table_widget, hex_colour_list, max_generations)
+        self.file_updater_thread.current_generation_signal.connect(self.current_generation_signal_received)
+        self.file_updater_thread.generation_str_signal.connect(self.generation_str_signal_received)
         self.file_updater_thread.table_signal.connect(self.table_signal_received)
 
     finished = QtCore.pyqtSignal()

@@ -10,11 +10,6 @@ import time
 import general_functions
 
 
-def submit_command(getcleft_command):
-    print('submitting command')
-    subprocess.run(getcleft_command, shell=True)
-
-
 def count_flex(ligand_inp_file_path):
     with open(ligand_inp_file_path, 'r') as t:
         texto = t.readlines()
@@ -109,22 +104,24 @@ def colour_specific_cell(table_widget, data):
             item = QtWidgets.QTableWidgetItem()
             item = QtWidgets.QTableWidgetItem(str(data[column_counter]))
         table_widget.setItem(row, column, item)
-    print('hey')
 
 
 def receive_list(table_list):
     colour_specific_cell(*table_list)
 
 
-def run_flexaid_worker(command, form, simulation_folder, hex_colour_list):
-    worker = thread_test.WorkerThread(command, simulation_folder, form.flexaid_result_table, hex_colour_list)
+def run_flexaid_worker(command, form, simulation_folder, hex_colour_list, max_generations):
+    worker = thread_test.WorkerThread(command, simulation_folder, form.flexaid_result_table, hex_colour_list, max_generations)
     time.sleep(1)
     worker.start()
     worker.table_signal_received.connect(receive_list)
-    worker.generation_signal_received.connect(form.flexaid_progress.setValue)
+    worker.current_generation_signal_received.connect(form.flexaid_progress.setValue)
+    worker.generation_str_signal_received.connect(form.generation_label.setText)
     worker.finished.connect(worker.quit)
     worker.finished.connect(lambda: toggle_buttons(form, False))
     worker.finished.connect(lambda: load_show_flexaid_result(simulation_folder))
+    worker.finished.connect(lambda: form.flexaid_progress.setValue(max_generations))
+    worker.finished.connect(lambda: form.generation_label.setText(f'Generation: {max_generations}/{max_generations}'))
     # worker.finished.connect(lambda: load_show_cleft(cleft_save_path, color_list, form.output_box, pymol_object))
 
 
@@ -170,6 +167,7 @@ def run_flexaid(flexaid_output_path, form, cleft_save_path, process_ligand_path,
     if form.flexaid_button_start.text() == 'Start':
         max_results = 10
         setting_dictionary = get_simulation_settings(form)
+        max_generations = setting_dictionary['number_generations']
         date = datetime.datetime.now()
         date_time_str = date.strftime("%d-%m-%y-%I-%M-%S")
         flexaid_result_path = os.path.join(simulation_folder_path, date_time_str)
@@ -200,7 +198,7 @@ def run_flexaid(flexaid_output_path, form, cleft_save_path, process_ligand_path,
         print(flexaid_command)
         form.output_box.append(f'Please wait...Running Flexaid with command: \n{flexaid_command}')
         form.flexaid_tab.setCurrentIndex(2)
-        run_flexaid_worker(flexaid_command, form, flexaid_result_path, hex_colour_list)
+        run_flexaid_worker(flexaid_command, form, flexaid_result_path, hex_colour_list, max_generations)
     elif form.flexaid_button_start.text() == 'Pause':
         pause_simulation(form)
     elif form.flexaid_button_start.text() == 'Resume':
