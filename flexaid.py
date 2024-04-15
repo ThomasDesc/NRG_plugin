@@ -92,8 +92,8 @@ def edit_ga(ga_template_path, ga_write_path, setting_dictionary):
                 ga_write.write(line)
 
 
-def toggle_buttons(form, true_false, start_text):
-    form.flexaid_button_start.setText(start_text)
+def toggle_buttons(form, true_false):
+    form.flexaid_button_pause.setEnabled(true_false)
     form.flexaid_button_abort.setEnabled(true_false)
     form.flexaid_button_stop.setEnabled(true_false)
 
@@ -123,7 +123,7 @@ def run_flexaid_worker(command, form, simulation_folder, hex_colour_list):
     worker.table_signal_received.connect(receive_list)
     worker.generation_signal_received.connect(form.flexaid_progress.setValue)
     worker.finished.connect(worker.quit)
-    worker.finished.connect(lambda: toggle_buttons(form, False, 'Start'))
+    worker.finished.connect(lambda: toggle_buttons(form, False))
     worker.finished.connect(lambda: load_show_flexaid_result(simulation_folder))
     # worker.finished.connect(lambda: load_show_cleft(cleft_save_path, color_list, form.output_box, pymol_object))
 
@@ -193,7 +193,7 @@ def run_flexaid(flexaid_output_path, form, cleft_save_path, process_ligand_path,
         config_file_path = write_config(target_inp_path, binding_site_path, ligand_inp_path, max_results, flexaid_output_path, flexaid_result_path)
         ga_path = os.path.join(flexaid_output_path, 'ga_inp.dat')
         edit_ga(os.path.join(os.path.dirname(__file__), 'ga_inp.dat'), ga_path, setting_dictionary)
-        toggle_buttons(form, True, 'Pause')
+        toggle_buttons(form, True)
         flexaid_command = f'"{flexaid_path}" "{config_file_path}" "{ga_path}" "{flexaid_result_name_path}"'
         with open('/Users/thomasdescoteaux/Documents/NRGSuite_Qt/' + 'flex_cmd.txt', 'w') as f:
             f.write(flexaid_command)
