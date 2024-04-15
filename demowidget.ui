@@ -178,7 +178,7 @@ color:rgb(255, 255, 255);</string>
     </rect>
    </property>
    <property name="currentIndex">
-    <number>3</number>
+    <number>2</number>
    </property>
    <widget class="QWidget" name="page_3">
     <widget class="QGroupBox" name="groupBox_2">
@@ -594,7 +594,10 @@ font-size:14px;
     </widget>
    </widget>
    <widget class="QWidget" name="page_4">
-    <widget class="QTabWidget" name="tabWidget_3">
+    <widget class="QTabWidget" name="flexaid_tab">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -616,7 +619,7 @@ font-size:14px;
       <enum>QTabWidget::Rounded</enum>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>2</number>
      </property>
      <property name="usesScrollButtons">
       <bool>false</bool>
@@ -878,7 +881,130 @@ font-size:14px;
          <height>51</height>
         </rect>
        </property>
-       <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <layout class="QHBoxLayout" name="horizontalLayout_2"/>
+      </widget>
+      <widget class="QLineEdit" name="simulate_folder_path">
+       <property name="geometry">
+        <rect>
+         <x>12</x>
+         <y>260</y>
+         <width>601</width>
+         <height>21</height>
+        </rect>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="tab">
+      <attribute name="title">
+       <string>Results</string>
+      </attribute>
+      <widget class="QTableWidget" name="flexaid_result_table">
+       <property name="geometry">
+        <rect>
+         <x>40</x>
+         <y>190</y>
+         <width>521</width>
+         <height>192</height>
+        </rect>
+       </property>
+       <property name="rowCount">
+        <number>5</number>
+       </property>
+       <row/>
+       <row/>
+       <row/>
+       <row/>
+       <row/>
+       <column>
+        <property name="text">
+         <string>Colour</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>TOP</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>CF</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Fitness</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Last RMSD</string>
+        </property>
+       </column>
+      </widget>
+      <widget class="QGroupBox" name="groupBox_8">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>10</y>
+         <width>591</width>
+         <height>81</height>
+        </rect>
+       </property>
+       <property name="title">
+        <string>Progress</string>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_2">
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_3">
+          <property name="text">
+           <string>Generation: 0/500</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QProgressBar" name="flexaid_progress">
+          <property name="autoFillBackground">
+           <bool>false</bool>
+          </property>
+          <property name="maximum">
+           <number>500</number>
+          </property>
+          <property name="value">
+           <number>0</number>
+          </property>
+          <property name="textVisible">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="horizontalLayoutWidget_4">
+       <property name="geometry">
+        <rect>
+         <x>9</x>
+         <y>110</y>
+         <width>591</width>
+         <height>80</height>
+        </rect>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_4">
+        <item>
+         <widget class="QPushButton" name="flexaid_button_pause">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Pause</string>
+          </property>
+          <property name="checkable">
+           <bool>true</bool>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
         <item>
          <widget class="QPushButton" name="flexaid_button_stop">
           <property name="enabled">
@@ -897,19 +1023,15 @@ font-size:14px;
           <property name="text">
            <string>Abort</string>
           </property>
+          <property name="checkable">
+           <bool>false</bool>
+          </property>
+          <property name="checked">
+           <bool>false</bool>
+          </property>
          </widget>
         </item>
        </layout>
-      </widget>
-      <widget class="QLineEdit" name="simulate_folder_path">
-       <property name="geometry">
-        <rect>
-         <x>12</x>
-         <y>260</y>
-         <width>601</width>
-         <height>21</height>
-        </rect>
-       </property>
       </widget>
      </widget>
     </widget>
@@ -918,79 +1040,14 @@ font-size:14px;
     <widget class="QPushButton" name="class_test">
      <property name="geometry">
       <rect>
-       <x>50</x>
-       <y>20</y>
+       <x>280</x>
+       <y>190</y>
        <width>100</width>
        <height>32</height>
       </rect>
      </property>
      <property name="text">
       <string>PushButton</string>
-     </property>
-    </widget>
-    <widget class="QTableWidget" name="flexaid_result_table">
-     <property name="geometry">
-      <rect>
-       <x>40</x>
-       <y>230</y>
-       <width>521</width>
-       <height>192</height>
-      </rect>
-     </property>
-     <property name="rowCount">
-      <number>5</number>
-     </property>
-     <row/>
-     <row/>
-     <row/>
-     <row/>
-     <row/>
-     <column>
-      <property name="text">
-       <string>Colour</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>TOP</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>CF</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Fitness</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Last RMSD</string>
-      </property>
-     </column>
-    </widget>
-    <widget class="QProgressBar" name="flexaid_progress">
-     <property name="geometry">
-      <rect>
-       <x>47</x>
-       <y>130</y>
-       <width>501</width>
-       <height>23</height>
-      </rect>
-     </property>
-     <property name="autoFillBackground">
-      <bool>false</bool>
-     </property>
-     <property name="maximum">
-      <number>500</number>
-     </property>
-     <property name="value">
-      <number>0</number>
-     </property>
-     <property name="textVisible">
-      <bool>true</bool>
      </property>
     </widget>
    </widget>

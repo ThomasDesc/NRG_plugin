@@ -1,5 +1,7 @@
 import os
 from pymol import cmd
+from pymol.Qt import QtGui
+from pymol.Qt import QtWidgets
 import shutil
 import subprocess
 import datetime
@@ -96,15 +98,30 @@ def toggle_buttons(form, true_false, start_text):
     form.flexaid_button_stop.setEnabled(true_false)
 
 
-def print_lines(lines):
-    print('generation: ', lines)
+def colour_specific_cell(table_widget, data):
+    num_column = table_widget.columnCount()
+    row = int(data[1]) - 1
+    for column_counter, column in enumerate(range(num_column)):
+        if column_counter == 0:
+            item = QtWidgets.QTableWidgetItem()
+            item.setBackground(QtGui.QColor(data[column_counter]))
+        else:
+            item = QtWidgets.QTableWidgetItem()
+            item = QtWidgets.QTableWidgetItem(str(data[column_counter]))
+        table_widget.setItem(row, column, item)
+    print('hey')
+
+
+def receive_list(table_list):
+    colour_specific_cell(*table_list)
 
 
 def run_flexaid_worker(command, form, simulation_folder, hex_colour_list):
-    worker = thread_test.WorkerThread(command, simulation_folder, form.flexaid_result_table, form.flexaid_progress, hex_colour_list)
+    worker = thread_test.WorkerThread(command, simulation_folder, form.flexaid_result_table, hex_colour_list)
     time.sleep(1)
     worker.start()
-    worker.generation_signal_received.connect(print_lines)
+    worker.table_signal_received.connect(receive_list)
+    worker.generation_signal_received.connect(form.flexaid_progress.setValue)
     worker.finished.connect(worker.quit)
     worker.finished.connect(lambda: toggle_buttons(form, False, 'Start'))
     worker.finished.connect(lambda: load_show_flexaid_result(simulation_folder))
@@ -115,27 +132,28 @@ def pause_simulation(form):
     simulation_path = form.simulate_folder_path.text()
     with open(os.path.join(simulation_path, '.pause'), 'a'):
         pass
-    form.flexaid_button_start.setText('Resume')
+    form.flexaid_button_pause.setText('Resume')
 
 
 def abort_simulation(form):
     simulation_path = form.simulate_folder_path.text()
     with open(os.path.join(simulation_path, '.abort'), 'a'):
         pass
-    form.flexaid_button_start.setText('Start')
+    form.flexaid_button_start.setEnabled(True)
+    form.flexaid_tab.setCurrentIndex(1)
 
 
 def stop_simulation(form):
     simulation_path = form.simulate_folder_path.text()
     with open(os.path.join(simulation_path, '.stop'), 'a'):
         pass
-    form.flexaid_button_start.setText('Start')
+    form.flexaid_button_start.setEnabled(True)
 
 
 def resume_simulation(form):
     simulation_path = form.simulate_folder_path.text()
     os.remove(os.path.join(simulation_path, '.pause'))
-    form.flexaid_button_start.setText('Pause')
+    form.flexaid_button_pause.setText('Pause')
 
 
 def load_show_flexaid_result(result_path):
@@ -181,6 +199,7 @@ def run_flexaid(flexaid_output_path, form, cleft_save_path, process_ligand_path,
             f.write(flexaid_command)
         print(flexaid_command)
         form.output_box.append(f'Please wait...Running Flexaid with command: \n{flexaid_command}')
+        form.flexaid_tab.setCurrentIndex(2)
         run_flexaid_worker(flexaid_command, form, flexaid_result_path, hex_colour_list)
     elif form.flexaid_button_start.text() == 'Pause':
         pause_simulation(form)
