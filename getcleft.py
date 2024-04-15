@@ -68,6 +68,11 @@ def load_show_cleft(cleft_save_path, color_list, output_box, pymol_object):
     cmd.set("auto_zoom", auto_zoom)
 
 
+def submit_command():
+    print('submitting command')
+    subprocess.run(r"C:\Users\Thomas\Downloads\NRG_plugin-main\bin\win\GetCleft.exe", shell=True)
+
+
 def run_getcleft(form, getcleft_path, getcleft_output_path, cleft_save_path, color_list):
     shutil.rmtree(getcleft_output_path)
     os.mkdir(getcleft_output_path)
@@ -83,6 +88,7 @@ def run_getcleft(form, getcleft_path, getcleft_output_path, cleft_save_path, col
     form.output_box.append(f'Please wait...Running GetCleft with command: {getcleft_command}')
     # submit_command(getcleft_command)
     # load_show_cleft(cleft_save_path, color_list, form.output_box)
+
     worker = WorkerThread(getcleft_command)
     time.sleep(1)
     worker.start()
