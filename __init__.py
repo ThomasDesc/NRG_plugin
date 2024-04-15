@@ -125,6 +125,7 @@ def make_dialog():
     form.flexaid_button_start.clicked.connect(lambda: form.flexaid_tab.setTabEnabled(2, True))
     form.flexaid_button_start.clicked.connect(lambda: flexaid.run_flexaid(flexaid_output_path, form, cleft_save_path, process_ligand_path, flexaid_path, simulation_folder_path, hex_colour_list))
 
+    form.flexaid_button_pause.clicked.connect(lambda: flexaid.pause_resume_simulation(form))
     form.flexaid_button_stop.clicked.connect(lambda: flexaid.stop_simulation(form))
     form.flexaid_button_abort.clicked.connect(lambda: flexaid.abort_simulation(form))
 

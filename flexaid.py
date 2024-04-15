@@ -163,11 +163,18 @@ def load_show_flexaid_result(result_path):
             cmd.load(file_path)
 
 
+def pause_resume_simulation(form):
+    if form.flexaid_button_pause.text() == 'Pause':
+        pause_simulation(form)
+    elif form.flexaid_button_pause.text() == 'Resume':
+        resume_simulation(form)
+
+
 def run_flexaid(flexaid_output_path, form, cleft_save_path, process_ligand_path, flexaid_path, simulation_folder_path, hex_colour_list):
     if form.flexaid_button_start.text() == 'Start':
         max_results = 10
         setting_dictionary = get_simulation_settings(form)
-        max_generations = setting_dictionary['number_generations']
+        max_generations = int(setting_dictionary['number_generations'])
         date = datetime.datetime.now()
         date_time_str = date.strftime("%d-%m-%y-%I-%M-%S")
         flexaid_result_path = os.path.join(simulation_folder_path, date_time_str)
@@ -199,9 +206,6 @@ def run_flexaid(flexaid_output_path, form, cleft_save_path, process_ligand_path,
         form.output_box.append(f'Please wait...Running Flexaid with command: \n{flexaid_command}')
         form.flexaid_tab.setCurrentIndex(2)
         run_flexaid_worker(flexaid_command, form, flexaid_result_path, hex_colour_list, max_generations)
-    elif form.flexaid_button_start.text() == 'Pause':
-        pause_simulation(form)
-    elif form.flexaid_button_start.text() == 'Resume':
-        resume_simulation(form)
+
     # TODO: set temp_folder in flexaid config with TEMPOP
 
