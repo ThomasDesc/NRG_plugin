@@ -68,9 +68,9 @@ def load_show_cleft(cleft_save_path, color_list, output_box, pymol_object):
     cmd.set("auto_zoom", auto_zoom)
 
 
-def test_submit_command():
+def test_submit_command(getcleft_command):
     print('submitting command')
-    subprocess.run(r"C:\Users\Thomas\Downloads\NRG_plugin-main\bin\win\GetCleft.exe", shell=True)
+    subprocess.run(getcleft_command, shell=True)
 
 
 def run_getcleft(form, getcleft_path, getcleft_output_path, cleft_save_path, color_list):
