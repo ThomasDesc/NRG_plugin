@@ -25,7 +25,7 @@ def write_config(target_inp_path, cleft, ligand_inp_path, max_results, flexaid_o
         lines = t1.readlines()
     config_file_output_path = os.path.join(flexaid_output_path, 'config.inp')
     flexaid_deps_path = os.path.join(os.path.dirname(__file__), 'flexaid_deps')
-    matrix_path = os.path.join(flexaid_deps_path, 'MC_5p_norm_P10_M2_2.dat')
+    matrix_path = os.path.join(flexaid_deps_path, 'MC_st0r5.2_6.dat')
     with open(config_file_output_path, "w") as t2:
         for line in lines:
             if line.startswith('PDBNAM'):
