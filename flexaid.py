@@ -170,7 +170,7 @@ def pause_resume_simulation(form):
         resume_simulation(form)
 
 
-def run_flexaid(flexaid_output_path, form, cleft_save_path, process_ligand_path, flexaid_path, simulation_folder_path, hex_colour_list):
+def run_flexaid(flexaid_output_path, form, cleft_save_path, process_ligand_path, flexaid_path, simulation_folder_path, hex_colour_list, tmp_path):
     if form.flexaid_button_start.text() == 'Start':
         max_results = 10
         setting_dictionary = get_simulation_settings(form)
@@ -201,7 +201,7 @@ def run_flexaid(flexaid_output_path, form, cleft_save_path, process_ligand_path,
         edit_ga(os.path.join(os.path.dirname(__file__), 'ga_inp.dat'), ga_path, setting_dictionary)
         toggle_buttons(form, True)
         flexaid_command = f'"{flexaid_path}" "{config_file_path}" "{ga_path}" "{flexaid_result_name_path}"'
-        with open('/Users/thomasdescoteaux/Documents/NRGSuite_Qt/' + 'flex_cmd.txt', 'w') as f:
+        with open(os.path.join(tmp_path, 'flex_cmd.txt'), 'w') as f:
             f.write(flexaid_command)
         print(flexaid_command)
         form.output_box.append(f'Please wait...Running Flexaid with command: \n{flexaid_command}')
