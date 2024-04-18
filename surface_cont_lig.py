@@ -3,10 +3,8 @@
 # Cite this work as Surfaces: A software to quantify and visualize interactions within and between proteins and ligands - Teruel, N. F. B., Borges, V. M., & Najmanovich, R. (2023)
 
 # Imports
-import sys
 import os
 import re
-import pandas as pd
 
 # Useful dicts
 aa = {'C': 'CYS', 'D': 'ASP', 'S': 'SER', 'Q': 'GLN', 'K': 'LYS', 'I': 'ILE', 'P': 'PRO', 'T': 'THR', 'F': 'PHE',
@@ -100,7 +98,7 @@ def read_surface(line):
     return (surf)
 
 
-def read_interactions(file, matrix, chains, ligands, def_file, dat_file, atom_numbers, scale_factor):
+def read_interactions(file, matrix, chains, ligands, def_file, dat_file, atom_numbers, scale_factor, atoms, res_list):
     f = open(file, 'r')
     Lines = f.readlines()
     for line in Lines:
@@ -118,7 +116,9 @@ def read_interactions(file, matrix, chains, ligands, def_file, dat_file, atom_nu
                         main_residue = main_res + str(main_resnum) + fixed_main_chain
                         surf = read_surface(line)
                         if (main_res not in ligands) and (res in ligands):
-                            matrix.loc[main_residue, atom_name] += (
+                            main_residue_index = res_list.index(main_residue)
+                            atom_index = atoms.index(atom_name)
+                            matrix[main_residue_index, atom_index] += (
                                         surf * score(main_attype, main_res, attype, res, def_file,
                                                      dat_file) * scale_factor)
 
@@ -211,7 +211,18 @@ def read_args():
     main(pdb_file, chains, ligand, output_name, atomtypes_definition, atomtypes_interactions, vcon_path, vcon_output_path)
 
 
+def fix_csv(output_name, atoms, res):
+    with open(output_name) as csv_file:
+        lines = csv_file.readlines()
+    for line_counter, line in enumerate(lines):
+        lines[line_counter] = res[line_counter] + ',' + lines[line_counter]
+    atoms_str = ',' + ','.join(atoms) + '\n'
+    lines.insert(0, atoms_str)
+    return lines
+
+
 def main(pdb_file, chains, ligand, output_name, atomtypes_definition, atomtypes_interactions, vcon_path, vcon_output_path):
+    import numpy as np
     list_ligands = ligand.split(",")
     res, atoms, atom_numbers = read_residues(pdb_file, chains, list_ligands)
     # print (res, atoms)
@@ -219,19 +230,23 @@ def main(pdb_file, chains, ligand, output_name, atomtypes_definition, atomtypes_
 
     vcon_o_path = vcon(pdb_file, vcon_path, vcon_output_path)
 
-    matrix = [[0.0 for i in range(len(atoms))] for j in range(len(res))]
-    matrix = pd.DataFrame(matrix)
-    matrix.columns = atoms
-    matrix.index = res
+    matrix = np.zeros((len(res), len(atoms)), dtype=np.float64)
+    # matrix = np.matrix(temp_matrix)
+    # matrix = pd.DataFrame(matrix)
+    # matrix.columns = atoms
+    # matrix.index = res
 
     # Determined according to the AB-Bind dataset results
     scale_factor = 0.00024329
 
     matrix = read_interactions(vcon_o_path, matrix, chains, list_ligands, atomtypes_definition,
-                               atomtypes_interactions, atom_numbers, scale_factor)
+                               atomtypes_interactions, atom_numbers, scale_factor, atoms, res)
 
-    matrix.to_csv(output_name)
-
+    # matrix.tofile(output_name, sep=',')
+    np.savetxt(output_name, matrix, delimiter=",")
+    lines = fix_csv(output_name, atoms, res)
+    with open(output_name, 'w') as csv_file:
+        csv_file.writelines(lines)
     list_file(matrix, output_name)
 
     # remove files
