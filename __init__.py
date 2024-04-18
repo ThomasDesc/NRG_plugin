@@ -52,6 +52,7 @@ def make_dialog():
     import flexaid
     import platform
     import spheres
+    import run_Surfaces
     import thread_test
     dialog = QtWidgets.QDialog()
 
@@ -73,7 +74,7 @@ def make_dialog():
     else:
         OSid = 'UNKNOWN'
 
-
+    main_folder_path = os.path.dirname(__file__)
     uifile = os.path.join(os.path.dirname(__file__), 'demowidget.ui')
     getcleft_path = os.path.join(os.path.dirname(__file__), 'bin', folder, f'GetCleft{suffix}')
     flexaid_path = os.path.join(os.path.dirname(__file__), 'bin', folder, f'FlexAID{suffix}')
@@ -82,6 +83,7 @@ def make_dialog():
     temp_path = os.path.join(plugin_tmp_output_path, 'temp')
     getcleft_output_path = os.path.join(temp_path, 'GetCleft')
     flexaid_output_path = os.path.join(temp_path, 'FlexAID')
+    surfaces_output_path = os.path.join(temp_path, 'Surfaces')
     cleft_save_path = os.path.join(getcleft_output_path, 'Clefts')
     simulation_folder_path = os.path.join(flexaid_output_path, 'Simulation')
     color_list = ['red', 'br8', 'tv_red', 'oxygen', 'iron', 'tv_orange', 'sulfur', 'gold', 'yelloworange', 'neodymium',
@@ -97,11 +99,14 @@ def make_dialog():
     os.mkdir(temp_path)
     os.mkdir(getcleft_output_path)
     os.mkdir(cleft_save_path)
+    os.mkdir(surfaces_output_path)
     os.mkdir(flexaid_output_path)
     os.mkdir(simulation_folder_path)
     form = loadUi(uifile, dialog)
     form.stackedWidget.setCurrentIndex(0)
     form.flexaid_tab.setTabEnabled(2, False)
+    print(form.surface_select_result.currentText())
+
 
     # Refresh object dropdown menu
     general_functions.refresh_dropdown(form.cleft_select_object, form.output_box, no_warning=True)
@@ -109,6 +114,7 @@ def make_dialog():
     form.button_partition_cleft.clicked.connect(lambda: form.stackedWidget.setCurrentIndex(1))
     form.button_flexaid.clicked.connect(lambda: form.stackedWidget.setCurrentIndex(2))
     form.button_nrgdock.clicked.connect(lambda: form.stackedWidget.setCurrentIndex(3))
+    form.button_Surfaces.clicked.connect(lambda: form.stackedWidget.setCurrentIndex(4))
 
     form.cleft_partition_button_add.clicked.connect(lambda: spheres.display_sphere(form.cleft_partition_select_object.currentText(), form.cleft_partition_radius_slider, form.partition_sphere_select))
 
@@ -131,5 +137,8 @@ def make_dialog():
 
     form.cleft_partition_radius_slider.valueChanged.connect(lambda: spheres.resize_sphere(form.partition_sphere_select.currentText(), form.cleft_partition_radius_slider.value()))
     form.cleft_partition_crop_button.clicked.connect(lambda: spheres.crop_cleft(form.partition_sphere_select.currentText(), form.cleft_partition_radius_slider.value()/100, cleft_save_path, form.cleft_partition_select_object.currentText()))
+
+    form.surfaces_refresh_button.clicked.connect(lambda: general_functions.refresh_dropdown(form.surface_select_result, form.output_box))
+    form.surfaces_run_button.clicked.connect(lambda: run_Surfaces.run_run_surfaces(form.surface_select_result.currentText(), surfaces_output_path, form.simulate_folder_path.text(), main_folder_path))
     # form.class_test.clicked.connect(lambda: getcleft.test_submit_command())
     return dialog
