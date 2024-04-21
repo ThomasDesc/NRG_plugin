@@ -5,6 +5,7 @@
 # Imports
 import os
 import re
+import numpy as np
 
 # Useful dicts
 aa = {'C': 'CYS', 'D': 'ASP', 'S': 'SER', 'Q': 'GLN', 'K': 'LYS', 'I': 'ILE', 'P': 'PRO', 'T': 'THR', 'F': 'PHE',
@@ -163,17 +164,17 @@ def score(attype1, res1, attype2, res2, def_file, dat_file):
 
 
 # create file of list of interactions
-def list_file(matrix, output_name):
+def list_file(matrix, output_name, atoms, res):
     residues1 = []
     residues2 = []
     values = []
     abs_values = []
-    for i in range(len(matrix.index)):
-        for j in range(len(matrix.columns)):
-            num = matrix.loc[matrix.index[i], matrix.columns[j]]
+    for i in range(len(matrix)):
+        for j in range(len(matrix[0])):
+            num = matrix[i][j]
             if num != 0:
-                residues1.append(matrix.index[i])
-                residues2.append(matrix.columns[j])
+                residues1.append(res[i])
+                residues2.append(atoms[j])
                 values.append(num)
                 abs_values.append(abs(num))
     sorted_residues1 = [x for _, x in sorted(zip(abs_values, residues1), reverse=True)]
@@ -221,8 +222,21 @@ def fix_csv(output_name, atoms, res):
     return lines
 
 
+def write_image_file(matrix, output_name, atoms, res):
+    out_lines = []
+    column = matrix.sum(axis=0)
+    row = matrix.sum(axis=1)
+    out_lines.append(','.join(atoms) + '\n')
+    out_lines.append(','.join(res) + '\n')
+    out_lines.append(','.join(np.char.mod('%f', column)) + '\n')
+    out_lines.append(','.join(np.char.mod('%f', row)))
+    list_out = os.path.join(os.path.dirname(output_name), 'image_' + os.path.basename(output_name)[:-4] + '.txt')
+    with open(list_out, "w") as f:
+        f.writelines(out_lines)
+    return list_out
+
+
 def main(pdb_file, chains, ligand, output_name, atomtypes_definition, atomtypes_interactions, vcon_path, vcon_output_path):
-    import numpy as np
     list_ligands = ligand.split(",")
     res, atoms, atom_numbers = read_residues(pdb_file, chains, list_ligands)
     # print (res, atoms)
@@ -247,8 +261,8 @@ def main(pdb_file, chains, ligand, output_name, atomtypes_definition, atomtypes_
     lines = fix_csv(output_name, atoms, res)
     with open(output_name, 'w') as csv_file:
         csv_file.writelines(lines)
-    list_file(matrix, output_name)
-
+    list_file(matrix, output_name, atoms, res)
+    write_image_file(matrix, output_name, atoms, res)
     # remove files
     os.remove(vcon_o_path)
 

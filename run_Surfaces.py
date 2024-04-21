@@ -32,7 +32,7 @@ def create_ligand_file(pdb_file_name, lig_path):
     return
 
 
-def run_run_surfaces(selected_result, surfaces_output_path, flexaid_simulation_folder, main_folder_path):
+def run_run_surfaces(selected_result, surfaces_output_path, flexaid_simulation_folder, main_folder_path, vcon_path):
     def_file = os.path.join(main_folder_path, "surfaces_defs", 'AMINO_FlexAID.def')
     flexaid_dat_path = os.path.join(main_folder_path, "surfaces_defs", 'FlexAID.dat')
     open_def_file = open(def_file, "r")
@@ -51,4 +51,5 @@ def run_run_surfaces(selected_result, surfaces_output_path, flexaid_simulation_f
     clean_pdb_file = open(cleaned_file_path, "w")
     clean_structure(processed_result_path, custom_def_path, clean_pdb_file)
     clean_pdb_file.close()
-    surface_cont_lig(cleaned_file_path, 'ABC', 'LIG', os.path.join(surfaces_output_path, 'csv_output.csv'), custom_def_path, flexaid_dat_path)
+    vcon_out_file = os.path.join(os.path.dirname(surfaces_output_path), 'vcon_file.txt')
+    surface_cont_lig(cleaned_file_path, 'ABC', 'LIG', os.path.join(surfaces_output_path, 'csv_output.csv'), custom_def_path, flexaid_dat_path, vcon_path, vcon_out_file)
