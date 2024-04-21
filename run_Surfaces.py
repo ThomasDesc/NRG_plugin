@@ -2,7 +2,7 @@ import os
 from ligand_atomtypes import add_pdb
 from clean_structure import main as clean_structure
 from surface_cont_lig import main as surface_cont_lig
-
+from pymol_image_surfaces_lig import generate_session
 def process_result_flexaid(flexaid_result_file, output):
     with open(flexaid_result_file, 'r') as t1:
         with open(output, 'w') as t2:
@@ -35,6 +35,7 @@ def create_ligand_file(pdb_file_name, lig_path):
 def run_run_surfaces(selected_result, surfaces_output_path, flexaid_simulation_folder, main_folder_path, vcon_path):
     def_file = os.path.join(main_folder_path, "surfaces_defs", 'AMINO_FlexAID.def')
     flexaid_dat_path = os.path.join(main_folder_path, "surfaces_defs", 'FlexAID.dat')
+    color_rgb_path = os.path.join(main_folder_path, "surfaces_defs", 'color_rgb.txt')
     open_def_file = open(def_file, "r")
     flexaid_simulation_folder = '/Users/thomasdescoteaux/Downloads/temp/FlexAID/Simulation/11-04-24-02-39-32'
     flexaid_result_file = os.path.join(flexaid_simulation_folder, selected_result + '.pdb')
@@ -52,4 +53,6 @@ def run_run_surfaces(selected_result, surfaces_output_path, flexaid_simulation_f
     clean_structure(processed_result_path, custom_def_path, clean_pdb_file)
     clean_pdb_file.close()
     vcon_out_file = os.path.join(os.path.dirname(surfaces_output_path), 'vcon_file.txt')
-    surface_cont_lig(cleaned_file_path, 'ABC', 'LIG', os.path.join(surfaces_output_path, 'csv_output.csv'), custom_def_path, flexaid_dat_path, vcon_path, vcon_out_file)
+    csv_path = os.path.join(surfaces_output_path, 'csv_output.csv')
+    list_file_path, image_file_path = surface_cont_lig(cleaned_file_path, 'ABC', 'LIG', csv_path, custom_def_path, flexaid_dat_path, vcon_path, vcon_out_file)
+    generate_session(clean_pdb_file, image_file_path, list_file_path, color_rgb_path)

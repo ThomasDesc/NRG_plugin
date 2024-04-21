@@ -204,8 +204,8 @@ def color_ligands():
     return
 
 
-def generate_session(pdb_file, surfaces_file, list_file, color_rgb_file_path, residues_of_interest=None, color_scale=None, color_scale_range=None):
-    residues, atoms, values_residues, values_atoms = read_image_data(surfaces_file)
+def generate_session(pdb_file, image_file, list_file, color_rgb_file_path, residues_of_interest=None, color_scale=None, color_scale_range=None):
+    residues, atoms, values_residues, values_atoms = read_image_data(image_file)
     color_codes = generate_color_scale(values_residues, color_scale_range, color_scale, color_rgb_file_path)
     pymol.cmd.load(pdb_file)
     pymol.cmd.color('grey60', pdb_file[:-4])

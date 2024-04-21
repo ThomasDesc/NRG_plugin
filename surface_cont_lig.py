@@ -185,7 +185,7 @@ def list_file(matrix, output_name, atoms, res):
     for k in range(len(values)):
         f.write(sorted_residues1[k] + "," + sorted_residues2[k] + "," + str(sorted_values[k]) + "\n")
     f.close()
-    return
+    return list_out
 
 
 def read_args():
@@ -261,12 +261,12 @@ def main(pdb_file, chains, ligand, output_name, atomtypes_definition, atomtypes_
     lines = fix_csv(output_name, atoms, res)
     with open(output_name, 'w') as csv_file:
         csv_file.writelines(lines)
-    list_file(matrix, output_name, atoms, res)
-    write_image_file(matrix, output_name, atoms, res)
+    list_file_path = list_file(matrix, output_name, atoms, res)
+    image_file_path = write_image_file(matrix, output_name, atoms, res)
     # remove files
     os.remove(vcon_o_path)
 
-    return ()
+    return list_file_path, image_file_path
 
 
 if __name__ == '__main__':
