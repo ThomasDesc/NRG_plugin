@@ -55,4 +55,4 @@ def run_run_surfaces(selected_result, surfaces_output_path, flexaid_simulation_f
     vcon_out_file = os.path.join(os.path.dirname(surfaces_output_path), 'vcon_file.txt')
     csv_path = os.path.join(surfaces_output_path, 'csv_output.csv')
     list_file_path, image_file_path = surface_cont_lig(cleaned_file_path, 'ABC', 'LIG', csv_path, custom_def_path, flexaid_dat_path, vcon_path, vcon_out_file)
-    generate_session(clean_pdb_file, image_file_path, list_file_path, color_rgb_path)
+    generate_session(cleaned_file_path, image_file_path, list_file_path, color_rgb_path)

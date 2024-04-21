@@ -6,6 +6,7 @@
 import argparse
 import sys
 import pymol
+import os
 
 
 def read_image_data(output_name):
@@ -208,7 +209,7 @@ def generate_session(pdb_file, image_file, list_file, color_rgb_file_path, resid
     residues, atoms, values_residues, values_atoms = read_image_data(image_file)
     color_codes = generate_color_scale(values_residues, color_scale_range, color_scale, color_rgb_file_path)
     pymol.cmd.load(pdb_file)
-    pymol.cmd.color('grey60', pdb_file[:-4])
+    pymol.cmd.color('grey60', os.path.basename(pdb_file)[:-4])
     chains = split_states(residues, atoms, pdb_file)
     for C in chains:
         pymol.cmd.set("cartoon_transparency", 0.55, 'chain' + C)
