@@ -141,6 +141,7 @@ def label_pairs(pair,selected_pairs):
     if pair[0] not in selected_residues:
         pymol.cmd.hide('labels', selection_string1)
     pymol.cmd.disable(pair_string)
+    pymol.cmd.set("label_position", "[0,0,6]")
     return
     
 def pairs_to_residues(pairs):
