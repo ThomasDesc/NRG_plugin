@@ -35,6 +35,7 @@ def run_plugin_gui():
         dialog = make_dialog()
 
     dialog.show()
+    dialog.raise_()
 
 
 def make_dialog():
@@ -106,7 +107,6 @@ def make_dialog():
     form = loadUi(uifile, dialog)
     form.stackedWidget.setCurrentIndex(0)
     form.flexaid_tab.setTabEnabled(2, False)
-    print(form.surface_select_result.currentText())
 
 
     # Refresh object dropdown menu
@@ -139,7 +139,7 @@ def make_dialog():
     form.cleft_partition_radius_slider.valueChanged.connect(lambda: spheres.resize_sphere(form.partition_sphere_select.currentText(), form.cleft_partition_radius_slider.value()))
     form.cleft_partition_crop_button.clicked.connect(lambda: spheres.crop_cleft(form.partition_sphere_select.currentText(), form.cleft_partition_radius_slider.value()/100, cleft_save_path, form.cleft_partition_select_object.currentText()))
 
-    form.surfaces_refresh_button.clicked.connect(lambda: general_functions.refresh_dropdown(form.surface_select_result, form.output_box))
+    form.surfaces_refresh_button.clicked.connect(lambda: general_functions.refresh_dropdown(form.surface_select_result, form.output_box, filter_for='RESULT'))
     form.surfaces_run_button.clicked.connect(lambda: run_Surfaces.run_run_surfaces(form.surface_select_result.currentText(), surfaces_output_path, form.simulate_folder_path.text(), main_folder_path, vcon_path))
     # form.class_test.clicked.connect(lambda: getcleft.test_submit_command())
     return dialog

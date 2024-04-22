@@ -43,7 +43,6 @@ class FileUpdaterThread(QtCore.QThread):
                     fitness = line[-1]
                     rmsd = 'N/A'
                     data = (hex_colour_list[number_color_list[top_number - 1]], top_number, cf, fitness, rmsd)
-                    print('Current generation: ', self.current_generation)
                     self.current_generation_signal.emit(self.current_generation)
                     self.generation_str_signal.emit(f"Generation: {self.current_generation}/{self.max_generation}")
                     self.colour_specific_cell(table_widget, data)

@@ -120,6 +120,7 @@ def run_flexaid_worker(command, form, simulation_folder, hex_colour_list, max_ge
     worker.finished.connect(worker.quit)
     worker.finished.connect(lambda: toggle_buttons(form, False))
     worker.finished.connect(lambda: load_show_flexaid_result(simulation_folder))
+    worker.finished.connect(lambda: print('max_generation: ', max_generations))
     worker.finished.connect(lambda: form.flexaid_progress.setValue(max_generations))
     worker.finished.connect(lambda: form.generation_label.setText(f'Generation: {max_generations}/{max_generations}'))
     # worker.finished.connect(lambda: load_show_cleft(cleft_save_path, color_list, form.output_box, pymol_object))
@@ -175,7 +176,7 @@ def run_flexaid(flexaid_output_path, form, cleft_save_path, process_ligand_path,
         max_results = 10
         setting_dictionary = get_simulation_settings(form)
         max_generations = int(setting_dictionary['number_generations'])
-        form.flexaid_progress.setMaximum(max_results)
+        form.flexaid_progress.setMaximum(max_generations)
         date = datetime.datetime.now()
         date_time_str = date.strftime("%d-%m-%y-%I-%M-%S")
         flexaid_result_path = os.path.join(simulation_folder_path, date_time_str)
