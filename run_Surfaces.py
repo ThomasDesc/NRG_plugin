@@ -37,7 +37,6 @@ def run_run_surfaces(selected_result, surfaces_output_path, flexaid_simulation_f
     flexaid_dat_path = os.path.join(main_folder_path, "surfaces_defs", 'FlexAID.dat')
     color_rgb_path = os.path.join(main_folder_path, "surfaces_defs", 'color_rgb.txt')
     open_def_file = open(def_file, "r")
-    flexaid_simulation_folder = '/Users/thomasdescoteaux/Downloads/temp/FlexAID/Simulation/11-04-24-02-39-32'
     flexaid_result_file = os.path.join(flexaid_simulation_folder, selected_result + '.pdb')
     processed_result_path = os.path.join(surfaces_output_path, os.path.basename(flexaid_result_file)[:-4] + '_processed.pdb')
     process_result_flexaid(flexaid_result_file, processed_result_path)
