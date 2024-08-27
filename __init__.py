@@ -1,14 +1,3 @@
-'''
-PyMOL Demo Plugin
-
-The plugin resembles the old "Rendering Plugin" from Michael Lerner, which
-was written with Tkinter instead of PyQt.
-
-(c) Schrodinger, Inc.
-
-License: BSD-2-Clause
-'''
-
 from __future__ import absolute_import
 from __future__ import print_function
 
@@ -55,6 +44,7 @@ def make_dialog():
     import spheres
     import run_Surfaces
     import thread_test
+    import nrgdock
     dialog = QtWidgets.QDialog()
 
     OS = platform.system().upper()
@@ -85,6 +75,7 @@ def make_dialog():
     temp_path = os.path.join(plugin_tmp_output_path, 'temp')
     getcleft_output_path = os.path.join(temp_path, 'GetCleft')
     flexaid_output_path = os.path.join(temp_path, 'FlexAID')
+    nrgdock_output_path = os.path.join(temp_path, 'NRGDock')
     surfaces_output_path = os.path.join(temp_path, 'Surfaces')
     cleft_save_path = os.path.join(getcleft_output_path, 'Clefts')
     simulation_folder_path = os.path.join(flexaid_output_path, 'Simulation')
@@ -104,12 +95,11 @@ def make_dialog():
     os.mkdir(surfaces_output_path)
     os.mkdir(flexaid_output_path)
     os.mkdir(simulation_folder_path)
+    os.mkdir(nrgdock_output_path)
     form = loadUi(uifile, dialog)
     form.stackedWidget.setCurrentIndex(0)
     form.flexaid_tab.setTabEnabled(2, False)
 
-
-    # Refresh object dropdown menu
     general_functions.refresh_dropdown(form.cleft_select_object, form.output_box, no_warning=True)
     form.button_getcleft.clicked.connect(lambda: form.stackedWidget.setCurrentIndex(0))
     form.button_partition_cleft.clicked.connect(lambda: form.stackedWidget.setCurrentIndex(1))
@@ -138,6 +128,13 @@ def make_dialog():
 
     form.cleft_partition_radius_slider.valueChanged.connect(lambda: spheres.resize_sphere(form.partition_sphere_select.currentText(), form.cleft_partition_radius_slider.value()))
     form.cleft_partition_crop_button.clicked.connect(lambda: spheres.crop_cleft(form.partition_sphere_select.currentText(), form.cleft_partition_radius_slider.value()/100, cleft_save_path, form.cleft_partition_select_object.currentText()))
+
+    # NRGDock:
+    form.nrgdock_target_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.nrgdock_select_target, form.output_box))
+    form.nrgdock_binding_site_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.nrgdock_select_binding_site, form.output_box, filter_for='_sph_'))
+    form.radioButton.isChecked().connect(lambda: form.input_num_chromosomes_3.setEnabled(True))
+    form.nrgdock_button_start.clicked.connect(
+        lambda: nrgdock.run_nrgdock(form, nrgdock_output_path))
 
     form.surfaces_refresh_button.clicked.connect(lambda: general_functions.refresh_dropdown(form.surface_select_result, form.output_box, filter_for='RESULT'))
     form.surfaces_run_button.clicked.connect(lambda: run_Surfaces.run_run_surfaces(form.surface_select_result.currentText(), surfaces_output_path, form.simulate_folder_path.text(), main_folder_path, vcon_path))
