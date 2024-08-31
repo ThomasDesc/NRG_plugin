@@ -3,6 +3,8 @@ from ligand_atomtypes import add_pdb
 from clean_structure import main as clean_structure
 from surface_cont_lig import main as surface_cont_lig
 from pymol_image_surfaces_lig import generate_session
+
+
 def process_result_flexaid(flexaid_result_file, output):
     with open(flexaid_result_file, 'r') as t1:
         with open(output, 'w') as t2:

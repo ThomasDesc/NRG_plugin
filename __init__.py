@@ -71,11 +71,13 @@ def make_dialog():
     flexaid_path = os.path.join(os.path.dirname(__file__), 'bin', folder, f'FlexAID{suffix}')
     vcon_path = os.path.join(os.path.dirname(__file__), 'bin', folder, f'vcon')
     process_ligand_path = os.path.join(os.path.dirname(__file__), 'bin', folder, f'Process_ligand{suffix}')
+    ligand_set_folder_path = os.path.join(os.path.dirname(__file__), 'nrgdock', 'ligand_sets')
     plugin_tmp_output_path = os.path.join(os.path.expanduser('~'), 'Documents', 'NRGSuite_Qt')
     temp_path = os.path.join(plugin_tmp_output_path, 'temp')
     getcleft_output_path = os.path.join(temp_path, 'GetCleft')
     flexaid_output_path = os.path.join(temp_path, 'FlexAID')
     nrgdock_output_path = os.path.join(temp_path, 'NRGDock')
+    nrgdock_temp_output_path = os.path.join(temp_path, 'NRGDock', 'temp', 'results')
     surfaces_output_path = os.path.join(temp_path, 'Surfaces')
     cleft_save_path = os.path.join(getcleft_output_path, 'Clefts')
     simulation_folder_path = os.path.join(flexaid_output_path, 'Simulation')
@@ -96,6 +98,7 @@ def make_dialog():
     os.mkdir(flexaid_output_path)
     os.mkdir(simulation_folder_path)
     os.mkdir(nrgdock_output_path)
+    os.makedirs(nrgdock_temp_output_path)
     form = loadUi(uifile, dialog)
     form.stackedWidget.setCurrentIndex(0)
     form.flexaid_tab.setTabEnabled(2, False)
@@ -132,9 +135,9 @@ def make_dialog():
     # NRGDock:
     form.nrgdock_target_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.nrgdock_select_target, form.output_box))
     form.nrgdock_binding_site_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.nrgdock_select_binding_site, form.output_box, filter_for='_sph_'))
-    form.radioButton.isChecked().connect(lambda: form.input_num_chromosomes_3.setEnabled(True))
+    form.radioButton.toggled.connect(lambda: form.input_num_chromosomes_3.setEnabled(True))
     form.nrgdock_button_start.clicked.connect(
-        lambda: nrgdock.run_nrgdock(form, nrgdock_output_path))
+        lambda: nrgdock.run_nrgdock(form, nrgdock_output_path, ligand_set_folder_path, main_folder_path))
 
     form.surfaces_refresh_button.clicked.connect(lambda: general_functions.refresh_dropdown(form.surface_select_result, form.output_box, filter_for='RESULT'))
     form.surfaces_run_button.clicked.connect(lambda: run_Surfaces.run_run_surfaces(form.surface_select_result.currentText(), surfaces_output_path, form.simulate_folder_path.text(), main_folder_path, vcon_path))

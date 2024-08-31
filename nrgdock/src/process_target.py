@@ -328,8 +328,9 @@ def preprocess_one_target(target, main_path, params_dict, energy_matrix, time_st
         print(f"Target: {target}")
     target_path = str(os.path.join(main_path, target))
     receptor_path = os.path.join(target_path, "receptor.mol2")
+    print(receptor_path)
     if not os.path.isfile(receptor_path):
-        exit("Could not find receptor.mol2 file")
+        exit(f"Could not find receptor.mol2 file at path: {receptor_path}")
 
     # ####################### GET BINDING SITE #######################
     if verbose:
@@ -439,12 +440,12 @@ def main(path_to_targets, target_list, overwrite=False, run_getcleft=False, liga
         print('Preprocessing targets: ', target_list)
     else:
         print('Preprocessing target: ', target_list[0])
-    # preprocess_one_target(target_list[0], path_to_targets, params_dict, energy_matrix, time_start, overwrite,
-    #                       run_getcleft, ligand_name, verbose)
-    with concurrent.futures.ProcessPoolExecutor(max_workers=32) as executor:
-        executor.map(preprocess_one_target, target_list, repeat(path_to_targets), repeat(params_dict),
-                     repeat(energy_matrix), repeat(time_start), repeat(overwrite), repeat(run_getcleft),
-                     repeat(ligand_name), repeat(verbose))
+    preprocess_one_target(target_list[0], path_to_targets, params_dict, energy_matrix, time_start, overwrite,
+                          run_getcleft, ligand_name, verbose)
+    # with concurrent.futures.ProcessPoolExecutor(max_workers=32) as executor:
+    #     executor.map(preprocess_one_target, target_list, repeat(path_to_targets), repeat(params_dict),
+    #                  repeat(energy_matrix), repeat(time_start), repeat(overwrite), repeat(run_getcleft),
+    #                  repeat(ligand_name), repeat(verbose))
 
 
 if __name__ == "__main__":
