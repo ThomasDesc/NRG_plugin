@@ -85,10 +85,11 @@ def run_getcleft(form, getcleft_path, getcleft_output_path, cleft_save_path, col
         print('No object selected')
         return
     getcleft_command = get_arg_str(form, getcleft_path, object_save_path, cleft_save_path)
+    print(getcleft_command)
     form.output_box.append(f'Please wait...Running GetCleft with command: {getcleft_command}')
     # test_submit_command(getcleft_command)
-    # load_show_cleft(cleft_save_path, color_list, form.output_box, pymol_object)
     os.system(getcleft_command)
+    load_show_cleft(cleft_save_path, color_list, form.output_box, pymol_object)
     # worker = WorkerThread(getcleft_command)
     # time.sleep(1)
     # worker.start()
