@@ -60,13 +60,12 @@ def make_dialog():
     else:
         exit('Unknown OS')
 
-    main_folder_path = os.path.dirname(__file__)
-    uifile = os.path.join(main_folder_path, 'nrgdock_widget.ui')
-    getcleft_path = os.path.join(os.path.dirname(__file__), 'bin', folder, f'GetCleft{suffix}')
-    flexaid_path = os.path.join(os.path.dirname(__file__), 'bin', folder, f'FlexAID{suffix}')
-    vcon_path = os.path.join(os.path.dirname(__file__), 'bin', folder, f'vcon')
-    process_ligand_path = os.path.join(os.path.dirname(__file__), 'bin', folder, f'Process_ligand{suffix}')
-    ligand_set_folder_path = os.path.join(os.path.dirname(__file__), 'nrgdock', 'ligand_sets')
+    uifile = os.path.join(install_dir, 'nrgdock_widget.ui')
+    getcleft_path = os.path.join(install_dir, 'bin', folder, f'GetCleft{suffix}')
+    flexaid_path = os.path.join(install_dir, 'bin', folder, f'FlexAID{suffix}')
+    vcon_path = os.path.join(install_dir, 'bin', folder, f'vcon')
+    process_ligand_path = os.path.join(install_dir, 'bin', folder, f'Process_ligand{suffix}')
+    ligand_set_folder_path = os.path.join(install_dir, 'nrgdock', 'ligand_sets')
     plugin_tmp_output_path = os.path.join(os.path.expanduser('~'), 'Documents', 'NRGSuite_Qt')
     temp_path = os.path.join(plugin_tmp_output_path, 'temp')
     getcleft_output_path = os.path.join(temp_path, 'GetCleft')
@@ -137,9 +136,9 @@ def make_dialog():
     form.nrgdock_button_ligandset_add.clicked.connect(lambda: nrgdock.process_ligands())
     form.nrgdock_ligand_set_refresh.clicked.connect(lambda: general_functions.refresh_folder(ligand_set_folder_path, form.nrgdock_select_ligand))
     form.nrgdock_button_start.clicked.connect(
-        lambda: nrgdock.run_nrgdock(form, nrgdock_output_path, ligand_set_folder_path, main_folder_path))
+        lambda: nrgdock.run_nrgdock(form, nrgdock_output_path, ligand_set_folder_path, install_dir))
 
     form.surfaces_refresh_button.clicked.connect(lambda: general_functions.refresh_dropdown(form.surface_select_result, form.output_box, filter_for='RESULT'))
-    form.surfaces_run_button.clicked.connect(lambda: run_Surfaces.run_run_surfaces(form.surface_select_result.currentText(), surfaces_output_path, form.simulate_folder_path.text(), main_folder_path, vcon_path))
+    form.surfaces_run_button.clicked.connect(lambda: run_Surfaces.run_run_surfaces(form.surface_select_result.currentText(), surfaces_output_path, form.simulate_folder_path.text(), install_dir, vcon_path))
     # form.class_test.clicked.connect(lambda: getcleft.test_submit_command())
     return dialog
