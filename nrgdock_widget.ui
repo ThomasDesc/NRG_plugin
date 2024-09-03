@@ -1409,7 +1409,7 @@ font-size:14px;
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>290</y>
+         <y>340</y>
          <width>601</width>
          <height>51</height>
         </rect>
@@ -1436,16 +1436,46 @@ font-size:14px;
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="horizontalLayoutWidget_7">
+      <widget class="QGroupBox" name="nrgdock_progress">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="geometry">
         <rect>
-         <x>9</x>
-         <y>339</y>
-         <width>601</width>
-         <height>51</height>
+         <x>10</x>
+         <y>260</y>
+         <width>591</width>
+         <height>81</height>
         </rect>
        </property>
-       <layout class="QHBoxLayout" name="horizontalLayout_8"/>
+       <property name="title">
+        <string>Progress</string>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_11">
+        <item row="0" column="0">
+         <widget class="QLabel" name="nrgdock_progress_label">
+          <property name="text">
+           <string>Ligand: 0/0</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QProgressBar" name="nrgdock_progress_bar">
+          <property name="autoFillBackground">
+           <bool>false</bool>
+          </property>
+          <property name="maximum">
+           <number>500</number>
+          </property>
+          <property name="value">
+           <number>0</number>
+          </property>
+          <property name="textVisible">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </widget>
      </widget>
      <widget class="QWidget" name="tab_2">

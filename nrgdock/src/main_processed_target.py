@@ -422,7 +422,6 @@ def main(config_file, path_to_target, category, start, end, target, numpy_array_
         output_lines.append(output)
         if verbose:
             print(output)
-    print(os.path.abspath(output_file_path))
     with open(output_file_path, "w") as f:
         f.writelines("\n".join(output_lines))
         f.write("\n")

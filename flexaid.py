@@ -126,6 +126,11 @@ def run_flexaid_worker(command, form, simulation_folder, hex_colour_list, max_ge
     # worker.finished.connect(lambda: load_show_cleft(cleft_save_path, color_list, form.output_box, pymol_object))
 
 
+def flexaid_no_worker(form, command):
+    toggle_buttons(form, False)
+    os.system(command)
+
+
 def pause_simulation(form):
     simulation_path = form.simulate_folder_path.text()
     with open(os.path.join(simulation_path, '.pause'), 'a'):

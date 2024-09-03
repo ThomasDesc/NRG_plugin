@@ -2,6 +2,7 @@ import os
 from pymol import cmd
 import sys
 import subprocess
+from PyQt5.QtWidgets import QApplication
 sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'nrgdock', 'src'))
 try:
     import scipy
@@ -13,7 +14,7 @@ except ImportError:
     subprocess.check_call([sys.executable, "-m", "pip", "install", 'numba'])
 from process_target import main as process_target
 from main_processed_target import main as nrgdock_main
-
+import numpy as np
 # TODO: run on more than 1 bd site
 # TODO: load own ligands (generate library from smiles)
 
@@ -29,6 +30,7 @@ def run_nrgdock(form, nrgdock_output_path, ligand_set_folder_path, main_folder_p
     if not os.path.exists(nrgdock_target_folder):
         os.mkdir(nrgdock_target_folder)
     ligand_path = os.path.join(ligand_set_folder_path, form.nrgdock_select_ligand.currentText().replace(' ', '_'), 'preprocessed_ligands_1_conf')
+    ligand_number = len(np.load(os.path.join(ligand_path, 'ligand_atom_type.npy')))
     target_name = form.nrgdock_select_target.currentText()
     if target_name == '':
         print('No target object selected')
@@ -50,6 +52,22 @@ def run_nrgdock(form, nrgdock_output_path, ligand_set_folder_path, main_folder_p
     nrgdock_result_folder = os.path.join(nrgdock_output_path, 'results')
     if not os.path.exists(nrgdock_result_folder):
         os.mkdir(nrgdock_result_folder)
-
+    form.output_box.append("Processing target...")
+    form.output_box.repaint()
+    QApplication.processEvents()
     process_target(nrgdock_output_path, ['target'], overwrite=True, run_getcleft=False)
-    nrgdock_main(config_path, nrgdock_target_folder, 'ligand', 0, 40000, target_name, None, None, ligand_path, 0, temp_path=nrgdock_output_path)
+    form.nrgdock_progress.setEnabled(True)
+    form.nrgdock_progress_label.setText(f'Generation: 0/{ligand_number}')
+    form.nrgdock_progress_bar.setMaximum(ligand_number)
+    form.nrgdock_progress_label.repaint()
+    form.nrgdock_progress.repaint()
+    form.nrgdock_progress_bar.repaint()
+    QApplication.processEvents()
+    step = 100
+    for current_ligand_number in range(0, ligand_number, step):
+        nrgdock_main(config_path, nrgdock_target_folder, 'ligand', current_ligand_number, current_ligand_number+step, target_name, None, None, ligand_path, 2, temp_path=nrgdock_output_path)
+        form.nrgdock_progress_label.setText(f'Generation: {current_ligand_number+step}/{ligand_number}')
+        form.nrgdock_progress_bar.setValue(current_ligand_number+step)
+        form.nrgdock_progress_label.repaint()
+        form.nrgdock_progress_bar.repaint()
+        QApplication.processEvents()
