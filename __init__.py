@@ -48,25 +48,20 @@ def make_dialog():
     dialog = QtWidgets.QDialog()
 
     OS = platform.system().upper()
-    folder = ''
     suffix = ''
-    OSid = 'UNKNOWN'
     # SET the configuration location
     if OS == 'LINUX' or OS == 'BSD':
-        OSid = 'LINUX'
         folder = 'linux'
     elif OS == 'DARWIN':
-        OSid = 'MAC'
         folder = 'mac'
     elif OS == 'WINDOWS' or OS == 'MICROSOFT' or OS == 'WIN32':
-        OSid = 'WIN'
         folder = 'win'
         suffix = '.exe'
     else:
-        OSid = 'UNKNOWN'
+        exit('Unknown OS')
 
     main_folder_path = os.path.dirname(__file__)
-    uifile = os.path.join(os.path.dirname(__file__), 'demowidget.ui')
+    uifile = os.path.join(os.path.dirname(__file__), 'nrgdock_widget.ui')
     getcleft_path = os.path.join(os.path.dirname(__file__), 'bin', folder, f'GetCleft{suffix}')
     flexaid_path = os.path.join(os.path.dirname(__file__), 'bin', folder, f'FlexAID{suffix}')
     vcon_path = os.path.join(os.path.dirname(__file__), 'bin', folder, f'vcon')
