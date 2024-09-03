@@ -52,4 +52,4 @@ def run_nrgdock(form, nrgdock_output_path, ligand_set_folder_path, main_folder_p
         os.mkdir(nrgdock_result_folder)
 
     process_target(nrgdock_output_path, ['target'], overwrite=True, run_getcleft=False)
-    nrgdock_main(config_path, nrgdock_target_folder, 'ligand', 0, 10, target_name, None, None, ligand_path, 0, temp_path=nrgdock_output_path)
+    nrgdock_main(config_path, nrgdock_target_folder, 'ligand', 0, 40000, target_name, None, None, ligand_path, 0, temp_path=nrgdock_output_path)
