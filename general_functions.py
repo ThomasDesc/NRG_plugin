@@ -1,6 +1,8 @@
 from pymol import cmd
 import numpy as np
+import os
 from PyQt5.QtCore import QThread
+from PyQt5.QtWidgets import QFileDialog
 
 
 def output_message(output_box, text, type):
@@ -28,6 +30,22 @@ def refresh_dropdown(dropdown_to_refresh, output_box, filter_for='', no_warning=
     dropdown_to_refresh.addItems(list_pymol_objects)
     if len(list_pymol_objects) > 0:
         dropdown_to_refresh.setCurrentText(list_pymol_objects[0])
+
+
+def refresh_folder(folder_path, dropdown_to_refresh):
+    print('received_command')
+    folders = next(os.walk(folder_path))[1]
+    folders = [item.replace('_', ' ') for item in folders]
+    print(folders)
+    dropdown_to_refresh.clear()
+    dropdown_to_refresh.addItems(folders)
+
+
+def folder_browser(text_window, ligand_set_path):
+    smile_file_path = QFileDialog.getOpenFileName(None, 'Select a File', ligand_set_path, "Smiles Files (*.smi)")[0]
+    if smile_file_path:
+        print(smile_file_path)
+        text_window.setText(smile_file_path)
 
 
 def pymol_hide_structures(form):

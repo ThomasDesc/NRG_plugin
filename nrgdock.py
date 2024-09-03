@@ -18,6 +18,9 @@ from main_processed_target import main as nrgdock_main
 # TODO: load own ligands (generate library from smiles)
 
 
+def process_ligands():
+
+
 def run_nrgdock(form, nrgdock_output_path, ligand_set_folder_path, main_folder_path):
     config_path = os.path.join(main_folder_path, 'nrgdock', 'deps', 'config.txt')
     nrgdock_target_folder = os.path.join(nrgdock_output_path, 'target')

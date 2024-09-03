@@ -28,7 +28,7 @@ def run_plugin_gui():
 
 
 def make_dialog():
-    from pymol.Qt import QtWidgets
+    from pymol.Qt import QtGui, QtWidgets
     from pymol.Qt.utils import loadUi
 
     import os
@@ -136,8 +136,11 @@ def make_dialog():
     form.nrgdock_target_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.nrgdock_select_target, form.output_box))
     form.nrgdock_binding_site_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.nrgdock_select_binding_site, form.output_box, filter_for='_sph_'))
     form.radioButton.toggled.connect(lambda: form.input_num_chromosomes_3.setEnabled(True))
+    form.nrgdock_ligand_set_refresh.clicked.connect(lambda: general_functions.refresh_folder(ligand_set_folder_path, form.nrgdock_delete_ligand_set_dropdown))
+    form.nrgdock_add_ligandset_button.clicked.connect(lambda: general_functions.folder_browser(form.nrgdock_add_ligand_file_path, ligand_set_folder_path))
+    form.nrgdock_button_ligandset_add.clicked.connect(lambda: general_functions.folder_browser(form.nrgdock_add_ligand_file_path, ligand_set_folder_path))
     form.nrgdock_button_start.clicked.connect(
-        lambda: nrgdock.run_nrgdock(form, nrgdock_output_path, ligand_set_folder_path, main_folder_path))
+        lambda: nrgdock.run_nrgdock(form, nrgdock_output_path, ligand_set_folder_path, main_folder_path ))
 
     form.surfaces_refresh_button.clicked.connect(lambda: general_functions.refresh_dropdown(form.surface_select_result, form.output_box, filter_for='RESULT'))
     form.surfaces_run_button.clicked.connect(lambda: run_Surfaces.run_run_surfaces(form.surface_select_result.currentText(), surfaces_output_path, form.simulate_folder_path.text(), main_folder_path, vcon_path))
