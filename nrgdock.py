@@ -19,14 +19,16 @@ from main_processed_target import main as nrgdock_main
 
 
 def process_ligands():
+    print()
 
 
 def run_nrgdock(form, nrgdock_output_path, ligand_set_folder_path, main_folder_path):
+
     config_path = os.path.join(main_folder_path, 'nrgdock', 'deps', 'config.txt')
     nrgdock_target_folder = os.path.join(nrgdock_output_path, 'target')
     if not os.path.exists(nrgdock_target_folder):
         os.mkdir(nrgdock_target_folder)
-    drugbank_molecule_path = os.path.join(ligand_set_folder_path, 'drugbank_subset_processed')
+    ligand_path = os.path.join(ligand_set_folder_path, form.nrgdock_select_ligand.currentText().replace(' ', '_'), 'preprocessed_ligands_1_conf')
     target_name = form.nrgdock_select_target.currentText()
     if target_name == '':
         print('No target object selected')
@@ -36,16 +38,18 @@ def run_nrgdock(form, nrgdock_output_path, ligand_set_folder_path, main_folder_p
         cmd.save(target_file_path, target_name)
 
     binding_site_name = form.nrgdock_select_binding_site.currentText()
-    if target_name == '':
+    if binding_site_name == '':
         print('No binding site object selected')
         return
     else:
         binding_site_folder_path = os.path.join(nrgdock_target_folder, 'get_cleft')
-        os.mkdir(binding_site_folder_path)
-        binding_site_file_path = os.path.join(binding_site_folder_path, 'binding_site_sph_1.pdb')
+        if not os.path.isdir(binding_site_folder_path):
+            os.mkdir(binding_site_folder_path)
+        binding_site_file_path = os.path.join(binding_site_folder_path, binding_site_name + '.pdb')
         cmd.save(binding_site_file_path, binding_site_name)
+    nrgdock_result_folder = os.path.join(nrgdock_output_path, 'results')
+    if not os.path.exists(nrgdock_result_folder):
+        os.mkdir(nrgdock_result_folder)
 
-    print('Nrgdock output path: ', nrgdock_target_folder)
-    print('Nrgdock target path: ', target_name)
     process_target(nrgdock_output_path, ['target'], overwrite=True, run_getcleft=False)
-    nrgdock_main(config_path, nrgdock_target_folder, 'ligand', 0, 10, target_name, None, None, drugbank_molecule_path, 2)
+    nrgdock_main(config_path, nrgdock_target_folder, 'ligand', 0, 10, target_name, None, None, ligand_path, 0, temp_path=nrgdock_output_path)

@@ -136,12 +136,8 @@ def rotate_ligand(ligand_atoms_xyz, n_rotations):
                 rotation_matrix = Rx(x) * Ry(y) * Rz(z)
                 for i, coord in enumerate(centered_ligand_atoms_xyz):
                     rotated_ligand_coord_list[rotation_counter][i] = np.array(np.dot(rotation_matrix, coord))
-                # molec_name_list.append(f"x_{x_rot_count}_y_{y_rot_count}_z_{z_rot_count}")
                 rotation_counter += 1
     rotated_ligand_coord_list_unique = np.unique(rotated_ligand_coord_list, axis=0)
-    # for counter, orientation in enumerate(rotated_ligand_coord_list):
-    #     write_test(orientation, molec_name_list[counter],
-    #                os.path.abspath(f'./temp/ligand_poses/rotation_test/'), None, None)
     return rotated_ligand_coord_list_unique
 
 
@@ -253,7 +249,7 @@ def get_cf_main_clash(binding_site_grid, ligand_orientations, cf_size_list, n_cf
     return cfs_list, cf_no_clash, cf_no_clash_diff_zero
 
 
-def main(config_file, path_to_target, category, start, end, target, numpy_array_path, extra_information, path_to_ligands, skip_info):
+def main(config_file, path_to_target, category, start, end, target, numpy_array_path, extra_information, path_to_ligands, skip_info, temp_path=None):
     root_software_path = Path(__file__).resolve().parents[1]
     os.chdir(root_software_path)
     time_start = timeit.default_timer()
@@ -268,15 +264,18 @@ def main(config_file, path_to_target, category, start, end, target, numpy_array_
     output_pdb_num = params_dict["OUTPUTS_PER_MOLECULE"]
     use_clash = params_dict["USE_CLASH"]
     default_cf = params_dict['DEFAULT_CF']
-    if not os.path.isdir(f"./temp/results/{target}/"):
+    if not temp_path:
+        temp_path = os.path.join(root_software_path, 'temp')
+    result_save_folder = str(os.path.join(temp_path, 'results', target))
+    if not os.path.isdir(result_save_folder):
         try:
-            os.mkdir(f"./temp/results/{target}/")
+            os.mkdir(result_save_folder)
         except:
             print("could not make new directory for result output")
-    output_file_path = f"./temp/results/{target}/{category}_{start}_{end}.txt"
+    output_file_path = os.path.join(result_save_folder, f'{category}_{start}_{end}.txt')
     if path_to_ligands is not None:
-        output_file_path = f"./temp/results/{target}/{'_'.join(os.path.basename(path_to_ligands).split('_')[1:])}_{start}_{end}.txt"
-
+        output_file_path = os.path.join(result_save_folder,
+                                        f"{'_'.join(os.path.basename(path_to_ligands).split('_')[1:])}_{start}_{end}.txt")
     if numpy_array_path is None:
         numpy_array_path = path_to_target
     numpy_output_path = os.path.join(numpy_array_path, 'preprocessing_files')
@@ -423,6 +422,7 @@ def main(config_file, path_to_target, category, start, end, target, numpy_array_
         output_lines.append(output)
         if verbose:
             print(output)
+    print(os.path.abspath(output_file_path))
     with open(output_file_path, "w") as f:
         f.writelines("\n".join(output_lines))
         f.write("\n")

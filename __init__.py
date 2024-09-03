@@ -77,7 +77,7 @@ def make_dialog():
     getcleft_output_path = os.path.join(temp_path, 'GetCleft')
     flexaid_output_path = os.path.join(temp_path, 'FlexAID')
     nrgdock_output_path = os.path.join(temp_path, 'NRGDock')
-    nrgdock_temp_output_path = os.path.join(temp_path, 'NRGDock', 'temp', 'results')
+    nrgdock_temp_path = os.path.join(temp_path, 'NRGDock', 'temp')
     surfaces_output_path = os.path.join(temp_path, 'Surfaces')
     cleft_save_path = os.path.join(getcleft_output_path, 'Clefts')
     simulation_folder_path = os.path.join(flexaid_output_path, 'Simulation')
@@ -98,12 +98,13 @@ def make_dialog():
     os.mkdir(flexaid_output_path)
     os.mkdir(simulation_folder_path)
     os.mkdir(nrgdock_output_path)
-    os.makedirs(nrgdock_temp_output_path)
+    os.makedirs(nrgdock_temp_path)
     form = loadUi(uifile, dialog)
     form.stackedWidget.setCurrentIndex(0)
     form.flexaid_tab.setTabEnabled(2, False)
 
     general_functions.refresh_dropdown(form.cleft_select_object, form.output_box, no_warning=True)
+    general_functions.refresh_folder(ligand_set_folder_path, form.nrgdock_select_ligand)
     form.button_getcleft.clicked.connect(lambda: form.stackedWidget.setCurrentIndex(0))
     form.button_partition_cleft.clicked.connect(lambda: form.stackedWidget.setCurrentIndex(1))
     form.button_flexaid.clicked.connect(lambda: form.stackedWidget.setCurrentIndex(2))
@@ -133,14 +134,15 @@ def make_dialog():
     form.cleft_partition_crop_button.clicked.connect(lambda: spheres.crop_cleft(form.partition_sphere_select.currentText(), form.cleft_partition_radius_slider.value()/100, cleft_save_path, form.cleft_partition_select_object.currentText()))
 
     # NRGDock:
-    form.nrgdock_target_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.nrgdock_select_target, form.output_box))
+    form.nrgdock_target_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.nrgdock_select_target, form.output_box, exclude='_sph'))
     form.nrgdock_binding_site_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.nrgdock_select_binding_site, form.output_box, filter_for='_sph_'))
     form.radioButton.toggled.connect(lambda: form.input_num_chromosomes_3.setEnabled(True))
-    form.nrgdock_ligand_set_refresh.clicked.connect(lambda: general_functions.refresh_folder(ligand_set_folder_path, form.nrgdock_delete_ligand_set_dropdown))
+    form.nrgdock_delete_ligand_set_refresh.clicked.connect(lambda: general_functions.refresh_folder(ligand_set_folder_path, form.nrgdock_delete_ligand_set_dropdown))
     form.nrgdock_add_ligandset_button.clicked.connect(lambda: general_functions.folder_browser(form.nrgdock_add_ligand_file_path, ligand_set_folder_path))
-    form.nrgdock_button_ligandset_add.clicked.connect(lambda: general_functions.folder_browser(form.nrgdock_add_ligand_file_path, ligand_set_folder_path))
+    form.nrgdock_button_ligandset_add.clicked.connect(lambda: nrgdock.process_ligands())
+    form.nrgdock_ligand_set_refresh.clicked.connect(lambda: general_functions.refresh_folder(ligand_set_folder_path, form.nrgdock_select_ligand))
     form.nrgdock_button_start.clicked.connect(
-        lambda: nrgdock.run_nrgdock(form, nrgdock_output_path, ligand_set_folder_path, main_folder_path ))
+        lambda: nrgdock.run_nrgdock(form, nrgdock_output_path, ligand_set_folder_path, main_folder_path))
 
     form.surfaces_refresh_button.clicked.connect(lambda: general_functions.refresh_dropdown(form.surface_select_result, form.output_box, filter_for='RESULT'))
     form.surfaces_run_button.clicked.connect(lambda: run_Surfaces.run_run_surfaces(form.surface_select_result.currentText(), surfaces_output_path, form.simulate_folder_path.text(), main_folder_path, vcon_path))
