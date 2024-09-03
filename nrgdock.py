@@ -34,7 +34,7 @@ def run_nrgdock(form, nrgdock_output_path, ligand_set_folder_path, main_folder_p
         print('No target object selected')
         return
     else:
-        target_file_path = os.path.join(nrgdock_target_folder, target_name + '.mol2')
+        target_file_path = os.path.join(nrgdock_target_folder, 'receptor.mol2')
         cmd.save(target_file_path, target_name)
 
     binding_site_name = form.nrgdock_select_binding_site.currentText()
