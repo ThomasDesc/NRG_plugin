@@ -23,9 +23,9 @@ def output_message(output_box, text, type):
 def refresh_dropdown(dropdown_to_refresh, output_box, filter_for=None, exclude=None, no_warning=False):
     list_pymol_objects = cmd.get_names('all')
     if filter_for:
-        list_pymol_objects = [item for item in list_pymol_objects if all(include_item not in item for include_item in filter_for)]
+        list_pymol_objects = [x for x in list_pymol_objects if filter_for in x]
     if exclude:
-        list_pymol_objects = [item for item in list_pymol_objects if all(exclude_item not in item for exclude_item in exclude)]
+        list_pymol_objects = [item for item in list_pymol_objects if exclude not in item]
     if len(list_pymol_objects) == 0 and no_warning is False:
         output_message(output_box, 'No objects found', 'warning')
     dropdown_to_refresh.clear()
