@@ -79,7 +79,7 @@ def run_nrgdock(form, nrgdock_output_path, ligand_set_folder_path, main_folder_p
     form.nrgdock_progress.repaint()
     form.nrgdock_progress_bar.repaint()
     QApplication.processEvents()
-    step = 10
+    step = 100
     for current_ligand_number in range(0, ligand_number, step):
         last_ligand = current_ligand_number+step
         print(last_ligand)
