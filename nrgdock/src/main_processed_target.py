@@ -266,6 +266,9 @@ def main(config_file, path_to_target, category, start, end, target, numpy_array_
     default_cf = params_dict['DEFAULT_CF']
     if not temp_path:
         temp_path = os.path.join(root_software_path, 'temp')
+    pose_save_path = os.path.join(temp_path, 'ligand_poses', target)
+    if not os.path.exists(pose_save_path):
+        os.makedirs(pose_save_path)
     result_save_folder = str(os.path.join(temp_path, 'results', target))
     if not os.path.isdir(result_save_folder):
         try:
@@ -296,8 +299,8 @@ def main(config_file, path_to_target, category, start, end, target, numpy_array_
         clash_list_size = None
 
     if params_dict["WRITE_BD_SITE_DOTS"]:
-        output_lines.append(os.path.abspath(f'./temp/ligand_poses/{target}/'))
-        write_test(binding_site_grid, "bd_site_grid", os.path.abspath(f'./temp/ligand_poses/{target}/'), None, None)
+        output_lines.append(os.path.abspath(pose_save_path))
+        write_test(binding_site_grid, "bd_site_grid", os.path.abspath(pose_save_path), None, None)
     n_cf_evals = len(binding_site_grid) * params_dict["ROTATIONS_PER_AXIS"]**3
     ligands_atom_names, ligands_atom_types, ligands_atom_xyz, ligand_name_list, atom_num_per_ligand, ligand_count \
         = load_ligands(path_to_target, category, start, end, conf_num, params_dict["OUTPUT_POSE"], path_to_ligands=path_to_ligands)
@@ -359,16 +362,23 @@ def main(config_file, path_to_target, category, start, end, target, numpy_array_
             ligand_atoms_names = ligands_atom_names[i][0:ligand_atom_count]
             if ligand_name_list[i].startswith("*****"):
                 ligand_name_list[i] = "lig_" + ligand_name_list[i].split("_")[-1]
-            molec_output_folder = os.path.join('./temp/ligand_poses/', target, ligand_name_list[i])
-            if not os.path.isdir(molec_output_folder):
-                os.makedirs(molec_output_folder)
+            if conf_num <= 1:
+                molec_output_folder = pose_save_path
+            else:
+                molec_output_folder = os.path.join(pose_save_path, ligand_name_list[i])
+                if not os.path.isdir(molec_output_folder):
+                    os.makedirs(molec_output_folder)
             for pdb_num in range(0, output_pdb_num, 1):
+                if conf_num <= 1 and output_pdb_num == 1:
+                    file_name = ligand_name_list[i].split("_")[0]
+                else:
+                    file_name = f"{ligand_name_list[i]}_pose_{pdb_num+1}"
                 translated_coords = np.zeros((len(ligand_rotations[int(cfs_list[sorted_indices[pdb_num]][1])]), 3), dtype=np.float32)
                 for atom in range(len(ligand_rotations[int(cfs_list[sorted_indices[pdb_num]][1])])):
                     translated_coords[atom] = np.add(
                         ligand_rotations[int(cfs_list[sorted_indices[pdb_num]][1])][atom],
                         binding_site_grid[int(cfs_list[sorted_indices[pdb_num]][2])])
-                write_test(translated_coords, f"{ligand_name_list[i]}_pose_{pdb_num+1}", molec_output_folder,
+                write_test(translated_coords, file_name, molec_output_folder,
                            ligand_atoms_names, [f"REMARK CF {cfs_list[sorted_indices[pdb_num]][0]:.2f}\n",
                                                 f"REMARK types: {np.array2string(ligand_atom_types, separator=' ', max_line_width=2000).strip('[]')}\n"])
         non_zero_list[i] = cf_no_clash_diff_zero

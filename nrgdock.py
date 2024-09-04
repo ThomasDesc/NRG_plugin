@@ -37,6 +37,19 @@ def merge_csv(folder):
     sorted_df.to_csv(os.path.join(folder, "nrgdock_result.csv"), index=False)
     for file in csv_files:
         os.remove(file)
+    top_10_names = sorted_df['Name'].head(10).tolist()
+    return top_10_names
+
+
+def manage_poses(top_n_name_list, ligand_poses_folder):
+    ligand_files = glob.glob(os.path.join(ligand_poses_folder, "*.pdb"))
+    for file in ligand_files:
+        file_name = os.path.splitext(os.path.basename(file))[0]
+        if file_name not in top_n_name_list:
+            os.remove(file)
+            print(f"Deleted file: {file}")
+        else:
+            cmd.load(file)
 
 
 def run_nrgdock(form, nrgdock_output_path, ligand_set_folder_path, main_folder_path):
@@ -94,4 +107,5 @@ def run_nrgdock(form, nrgdock_output_path, ligand_set_folder_path, main_folder_p
     form.output_box.append("Done NRGDock")
     form.output_box.repaint()
     QApplication.processEvents()
-    merge_csv(os.path.join(nrgdock_result_folder, target_name))
+    top_n_name_list = merge_csv(os.path.join(nrgdock_result_folder, target_name))
+    manage_poses(top_n_name_list, os.path.join(nrgdock_output_path, 'ligand_poses', target_name))
