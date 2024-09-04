@@ -13,12 +13,13 @@ try:
 except ImportError:
     subprocess.check_call([sys.executable, "-m", "pip", "install", 'numba'])
 try:
-    import polars
+    import pandas
 except ImportError:
-    subprocess.check_call([sys.executable, "-m", "pip", "install", 'polars'])
+    subprocess.check_call([sys.executable, "-m", "pip", "install", 'pandas'])
 from process_target import main as process_target
 from main_processed_target import main as nrgdock_main
-from compress_results import main as compress_results
+import pandas as pd
+import glob
 import numpy as np
 # TODO: run on more than 1 bd site
 # TODO: load own ligands (generate library from smiles)
@@ -26,6 +27,14 @@ import numpy as np
 
 def process_ligands():
     print()
+
+
+def merge_csv():
+    csv_files = glob.glob("*.csv")
+    merged_df = pd.concat((pd.read_csv(file) for file in csv_files), ignore_index=True)
+    sorted_df = merged_df.sort_values(by='CF')
+    sorted_df.to_csv("merged_sorted_output.csv", index=False)
+    print(sorted_df)
 
 
 def run_nrgdock(form, nrgdock_output_path, ligand_set_folder_path, main_folder_path):
@@ -75,7 +84,7 @@ def run_nrgdock(form, nrgdock_output_path, ligand_set_folder_path, main_folder_p
         if last_ligand > ligand_number:
             last_ligand = ligand_number
         nrgdock_main(config_path, nrgdock_target_folder, 'ligand', current_ligand_number, last_ligand, target_name, None, None, ligand_path, 2, temp_path=nrgdock_output_path)
-        form.nrgdock_progress_label.setText(f'Generation: {last_ligand}/{ligand_number}')
+        form.nrgdock_progress_label.setText(f'Ligand: {last_ligand}/{ligand_number}')
         form.nrgdock_progress_bar.setValue(last_ligand)
         form.nrgdock_progress_label.repaint()
         form.nrgdock_progress_bar.repaint()
@@ -83,4 +92,4 @@ def run_nrgdock(form, nrgdock_output_path, ligand_set_folder_path, main_folder_p
     form.output_box.append("Done NRGDock")
     form.output_box.repaint()
     QApplication.processEvents()
-    compress_results(target_name, False, False, None, None, nrgdock_result_folder)
+    merge_csv()

@@ -233,6 +233,7 @@ def main(specific_target, htpvs, folder_end, top_n=None, db_path=None, custom_re
         ligand_type = 'ligand'
     else:
         ligand_type = None
+    print(result_path)
     config_file = "./deps/config.txt"
     ef_percentage = 0.01
     original_data_path = None
