@@ -29,12 +29,14 @@ def process_ligands():
     print()
 
 
-def merge_csv():
-    csv_files = glob.glob("*.csv")
+def merge_csv(folder):
+    csv_files = glob.glob(os.path.join(folder, "*.csv"))
     merged_df = pd.concat((pd.read_csv(file) for file in csv_files), ignore_index=True)
-    sorted_df = merged_df.sort_values(by='CF')
-    sorted_df.to_csv("merged_sorted_output.csv", index=False)
-    print(sorted_df)
+    filtered_df = merged_df[merged_df['CF'] != 100000000]
+    sorted_df = filtered_df.sort_values(by='CF')
+    sorted_df.to_csv(os.path.join(folder, "nrgdock_result.csv"), index=False)
+    for file in csv_files:
+        os.remove(file)
 
 
 def run_nrgdock(form, nrgdock_output_path, ligand_set_folder_path, main_folder_path):
@@ -78,7 +80,7 @@ def run_nrgdock(form, nrgdock_output_path, ligand_set_folder_path, main_folder_p
     form.nrgdock_progress_bar.repaint()
     QApplication.processEvents()
     step = 10
-    for current_ligand_number in range(2400, ligand_number, step):
+    for current_ligand_number in range(0, ligand_number, step):
         last_ligand = current_ligand_number+step
         print(last_ligand)
         if last_ligand > ligand_number:
@@ -92,4 +94,4 @@ def run_nrgdock(form, nrgdock_output_path, ligand_set_folder_path, main_folder_p
     form.output_box.append("Done NRGDock")
     form.output_box.repaint()
     QApplication.processEvents()
-    merge_csv()
+    merge_csv(os.path.join(nrgdock_result_folder, target_name))
