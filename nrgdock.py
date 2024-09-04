@@ -47,7 +47,6 @@ def manage_poses(top_n_name_list, ligand_poses_folder):
         file_name = os.path.splitext(os.path.basename(file))[0]
         if file_name not in top_n_name_list:
             os.remove(file)
-            print(f"Deleted file: {file}")
         else:
             cmd.load(file)
 
@@ -85,6 +84,8 @@ def run_nrgdock(form, nrgdock_output_path, ligand_set_folder_path, main_folder_p
     form.output_box.repaint()
     QApplication.processEvents()
     process_target(nrgdock_output_path, ['target'], overwrite=True, run_getcleft=False)
+    form.output_box.append("Running NRGDock...")
+    form.output_box.repaint()
     form.nrgdock_progress.setEnabled(True)
     form.nrgdock_progress_label.setText(f'Generation: 0/{ligand_number}')
     form.nrgdock_progress_bar.setMaximum(ligand_number)
@@ -92,7 +93,7 @@ def run_nrgdock(form, nrgdock_output_path, ligand_set_folder_path, main_folder_p
     form.nrgdock_progress.repaint()
     form.nrgdock_progress_bar.repaint()
     QApplication.processEvents()
-    step = 100
+    step = 10
     for current_ligand_number in range(0, ligand_number, step):
         last_ligand = current_ligand_number+step
         print(last_ligand)

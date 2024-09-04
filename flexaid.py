@@ -175,7 +175,7 @@ def pause_resume_simulation(form):
         resume_simulation(form)
 
 
-def run_flexaid(flexaid_output_path, form, cleft_save_path, process_ligand_path, flexaid_path, simulation_folder_path, hex_colour_list):
+def run_flexaid(flexaid_output_path, form, process_ligand_path, flexaid_path, simulation_folder_path, hex_colour_list):
     if form.flexaid_button_start.text() == 'Start':
         max_results = 10
         setting_dictionary = get_simulation_settings(form)
@@ -196,7 +196,7 @@ def run_flexaid(flexaid_output_path, form, cleft_save_path, process_ligand_path,
         ligand_save_path = os.path.join(flexaid_output_path, 'flexaid_ligand.pdb')
         cmd.save(ligand_save_path, ligand_name)
         binding_site_name = form.flexaid_select_binding_site.currentText()
-        shutil.copy(os.path.join(cleft_save_path, binding_site_name + '.pdb'), binding_site_path)
+        cmd.save(binding_site_path, binding_site_name)
         process_ligand(process_ligand_path, target_save_path, istarget=True)
         process_ligand(process_ligand_path, ligand_save_path)
         target_inp_path = os.path.splitext(target_save_path)[0] + '.inp.pdb'
@@ -208,7 +208,6 @@ def run_flexaid(flexaid_output_path, form, cleft_save_path, process_ligand_path,
         flexaid_command = f'"{flexaid_path}" "{config_file_path}" "{ga_path}" "{flexaid_result_name_path}"'
         # with open(os.path.join(tmp_path, 'flex_cmd.txt'), 'w') as f:
         #     f.write(flexaid_command)
-        print(flexaid_command)
         form.output_box.append(f'Please wait...Running Flexaid with command: \n{flexaid_command}')
         form.flexaid_tab.setCurrentIndex(2)
         run_flexaid_worker(flexaid_command, form, flexaid_result_path, hex_colour_list, max_generations)
