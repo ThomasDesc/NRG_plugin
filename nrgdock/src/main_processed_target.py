@@ -272,10 +272,10 @@ def main(config_file, path_to_target, category, start, end, target, numpy_array_
             os.mkdir(result_save_folder)
         except:
             print("could not make new directory for result output")
-    output_file_path = os.path.join(result_save_folder, f'{category}_{start}_{end}.txt')
+    output_file_path = os.path.join(result_save_folder, f'{category}_{start}_{end}.csv')
     if path_to_ligands is not None:
         output_file_path = os.path.join(result_save_folder,
-                                        f"{'_'.join(os.path.basename(path_to_ligands).split('_')[1:])}_{start}_{end}.txt")
+                                        f"{'_'.join(os.path.basename(path_to_ligands).split('_')[1:])}_{start}_{end}.csv")
     if numpy_array_path is None:
         numpy_array_path = path_to_target
     numpy_output_path = os.path.join(numpy_array_path, 'preprocessing_files')
