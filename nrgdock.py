@@ -12,8 +12,13 @@ try:
     import numba
 except ImportError:
     subprocess.check_call([sys.executable, "-m", "pip", "install", 'numba'])
+try:
+    import polars
+except ImportError:
+    subprocess.check_call([sys.executable, "-m", "pip", "install", 'polars'])
 from process_target import main as process_target
 from main_processed_target import main as nrgdock_main
+from compress_results import main as compress_results
 import numpy as np
 # TODO: run on more than 1 bd site
 # TODO: load own ligands (generate library from smiles)
@@ -63,7 +68,7 @@ def run_nrgdock(form, nrgdock_output_path, ligand_set_folder_path, main_folder_p
     form.nrgdock_progress.repaint()
     form.nrgdock_progress_bar.repaint()
     QApplication.processEvents()
-    step = 100
+    step = 10
     for current_ligand_number in range(2400, ligand_number, step):
         last_ligand = current_ligand_number+step
         print(last_ligand)
@@ -78,3 +83,4 @@ def run_nrgdock(form, nrgdock_output_path, ligand_set_folder_path, main_folder_p
     form.output_box.append("Done NRGDock")
     form.output_box.repaint()
     QApplication.processEvents()
+    compress_results(target_name, False, False, None, None, nrgdock_result_folder)
