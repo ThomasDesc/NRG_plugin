@@ -67,6 +67,7 @@ def make_dialog():
     vcon_path = os.path.join(install_dir, 'bin', folder, f'vcon')
     process_ligand_path = os.path.join(install_dir, 'bin', folder, f'Process_ligand{suffix}')
     bin_list = [getcleft_path, flexaid_path, vcon_path, process_ligand_path]
+    print("Binaries are stored at: ", os.path.join(install_dir, 'bin', folder))
     if folder == 'mac':
         for file in bin_list:
             subprocess.run(["chmod", "755", file])
