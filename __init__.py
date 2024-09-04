@@ -71,7 +71,7 @@ def make_dialog():
     if folder == 'mac':
         for file in bin_list:
             subprocess.run(["chmod", "755", file])
-            result = subprocess.run(['/Users/thomasdescoteaux/Downloads/GetCleft'], capture_output=True, text=True)
+            result = subprocess.run([file], capture_output=True, text=True)
             if result.returncode != 0:
                 print('Could not run: ', file)
     ligand_set_folder_path = os.path.join(install_dir, 'nrgdock', 'ligand_sets')
