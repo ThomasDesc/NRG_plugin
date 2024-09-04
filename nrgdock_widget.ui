@@ -1052,7 +1052,7 @@ font-size:14px;
       <enum>QTabWidget::Rounded</enum>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>2</number>
      </property>
      <property name="usesScrollButtons">
       <bool>false</bool>
@@ -1458,7 +1458,7 @@ font-size:14px;
         <item row="0" column="0">
          <widget class="QLabel" name="nrgdock_progress_label">
           <property name="text">
-           <string>Ligand: 0/0</string>
+           <string/>
           </property>
          </widget>
         </item>
@@ -1489,11 +1489,56 @@ font-size:14px;
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>10</y>
+         <y>40</y>
          <width>591</width>
-         <height>381</height>
+         <height>351</height>
         </rect>
        </property>
+      </widget>
+      <widget class="QWidget" name="gridLayoutWidget_8">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>10</y>
+         <width>551</width>
+         <height>33</height>
+        </rect>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_12">
+        <item row="0" column="2">
+         <widget class="QLineEdit" name="nrgdock_result_path"/>
+        </item>
+        <item row="0" column="1">
+         <spacer name="horizontalSpacer_5">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Preferred</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_6">
+          <property name="text">
+           <string>Result csv</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="3">
+         <widget class="QPushButton" name="nrgdock_result_browse_button">
+          <property name="text">
+           <string>Browse</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </widget>
      </widget>
     </widget>

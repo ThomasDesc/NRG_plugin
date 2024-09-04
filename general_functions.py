@@ -41,8 +41,8 @@ def refresh_folder(folder_path, dropdown_to_refresh):
     dropdown_to_refresh.addItems(folders)
 
 
-def folder_browser(text_window, ligand_set_path):
-    smile_file_path = QFileDialog.getOpenFileName(None, 'Select a File', ligand_set_path, "Smiles Files (*.smi)")[0]
+def folder_browser(text_window, ligand_set_path, file_extension):
+    smile_file_path = QFileDialog.getOpenFileName(None, 'Select a File', ligand_set_path, file_extension)[0]
     if smile_file_path:
         print(smile_file_path)
         text_window.setText(smile_file_path)
