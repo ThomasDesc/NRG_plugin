@@ -168,7 +168,7 @@ color:rgb(255, 255, 255);</string>
     </rect>
    </property>
    <property name="currentIndex">
-    <number>2</number>
+    <number>3</number>
    </property>
    <widget class="QWidget" name="page_3">
     <widget class="QGroupBox" name="groupBox_2">
@@ -1052,7 +1052,7 @@ font-size:14px;
       <enum>QTabWidget::Rounded</enum>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <property name="usesScrollButtons">
       <bool>false</bool>
@@ -1082,12 +1082,25 @@ font-size:14px;
           <x>20</x>
           <y>40</y>
           <width>571</width>
-          <height>81</height>
+          <height>85</height>
          </rect>
         </property>
         <layout class="QGridLayout" name="gridLayout_9">
+         <item row="0" column="1">
+          <spacer name="horizontalSpacer_6">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
          <item row="0" column="2">
-          <widget class="QLineEdit" name="input_num_chromosomes_2">
+          <widget class="QLineEdit" name="nrgdock_ligand_rotations">
            <property name="text">
             <string>9</string>
            </property>
@@ -1104,12 +1117,12 @@ font-size:14px;
           </widget>
          </item>
          <item row="1" column="2">
-          <widget class="QLineEdit" name="input_num_chromosomes_3">
+          <widget class="QLineEdit" name="nrgdock_top_n_poses">
            <property name="enabled">
-            <bool>false</bool>
+            <bool>true</bool>
            </property>
            <property name="text">
-            <string>10</string>
+            <string>20</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignCenter</set>
@@ -1125,14 +1138,24 @@ font-size:14px;
          <item row="1" column="0">
           <widget class="QLabel" name="label_38">
            <property name="text">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Top n ligands to save poses:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Save poses for top n results:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
           </widget>
          </item>
-         <item row="1" column="1">
-          <widget class="QRadioButton" name="radioButton">
+         <item row="2" column="0">
+          <widget class="QLabel" name="label_7">
            <property name="text">
-            <string>Save Pose(s)</string>
+            <string>Start screening at ligand:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="2">
+          <widget class="QLineEdit" name="nrgdock_start_ligand">
+           <property name="text">
+            <string>0</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
            </property>
           </widget>
          </item>
@@ -1140,6 +1163,9 @@ font-size:14px;
        </widget>
       </widget>
       <widget class="QGroupBox" name="groupBox_13">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="geometry">
         <rect>
          <x>10</x>

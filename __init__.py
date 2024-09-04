@@ -34,6 +34,7 @@ def make_dialog():
     import os
     import sys
     import shutil
+    import subprocess
 
     install_dir = os.path.dirname(__file__)
     sys.path.append(install_dir)
@@ -65,6 +66,10 @@ def make_dialog():
     flexaid_path = os.path.join(install_dir, 'bin', folder, f'FlexAID{suffix}')
     vcon_path = os.path.join(install_dir, 'bin', folder, f'vcon')
     process_ligand_path = os.path.join(install_dir, 'bin', folder, f'Process_ligand{suffix}')
+    bin_list = [getcleft_path, flexaid_path, vcon_path, process_ligand_path]
+    if folder == 'mac':
+        for file in bin_list:
+            subprocess.run(["chmod", "755", file])
     ligand_set_folder_path = os.path.join(install_dir, 'nrgdock', 'ligand_sets')
     plugin_tmp_output_path = os.path.join(os.path.expanduser('~'), 'Documents', 'NRGSuite_Qt')
     temp_path = os.path.join(plugin_tmp_output_path, 'temp')
@@ -130,7 +135,6 @@ def make_dialog():
     # NRGDock:
     form.nrgdock_target_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.nrgdock_select_target, form.output_box, exclude='_sph'))
     form.nrgdock_binding_site_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.nrgdock_select_binding_site, form.output_box, filter_for='_sph_'))
-    form.radioButton.toggled.connect(lambda: form.input_num_chromosomes_3.setEnabled(True))
     form.nrgdock_delete_ligand_set_refresh.clicked.connect(lambda: general_functions.refresh_folder(ligand_set_folder_path, form.nrgdock_delete_ligand_set_dropdown))
     form.nrgdock_add_ligandset_button.clicked.connect(lambda: general_functions.folder_browser(form.nrgdock_add_ligand_file_path, ligand_set_folder_path, "Smiles Files (*.smi)"))
     form.nrgdock_button_ligandset_add.clicked.connect(lambda: nrgdock.process_ligands())

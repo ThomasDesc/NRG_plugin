@@ -37,7 +37,7 @@ def merge_csv(folder):
     sorted_df.to_csv(os.path.join(folder, "nrgdock_result.csv"), index=False)
     for file in csv_files:
         os.remove(file)
-    top_10_names = sorted_df['Name'].head(10).tolist()
+    top_10_names = sorted_df['Name'].head(20).tolist()
     return top_10_names
 
 
@@ -54,6 +54,9 @@ def manage_poses(top_n_name_list, ligand_poses_folder):
 def run_nrgdock(form, nrgdock_output_path, ligand_set_folder_path, main_folder_path):
 
     config_path = os.path.join(main_folder_path, 'nrgdock', 'deps', 'config.txt')
+    n_poses_to_save = form.nrgdock_top_n_poses.text()
+    starting_ligand = int(form.nrgdock_start_ligand.text())
+    print(n_poses_to_save)
     nrgdock_target_folder = os.path.join(nrgdock_output_path, 'target')
     if not os.path.exists(nrgdock_target_folder):
         os.mkdir(nrgdock_target_folder)
@@ -94,7 +97,7 @@ def run_nrgdock(form, nrgdock_output_path, ligand_set_folder_path, main_folder_p
     form.nrgdock_progress_bar.repaint()
     QApplication.processEvents()
     step = 100
-    for current_ligand_number in range(0, ligand_number, step):
+    for current_ligand_number in range(starting_ligand, ligand_number, step):
         last_ligand = current_ligand_number+step
         print(last_ligand)
         if last_ligand > ligand_number:
