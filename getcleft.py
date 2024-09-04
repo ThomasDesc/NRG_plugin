@@ -4,7 +4,7 @@ from pymol import cmd
 from pymol.Qt import QtCore
 import shutil
 import general_functions
-import time
+from PyQt5.QtWidgets import QApplication
 
 class WorkerThread(QtCore.QThread):
     def __init__(self, command):
@@ -86,7 +86,9 @@ def run_getcleft(form, getcleft_path, getcleft_output_path, cleft_save_path, col
         return
     getcleft_command = get_arg_str(form, getcleft_path, object_save_path, cleft_save_path)
     print(getcleft_command)
-    form.output_box.append(f'Please wait...Running GetCleft with command: {getcleft_command}')
+    form.output_box.append(f'Running GetCleft...')
+    form.output_box.repaint()
+    QApplication.processEvents()
     # test_submit_command(getcleft_command)
     os.system(getcleft_command)
     load_show_cleft(cleft_save_path, color_list, form.output_box, pymol_object)

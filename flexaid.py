@@ -101,7 +101,6 @@ def colour_specific_cell(table_widget, data):
             item = QtWidgets.QTableWidgetItem()
             item.setBackground(QtGui.QColor(data[column_counter]))
         else:
-            item = QtWidgets.QTableWidgetItem()
             item = QtWidgets.QTableWidgetItem(str(data[column_counter]))
         table_widget.setItem(row, column, item)
 
@@ -176,7 +175,7 @@ def pause_resume_simulation(form):
         resume_simulation(form)
 
 
-def run_flexaid(flexaid_output_path, form, cleft_save_path, process_ligand_path, flexaid_path, simulation_folder_path, hex_colour_list, tmp_path):
+def run_flexaid(flexaid_output_path, form, cleft_save_path, process_ligand_path, flexaid_path, simulation_folder_path, hex_colour_list):
     if form.flexaid_button_start.text() == 'Start':
         max_results = 10
         setting_dictionary = get_simulation_settings(form)

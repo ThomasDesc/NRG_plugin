@@ -63,6 +63,9 @@ QPushButton:checked{
     </item>
     <item>
      <widget class="QPushButton" name="button_partition_cleft">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="text">
        <string>Partition Cleft</string>
       </property>
