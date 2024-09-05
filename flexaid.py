@@ -48,6 +48,8 @@ def write_config(target_inp_path, cleft, ligand_inp_path, max_results, flexaid_o
                 t2.write(f'MAXRES {max_results}\n')
             elif line.startswith('TEMPOP'):
                 t2.write(f'TEMPOP {os.path.join(flexaid_result_path, "temp")}\n')
+            elif line.startswith('NRGSUI'):
+                t2.write('')
             else:
                 t2.write(line)
     return config_file_output_path
@@ -107,22 +109,6 @@ def colour_specific_cell(table_widget, data):
 
 def receive_list(table_list):
     colour_specific_cell(*table_list)
-
-
-def run_flexaid_worker(command, form, simulation_folder, hex_colour_list, max_generations):
-    worker = thread_test.WorkerThread(command, simulation_folder, form.flexaid_result_table, hex_colour_list, max_generations)
-    time.sleep(1)
-    worker.start()
-    worker.table_signal_received.connect(receive_list)
-    worker.current_generation_signal_received.connect(form.flexaid_progress.setValue)
-    worker.generation_str_signal_received.connect(form.generation_label.setText)
-    worker.finished.connect(worker.quit)
-    worker.finished.connect(lambda: toggle_buttons(form, False))
-    worker.finished.connect(lambda: load_show_flexaid_result(simulation_folder))
-    worker.finished.connect(lambda: print('max_generation: ', max_generations))
-    worker.finished.connect(lambda: form.flexaid_progress.setValue(max_generations))
-    worker.finished.connect(lambda: form.generation_label.setText(f'Generation: {max_generations}/{max_generations}'))
-    # worker.finished.connect(lambda: load_show_cleft(cleft_save_path, color_list, form.output_box, pymol_object))
 
 
 def flexaid_no_worker(form, command):
@@ -195,6 +181,44 @@ def retrieve_nrgdock_ligands(nrgdock_output_path):
     cmd.load(os.path.join(target_path, 'get_cleft', 'receptor_sph_1.pdb'))
 
 
+def run_flexaid_worker(command, form, simulation_folder, hex_colour_list, max_generations):
+    worker = thread_test.WorkerThread(command, simulation_folder, form.flexaid_result_table, hex_colour_list, max_generations)
+    time.sleep(1)
+    worker.start()
+    worker.table_signal_received.connect(receive_list)
+    worker.current_generation_signal_received.connect(form.flexaid_progress.setValue)
+    worker.generation_str_signal_received.connect(form.generation_label.setText)
+    worker.finished.connect(worker.quit)
+    worker.finished.connect(lambda: toggle_buttons(form, False))
+    worker.finished.connect(lambda: load_show_flexaid_result(simulation_folder))
+    worker.finished.connect(lambda: form.flexaid_progress.setValue(max_generations))
+    worker.finished.connect(lambda: form.generation_label.setText(f'Generation: {max_generations}/{max_generations}'))
+    # worker.finished.connect(lambda: load_show_cleft(cleft_save_path, color_list, form.output_box, pymol_object))
+
+
+def update_table(simulation_folder, table_widget, hex_colour_list, num_results=5):
+    update_file_path = os.path.join(simulation_folder, ".update")
+    number_color_list = general_functions.create_number_list(num_results, len(hex_colour_list))
+    with open(update_file_path, "r") as f:
+        for line_counter, line in enumerate(f):
+            if line_counter > 1:
+                line = line.split()
+                top_number = int(line[0]) + 1
+                cf = line[-5]
+                fitness = line[-1]
+                rmsd = 'N/A'
+                data = (hex_colour_list[number_color_list[top_number - 1]], top_number, cf, fitness, rmsd)
+                colour_specific_cell(table_widget, data)
+
+
+def run_flexaid_same_thread(command, update_file_path, form, hex_colour_list, max_generations):
+    form.flexaid_progress.setValue(max_generations)
+    os.system(command)
+    form.flexaid_progress.setValue(max_generations)
+    form.generation_label.setText(f'Generation: {max_generations}/{max_generations}')
+    update_table(update_file_path, form.flexaid_result_table, hex_colour_list, num_results=5)
+
+
 def run_flexaid(flexaid_output_path, form, process_ligand_path, flexaid_path, simulation_folder_path, hex_colour_list):
     if form.flexaid_button_start.text() == 'Start':
         max_results = 10
@@ -230,5 +254,8 @@ def run_flexaid(flexaid_output_path, form, process_ligand_path, flexaid_path, si
         #     f.write(flexaid_command)
         form.output_box.append(f'Please wait...Running Flexaid with command: \n{flexaid_command}')
         form.flexaid_tab.setCurrentIndex(2)
-        run_flexaid_worker(flexaid_command, form, flexaid_result_path, hex_colour_list, max_generations)
+        if form.flexaid_multithread_button.isChecked():
+            run_flexaid_worker(flexaid_command, form, flexaid_result_path, hex_colour_list, max_generations)
+        else:
+            run_flexaid_same_thread(flexaid_command, flexaid_result_path, form, hex_colour_list, max_generations)
 
