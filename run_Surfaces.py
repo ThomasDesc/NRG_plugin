@@ -23,6 +23,7 @@ def process_result_flexaid(flexaid_result_file, output):
 
 
 def load_surfaces_result(form, surfaces_output_path):
+    cmd.delete('all')
     result_path = form.surfaces_load_result_text.text()
     result_base_name = os.path.basename(result_path)
     dst = os.path.join(surfaces_output_path, result_base_name)
