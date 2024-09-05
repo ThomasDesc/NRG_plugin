@@ -213,7 +213,7 @@ def generate_session(pdb_file, image_file, list_file, color_rgb_file_path, resid
     pymol.cmd.color('grey60', os.path.basename(pdb_file)[:-4])
     chains = split_states(residues, atoms, pdb_file)
     for C in chains:
-        pymol.cmd.set("cartoon_transparency", 0.55, 'chain' + C)
+        pymol.cmd.set("cartoon_transparency", 0.55, 'chain ' + C)
     for i in range(len(residues)):
         if values_residues[i] != 0:
             color_residue(residues[i], color_codes[i])
