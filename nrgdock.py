@@ -78,7 +78,7 @@ def run_nrgdock(form, nrgdock_output_path, ligand_set_folder_path, main_folder_p
         binding_site_folder_path = os.path.join(nrgdock_target_folder, 'get_cleft')
         if not os.path.isdir(binding_site_folder_path):
             os.mkdir(binding_site_folder_path)
-        binding_site_file_path = os.path.join(binding_site_folder_path, binding_site_name + '.pdb')
+        binding_site_file_path = os.path.join(binding_site_folder_path, 'receptor_sph_1.pdb')
         cmd.save(binding_site_file_path, binding_site_name)
     nrgdock_result_folder = os.path.join(nrgdock_output_path, 'results')
     if not os.path.exists(nrgdock_result_folder):

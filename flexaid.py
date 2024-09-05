@@ -175,6 +175,25 @@ def pause_resume_simulation(form):
         resume_simulation(form)
 
 
+def retrieve_nrgdock_ligands(nrgdock_output_path):
+    cmd.delete('all')
+    ligand_pose_path = os.path.join(nrgdock_output_path, 'ligand_poses')
+    items = os.listdir(ligand_pose_path)
+    directories = [d for d in items if os.path.isdir(os.path.join(ligand_pose_path, d))]
+    if len(directories) != 1:
+        print("There should be exactly one directory in the base directory.")
+        return
+    folder = directories[0]
+    folder_path = os.path.join(ligand_pose_path, folder)
+    files = os.listdir(folder_path)
+    pdb_files = [f for f in files if f.endswith('.pdb')]
+    for pdb_file in pdb_files:
+        file_path = os.path.join(folder_path, pdb_file)
+        cmd.load(file_path)
+    target_path = os.path.join(nrgdock_output_path, 'target')
+    cmd.load(os.path.join(target_path, 'receptor.mol2'))
+    cmd.load(os.path.join(target_path, 'get_cleft', 'receptor_sph_1.pdb'))
+
 def run_flexaid(flexaid_output_path, form, process_ligand_path, flexaid_path, simulation_folder_path, hex_colour_list):
     if form.flexaid_button_start.text() == 'Start':
         max_results = 10
