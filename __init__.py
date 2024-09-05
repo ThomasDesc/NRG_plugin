@@ -67,7 +67,7 @@ def make_dialog():
     vcon_path = os.path.join(install_dir, 'bin', folder, f'vcon')
     process_ligand_path = os.path.join(install_dir, 'bin', folder, f'Process_ligand{suffix}')
     bin_list = [getcleft_path, flexaid_path, vcon_path, process_ligand_path]
-    print("Binaries are stored at: ", os.path.join(install_dir, 'bin', folder))
+    # print("Binaries are stored at: ", os.path.join(install_dir, 'bin', folder))
     if folder == 'mac':
         for file in bin_list:
             subprocess.run(["chmod", "755", file])
@@ -103,6 +103,7 @@ def make_dialog():
     form = loadUi(uifile, dialog)
     form.stackedWidget.setCurrentIndex(0)
     form.flexaid_tab.setTabEnabled(2, False)
+    form.NRGDock_settings.setTabEnabled(2, False)
 
     general_functions.refresh_dropdown(form.cleft_select_object, form.output_box, no_warning=True)
     general_functions.refresh_folder(ligand_set_folder_path, form.nrgdock_select_ligand)
