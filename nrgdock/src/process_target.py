@@ -70,7 +70,7 @@ def find_cleft_file(target_folder, ligand_name=None):
     get_cleft_folder = os.path.join(target_folder, "get_cleft")
     if not os.path.isdir(get_cleft_folder):
         os.mkdir(get_cleft_folder)
-    get_cleft_path = '/Users/thomasdescoteaux/pymol-open-source-build/lib/python/pmg_tk/startup/NRGSuite_GetCleft/bin/mac/GetCleft'
+    get_cleft_path = ''
     output = os.path.join(get_cleft_folder, "bd_site")
     get_cleft_command = f'{get_cleft_path} -p "{receptor_pdb_path}" -o "{output}" -l 1.75 -u 3.6 -s -t 1'
     if ligand_name:
