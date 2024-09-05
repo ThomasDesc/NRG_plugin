@@ -194,6 +194,7 @@ def retrieve_nrgdock_ligands(nrgdock_output_path):
     cmd.load(os.path.join(target_path, 'receptor.mol2'))
     cmd.load(os.path.join(target_path, 'get_cleft', 'receptor_sph_1.pdb'))
 
+
 def run_flexaid(flexaid_output_path, form, process_ligand_path, flexaid_path, simulation_folder_path, hex_colour_list):
     if form.flexaid_button_start.text() == 'Start':
         max_results = 10
