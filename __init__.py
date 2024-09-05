@@ -62,6 +62,7 @@ def make_dialog():
         exit('Unknown OS')
 
     uifile = os.path.join(install_dir, 'nrgdock_widget.ui')
+    print('binary path: ', os.path.join(install_dir, 'bin', folder))
     getcleft_path = os.path.join(install_dir, 'bin', folder, f'GetCleft{suffix}')
     flexaid_path = os.path.join(install_dir, 'bin', folder, f'FlexAID{suffix}')
     vcon_path = os.path.join(install_dir, 'bin', folder, f'vcon{suffix}')
