@@ -131,7 +131,7 @@ def make_dialog():
     form.flexaid_binding_site_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.flexaid_select_binding_site, form.output_box, filter_for='_sph'))
     form.flexaid_button_start.clicked.connect(lambda: form.flexaid_tab.setTabEnabled(2, True))
     form.flexaid_retrieve_nrgdock_ligands.clicked.connect(lambda: flexaid.retrieve_nrgdock_ligands(nrgdock_output_path))
-    form.flexaid_button_start.clicked.connect(lambda: flexaid.run_flexaid(flexaid_output_path, form, process_ligand_path, flexaid_path, simulation_folder_path, hex_colour_list))
+    form.flexaid_button_start.clicked.connect(lambda: flexaid.run_flexaid(flexaid_output_path, form, process_ligand_path, flexaid_path, simulation_folder_path, hex_colour_list, folder))
 
     form.flexaid_button_pause.clicked.connect(lambda: flexaid.pause_resume_simulation(form))
     form.flexaid_button_stop.clicked.connect(lambda: flexaid.stop_simulation(form))
@@ -157,5 +157,9 @@ def make_dialog():
     form.surfaces_run_button.clicked.connect(lambda: general_functions.surfaces_enable_buttons(form))
     form.surfaces_retreive_flexaid_result.clicked.connect(lambda: run_Surfaces.retrieve_flexaid_result(form.simulate_folder_path.text()))
     form.surfaces_retreive_flexaid_result.clicked.connect(lambda: general_functions.refresh_dropdown(form.surface_select_result, form.output_box, filter_for='RESULT'))
+    form.surfaces_result_browse_button.clicked.connect(
+        lambda: general_functions.folder_browser(form.surfaces_load_result_text, nrgdock_output_path, "CSV file (*.pdb)"))
+    form.surfaces_load_result_button.clicked.connect(
+        lambda: run_Surfaces.load_surfaces_result(form, surfaces_output_path))
     # form.class_test.clicked.connect(lambda: getcleft.test_submit_command())
     return dialog
