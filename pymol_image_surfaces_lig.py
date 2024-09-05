@@ -117,7 +117,7 @@ def color_distance(pair, value, color, selected_pairs):
     distance_string = distance_string.replace("'", "")
     type_res, chain_res, num_res = read_residue(pair[0])
     atom_name, atom_num = read_atom(pair[1])
-    selection_string1 = 'chain' + chain_res + ' and resi ' + num_res + ' and n. CA'
+    selection_string1 = 'chain ' + chain_res + ' and resi ' + num_res + ' and n. CA'
     selection_string2 = 'id ' + atom_num
     pymol.cmd.set_color(distance_string, color)
     pymol.cmd.distance(distance_string, selection_string1, selection_string2)
@@ -132,7 +132,7 @@ def label_pairs(pair,selected_pairs):
     pair_string = pair[0] + '-' + pair[1]
     type_res, chain_res, num_res = read_residue(pair[0])
     atom_name, atom_num = read_atom(pair[1])
-    selection_string1 = 'chain' + chain_res + ' and resi ' + num_res + ' and n. CA'
+    selection_string1 = 'chain ' + chain_res + ' and resi ' + num_res + ' and n. CA'
     selection_string2 = 'id ' + atom_num
     pymol.cmd.select(pair_string, selection_string1 + ' ' + selection_string2)
     #label residues
@@ -182,7 +182,7 @@ def split_states(residues, atoms, pdb_file):
             chains.append(chain_res)
     for C in chains:
         pymol.cmd.select('chain ' + C)
-        pymol.cmd.extract('chain' + C, 'sele')
+        pymol.cmd.extract('chain ' + C, 'sele')
     for atom in atoms:
         atom_name, atom_num = read_atom(atom)
         atom_nums.append(atom_num)
@@ -196,7 +196,7 @@ def split_states(residues, atoms, pdb_file):
 
 def show_separate_surfaces(chains):
     for C in chains:
-        pymol.cmd.show('surface', 'chain' + C)
+        pymol.cmd.show('surface', 'chain ' + C)
         #pymol.cmd.set('transparency', 0.7, 'chain' + C)
     return
 
