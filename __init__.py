@@ -64,7 +64,7 @@ def make_dialog():
     uifile = os.path.join(install_dir, 'nrgdock_widget.ui')
     getcleft_path = os.path.join(install_dir, 'bin', folder, f'GetCleft{suffix}')
     flexaid_path = os.path.join(install_dir, 'bin', folder, f'FlexAID{suffix}')
-    vcon_path = os.path.join(install_dir, 'bin', folder, f'vcon')
+    vcon_path = os.path.join(install_dir, 'bin', folder, f'vcon{suffix}')
     process_ligand_path = os.path.join(install_dir, 'bin', folder, f'Process_ligand{suffix}')
     bin_list = [getcleft_path, flexaid_path, vcon_path, process_ligand_path]
     # print("Binaries are stored at: ", os.path.join(install_dir, 'bin', folder))
