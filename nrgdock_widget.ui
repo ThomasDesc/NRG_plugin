@@ -78,9 +78,9 @@ QPushButton:checked{
      </widget>
     </item>
     <item>
-     <widget class="QPushButton" name="button_flexaid">
+     <widget class="QPushButton" name="button_nrgdock">
       <property name="text">
-       <string>Flexaid</string>
+       <string>NRGDock</string>
       </property>
       <property name="checkable">
        <bool>true</bool>
@@ -91,9 +91,9 @@ QPushButton:checked{
      </widget>
     </item>
     <item>
-     <widget class="QPushButton" name="button_nrgdock">
+     <widget class="QPushButton" name="button_flexaid">
       <property name="text">
-       <string>NRGDock</string>
+       <string>Flexaid</string>
       </property>
       <property name="checkable">
        <bool>true</bool>
@@ -168,7 +168,7 @@ color:rgb(255, 255, 255);</string>
     </rect>
    </property>
    <property name="currentIndex">
-    <number>3</number>
+    <number>4</number>
    </property>
    <widget class="QWidget" name="page_3">
     <widget class="QGroupBox" name="groupBox_2">
@@ -716,7 +716,7 @@ font-size:14px;
           <x>20</x>
           <y>40</y>
           <width>571</width>
-          <height>81</height>
+          <height>108</height>
          </rect>
         </property>
         <layout class="QGridLayout" name="gridLayout_4">
@@ -727,23 +727,10 @@ font-size:14px;
            </property>
           </widget>
          </item>
-         <item row="1" column="1">
-          <widget class="QComboBox" name="flexaid_select_ligand"/>
-         </item>
          <item row="0" column="0">
           <widget class="QLabel" name="label_33">
            <property name="text">
             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Target: &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QComboBox" name="flexaid_select_target">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
            </property>
           </widget>
          </item>
@@ -757,6 +744,19 @@ font-size:14px;
            </property>
            <property name="text">
             <string>Refresh</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QComboBox" name="flexaid_select_ligand"/>
+         </item>
+         <item row="0" column="1">
+          <widget class="QComboBox" name="flexaid_select_target">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
            </property>
           </widget>
          </item>
@@ -1310,9 +1310,9 @@ font-size:14px;
         <property name="geometry">
          <rect>
           <x>20</x>
-          <y>40</y>
+          <y>30</y>
           <width>571</width>
-          <height>81</height>
+          <height>101</height>
          </rect>
         </property>
         <layout class="QGridLayout" name="gridLayout_6">
@@ -1576,30 +1576,43 @@ font-size:14px;
        <x>20</x>
        <y>20</y>
        <width>601</width>
-       <height>111</height>
+       <height>211</height>
       </rect>
      </property>
      <property name="title">
       <string>Result selection</string>
      </property>
-     <widget class="QWidget" name="horizontalLayoutWidget_5">
+     <widget class="QWidget" name="gridLayoutWidget_9">
       <property name="geometry">
        <rect>
-        <x>29</x>
+        <x>20</x>
         <y>29</y>
-        <width>541</width>
-        <height>61</height>
+        <width>571</width>
+        <height>72</height>
        </rect>
       </property>
-      <layout class="QHBoxLayout" name="horizontalLayout_6">
-       <item>
+      <layout class="QGridLayout" name="gridLayout_13">
+       <item row="0" column="0">
         <widget class="QLabel" name="label_3">
          <property name="text">
           <string>Result to run surfaces on:</string>
          </property>
         </widget>
        </item>
-       <item>
+       <item row="0" column="2">
+        <widget class="QPushButton" name="surfaces_refresh_button">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Refresh</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
         <widget class="QComboBox" name="surface_select_result">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -1615,16 +1628,10 @@ font-size:14px;
          </property>
         </widget>
        </item>
-       <item>
-        <widget class="QPushButton" name="surfaces_refresh_button">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
+       <item row="1" column="1">
+        <widget class="QPushButton" name="surfaces_retreive_flexaid_result">
          <property name="text">
-          <string>Refresh</string>
+          <string>Retreive FlexAID results</string>
          </property>
         </widget>
        </item>

@@ -147,7 +147,10 @@ def make_dialog():
         lambda: nrgdock.run_nrgdock(form, nrgdock_output_path, ligand_set_folder_path, install_dir))
     form.nrgdock_result_browse_button.clicked.connect(lambda: general_functions.folder_browser(form.nrgdock_result_path, nrgdock_output_path, "CSV file (*.csv)"))
 
-    form.surfaces_refresh_button.clicked.connect(lambda: general_functions.refresh_dropdown(form.surface_select_result, form.output_box, filter_for=['RESULT']))
+    # Surfaces:
+    form.surfaces_refresh_button.clicked.connect(lambda: general_functions.refresh_dropdown(form.surface_select_result, form.output_box, filter_for='RESULT'))
     form.surfaces_run_button.clicked.connect(lambda: run_Surfaces.run_run_surfaces(form.surface_select_result.currentText(), surfaces_output_path, form.simulate_folder_path.text(), install_dir, vcon_path))
+    form.surfaces_retreive_flexaid_result.clicked.connect(lambda: run_Surfaces.retrieve_flexaid_result(form.simulate_folder_path.text()))
+    form.surfaces_retreive_flexaid_result.clicked.connect(lambda: general_functions.refresh_dropdown(form.surface_select_result, form.output_box, filter_for='RESULT'))
     # form.class_test.clicked.connect(lambda: getcleft.test_submit_command())
     return dialog

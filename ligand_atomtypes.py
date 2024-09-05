@@ -128,11 +128,11 @@ def remove_duplicates (list_atomnames, list_atomnumbers):
 def add_mol2 (ligand_file, f, g):
     list_atomnames, list_atomtypes, res = read_mol2 (ligand_file)
     # EVERY ATOM NAME SHOULD HAVE UP TO 3 CHARACTERS IN ORDER TO AVOID MOL2 CONVERSION ISSUES
-    if not check_atom_names_mol2 (ligand_file):
-        print ("WARNING: ATOM NAMES LARGER THAN 3 CHARACTERS - POSSIBLE PROBLEM WITH ATOM TYPE READING")
+    if not check_atom_names_mol2(ligand_file):
+        print("WARNING: ATOM NAMES LARGER THAN 3 CHARACTERS - POSSIBLE PROBLEM WITH ATOM TYPE READING")
     # EVERY ATOM FROM THE LIGAND NEEDS TO HAVE A DIFFERENT NAME; EG. CA,CB...
     if not check_atoms (list_atomnames, list_atomtypes):
-        print ("WARNING: ATOMS WITH DIFFERENT ATOM TYPES AND SAME ATOM NAME")
+        print("WARNING: ATOMS WITH DIFFERENT ATOM TYPES AND SAME ATOM NAME")
     list_atomnumbers = atomtypes_to_numbers (list_atomtypes)
     list_atomnames, list_atomnumbers = remove_duplicates (list_atomnames, list_atomnumbers)
     custom_def_file (f, g, list_atomnames, list_atomnumbers, res)

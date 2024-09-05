@@ -1,4 +1,5 @@
 import os
+from pymol import cmd
 from ligand_atomtypes import add_pdb
 from clean_structure import main as clean_structure
 from surface_cont_lig import main as surface_cont_lig
@@ -30,8 +31,21 @@ def create_ligand_file(pdb_file_name, lig_path):
             res = line[17:20].strip()
             if res == lig_name:
                 lig_pdb_file.write(line)
+        if line[:4] == 'CONE':
+            lig_pdb_file.write(line)
+    lig_pdb_file.write('END')
     lig_pdb_file.close()
     return
+
+
+def retrieve_flexaid_result(flexaid_simulation_folder):
+    cmd.delete('all')
+    files = os.listdir(flexaid_simulation_folder)
+    for file in files:
+        if file.endswith('.pdb') and not file.endswith('INI.pdb'):
+            file_path = os.path.join(flexaid_simulation_folder, file)
+            if os.path.isfile(file_path):
+                cmd.load(file_path)
 
 
 def run_run_surfaces(selected_result, surfaces_output_path, flexaid_simulation_folder, main_folder_path, vcon_path):

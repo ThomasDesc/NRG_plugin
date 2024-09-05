@@ -29,6 +29,7 @@ def refresh_dropdown(dropdown_to_refresh, output_box, filter_for=None, exclude=N
     if len(list_pymol_objects) == 0 and no_warning is False:
         output_message(output_box, 'No objects found', 'warning')
     dropdown_to_refresh.clear()
+    list_pymol_objects = sorted(list_pymol_objects)
     dropdown_to_refresh.addItems(list_pymol_objects)
     if len(list_pymol_objects) > 0:
         dropdown_to_refresh.setCurrentText(list_pymol_objects[0])
@@ -51,7 +52,6 @@ def folder_browser(text_window, ligand_set_path, file_extension):
 def pymol_hide_structures(form):
     list_pymol_objects = cmd.get_names('all')
     list_pymol_objects = [x for x in list_pymol_objects if 'sph' in x]
-    print(list_pymol_objects)
     if form.button_hide.isChecked():
         if not list_pymol_objects:
             output_message(form.output_box, 'No clefts to hide', 'warning')

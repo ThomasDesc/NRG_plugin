@@ -21,7 +21,7 @@ def read_residues(pdb_file, chains, ligands):
     f = open(pdb_file, 'r')
     Lines = f.readlines()
     for line in Lines:
-        if (line[:4] == 'ATOM' or line[:4] == 'HETA'):
+        if line[:4] == 'ATOM' or line[:4] == 'HETA':
             if line[21] in chains:
                 res_num = re.findall('[+-]?\d+', line[22:27])
                 res_name = line[17:20]
@@ -63,6 +63,7 @@ def vcon(pdb_name, custom_vcon_path=None, custom_vcon_out_path=None):
 
 
 # Functions to fix the names of the chains
+
 
 def get_chain(atom, og_chain, chains, atom_numbers):
     if og_chain == 'L' and atom < 90000:
