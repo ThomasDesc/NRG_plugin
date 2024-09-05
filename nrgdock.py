@@ -5,6 +5,10 @@ import subprocess
 from PyQt5.QtWidgets import QApplication
 sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'nrgdock', 'src'))
 try:
+    import numpy
+except ImportError:
+    subprocess.check_call([sys.executable, "-m", "pip", "install", 'numpy=2.0'])
+try:
     import scipy
 except ImportError:
     subprocess.check_call([sys.executable, "-m", "pip", "install", 'scipy'])

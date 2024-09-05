@@ -117,3 +117,8 @@ def create_number_list(length_TotColor, length_TotalColorList):
                 step_end = step_end - partition
         number_list.sort()
         return [int(i) for i in number_list]
+
+
+def surfaces_enable_buttons(form):
+    form.flexaid_retrieve_nrgdock_ligands.setEnabled(True)
+    form.surfaces_retreive_flexaid_result.setEnabled(True)

@@ -72,7 +72,7 @@ def make_dialog():
         for file in bin_list:
             subprocess.run(["chmod", "755", file])
             result = subprocess.run([file], capture_output=True, text=True)
-            if result.returncode != 0:
+            if result.returncode != 0 and result.returncode != -11:
                 print('Could not run: ', file)
     ligand_set_folder_path = os.path.join(install_dir, 'nrgdock', 'ligand_sets')
     plugin_tmp_output_path = os.path.join(os.path.expanduser('~'), 'Documents', 'NRGSuite_Qt')
@@ -151,6 +151,7 @@ def make_dialog():
     # Surfaces:
     form.surfaces_refresh_button.clicked.connect(lambda: general_functions.refresh_dropdown(form.surface_select_result, form.output_box, filter_for='RESULT'))
     form.surfaces_run_button.clicked.connect(lambda: run_Surfaces.run_run_surfaces(form.surface_select_result.currentText(), surfaces_output_path, form.simulate_folder_path.text(), install_dir, vcon_path))
+    form.surfaces_run_button.clicked.connect(lambda: general_functions.surfaces_enable_buttons(form))
     form.surfaces_retreive_flexaid_result.clicked.connect(lambda: run_Surfaces.retrieve_flexaid_result(form.simulate_folder_path.text()))
     form.surfaces_retreive_flexaid_result.clicked.connect(lambda: general_functions.refresh_dropdown(form.surface_select_result, form.output_box, filter_for='RESULT'))
     # form.class_test.clicked.connect(lambda: getcleft.test_submit_command())

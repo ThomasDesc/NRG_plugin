@@ -168,7 +168,7 @@ color:rgb(255, 255, 255);</string>
     </rect>
    </property>
    <property name="currentIndex">
-    <number>2</number>
+    <number>4</number>
    </property>
    <widget class="QWidget" name="page_3">
     <widget class="QGroupBox" name="groupBox_2">
@@ -775,6 +775,9 @@ font-size:14px;
          </item>
          <item row="2" column="1">
           <widget class="QPushButton" name="flexaid_retrieve_nrgdock_ligands">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="text">
             <string>Retrieve NRGDock ligands</string>
            </property>
@@ -1637,6 +1640,9 @@ font-size:14px;
        </item>
        <item row="1" column="1">
         <widget class="QPushButton" name="surfaces_retreive_flexaid_result">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="text">
           <string>Retreive FlexAID results</string>
          </property>
