@@ -228,6 +228,7 @@ def run_flexaid_same_thread(command, update_file_path, form, hex_colour_list, ma
 
 
 def run_flexaid(flexaid_output_path, form, process_ligand_path, flexaid_path, simulation_folder_path, hex_colour_list, operating_system):
+    flexaid_path.replace('\\', '/')
     if form.flexaid_button_start.text() == 'Start':
         max_results = 10
         multithreaded = form.flexaid_multithread_button.isChecked()
@@ -240,7 +241,7 @@ def run_flexaid(flexaid_output_path, form, process_ligand_path, flexaid_path, si
         form.simulate_folder_path.setText(flexaid_result_path)
         os.mkdir(flexaid_result_path)
         os.mkdir(os.path.join(flexaid_result_path, 'temp'))
-        flexaid_result_name_path = os.path.join(flexaid_result_path, "RESULT")
+        flexaid_result_name_path = os.path.join(flexaid_result_path, "RESULT").replace('\\', '/')
         binding_site_path = os.path.join(flexaid_output_path, 'binding_site_sph_.pdb')
         target_name = form.flexaid_select_target.currentText()
         target_save_path = os.path.join(flexaid_output_path, 'flexaid_target.pdb')
@@ -254,8 +255,8 @@ def run_flexaid(flexaid_output_path, form, process_ligand_path, flexaid_path, si
         process_ligand(process_ligand_path, ligand_save_path)
         target_inp_path = os.path.splitext(target_save_path)[0] + '.inp.pdb'
         ligand_inp_path = os.path.splitext(ligand_save_path)[0] + '.inp'
-        config_file_path = write_config(target_inp_path, binding_site_path, ligand_inp_path, max_results, flexaid_output_path, flexaid_result_path, multithreaded)
-        ga_path = os.path.join(flexaid_output_path, 'ga_inp.dat')
+        config_file_path = write_config(target_inp_path, binding_site_path, ligand_inp_path, max_results, flexaid_output_path, flexaid_result_path, multithreaded).replace('\\', '/')
+        ga_path = os.path.join(flexaid_output_path, 'ga_inp.dat').replace('\\', '/')
         edit_ga(os.path.join(os.path.dirname(__file__), 'ga_inp.dat'), ga_path, setting_dictionary)
         toggle_buttons(form, True)
         flexaid_command = f'"{flexaid_path}" "{config_file_path}" "{ga_path}" "{flexaid_result_name_path}"'
