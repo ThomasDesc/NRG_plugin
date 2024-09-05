@@ -158,7 +158,7 @@ def make_dialog():
     form.surfaces_retreive_flexaid_result.clicked.connect(lambda: run_Surfaces.retrieve_flexaid_result(form.simulate_folder_path.text()))
     form.surfaces_retreive_flexaid_result.clicked.connect(lambda: general_functions.refresh_dropdown(form.surface_select_result, form.output_box, filter_for='RESULT'))
     form.surfaces_result_browse_button.clicked.connect(
-        lambda: general_functions.folder_browser(form.surfaces_load_result_text, nrgdock_output_path, "CSV file (*.pdb)"))
+        lambda: general_functions.folder_browser(form.surfaces_load_result_text, os.path.join(install_dir, 'result_demo'), "CSV file (*.pdb)"))
     form.surfaces_load_result_button.clicked.connect(
         lambda: run_Surfaces.load_surfaces_result(form, surfaces_output_path))
     # form.class_test.clicked.connect(lambda: getcleft.test_submit_command())
