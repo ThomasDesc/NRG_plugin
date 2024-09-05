@@ -50,7 +50,7 @@ def read_atom(atom):
 
 def color_residue(res, color):
     type_res, chain_res, num_res = read_residue(res)
-    selection_string = 'chain' + chain_res + ' and resi ' + num_res
+    selection_string = 'chain ' + chain_res + ' and resi ' + num_res
     pymol.cmd.set_color(res, color)
     pymol.cmd.select(selection_string)
     #pymol.cmd.show('spheres', 'sele')
