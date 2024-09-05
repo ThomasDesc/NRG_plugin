@@ -255,7 +255,7 @@ def run_flexaid(flexaid_output_path, form, process_ligand_path, flexaid_path, si
         ga_path = os.path.join(flexaid_output_path, 'ga_inp.dat')
         edit_ga(os.path.join(os.path.dirname(__file__), 'ga_inp.dat'), ga_path, setting_dictionary)
         toggle_buttons(form, True)
-        flexaid_command = f'"{flexaid_path}" "{config_file_path}" "{ga_path}" "{flexaid_result_name_path}"'
+        flexaid_command = f'& "{flexaid_path}" "{config_file_path}" "{ga_path}" "{flexaid_result_name_path}"'
         # with open(os.path.join(tmp_path, 'flex_cmd.txt'), 'w') as f:
         #     f.write(flexaid_command)
         form.output_box.append(f'Please wait...Running Flexaid with command: \n{flexaid_command}')
