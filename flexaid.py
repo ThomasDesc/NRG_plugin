@@ -20,7 +20,7 @@ def count_flex(ligand_inp_file_path):
     return count
 
 
-def write_config(target_inp_path, cleft, ligand_inp_path, max_results, flexaid_output_path, flexaid_result_path):
+def write_config(target_inp_path, cleft, ligand_inp_path, max_results, flexaid_output_path, flexaid_result_path, multithread):
     with open(os.path.join(os.path.dirname(__file__), 'template_config.inp'), "r") as t1:
         lines = t1.readlines()
     config_file_output_path = os.path.join(flexaid_output_path, 'config.inp')
@@ -48,7 +48,7 @@ def write_config(target_inp_path, cleft, ligand_inp_path, max_results, flexaid_o
                 t2.write(f'MAXRES {max_results}\n')
             elif line.startswith('TEMPOP'):
                 t2.write(f'TEMPOP {os.path.join(flexaid_result_path, "temp")}\n')
-            elif line.startswith('NRGSUI'):
+            elif line.startswith('NRGSUI') and not multithread:
                 t2.write('')
             else:
                 t2.write(line)
@@ -197,18 +197,22 @@ def run_flexaid_worker(command, form, simulation_folder, hex_colour_list, max_ge
 
 
 def update_table(simulation_folder, table_widget, hex_colour_list, num_results=5):
-    update_file_path = os.path.join(simulation_folder, ".update")
+    update_file_path = os.path.join(simulation_folder, "RESULT.cad")
     number_color_list = general_functions.create_number_list(num_results, len(hex_colour_list))
     with open(update_file_path, "r") as f:
         for line_counter, line in enumerate(f):
-            if line_counter > 1:
-                line = line.split()
-                top_number = int(line[0]) + 1
-                cf = line[-5]
-                fitness = line[-1]
+            if line.startswith('Cluster'):
+                line = line.split(' ')
+                top_number = int(line[1].replace(':', '')) + 1
+                cf = line[3].split('=')[-1]
+                fitness = 'N/A'
                 rmsd = 'N/A'
-                data = (hex_colour_list[number_color_list[top_number - 1]], top_number, cf, fitness, rmsd)
+                ligand_color = hex_colour_list[number_color_list[top_number - 1]]
+                data = (ligand_color, top_number, cf, fitness, rmsd)
                 colour_specific_cell(table_widget, data)
+                cmd.color('0x' + ligand_color[1:], f"RESULT_{top_number-1} and elem C")
+            if line_counter == 4:
+                return
 
 
 def run_flexaid_same_thread(command, update_file_path, form, hex_colour_list, max_generations):
@@ -216,12 +220,14 @@ def run_flexaid_same_thread(command, update_file_path, form, hex_colour_list, ma
     os.system(command)
     form.flexaid_progress.setValue(max_generations)
     form.generation_label.setText(f'Generation: {max_generations}/{max_generations}')
+    load_show_flexaid_result(update_file_path)
     update_table(update_file_path, form.flexaid_result_table, hex_colour_list, num_results=5)
 
 
 def run_flexaid(flexaid_output_path, form, process_ligand_path, flexaid_path, simulation_folder_path, hex_colour_list):
     if form.flexaid_button_start.text() == 'Start':
         max_results = 10
+        multithreaded = form.flexaid_multithread_button.isChecked()
         setting_dictionary = get_simulation_settings(form)
         max_generations = int(setting_dictionary['number_generations'])
         form.flexaid_progress.setMaximum(max_generations)
@@ -245,7 +251,7 @@ def run_flexaid(flexaid_output_path, form, process_ligand_path, flexaid_path, si
         process_ligand(process_ligand_path, ligand_save_path)
         target_inp_path = os.path.splitext(target_save_path)[0] + '.inp.pdb'
         ligand_inp_path = os.path.splitext(ligand_save_path)[0] + '.inp'
-        config_file_path = write_config(target_inp_path, binding_site_path, ligand_inp_path, max_results, flexaid_output_path, flexaid_result_path)
+        config_file_path = write_config(target_inp_path, binding_site_path, ligand_inp_path, max_results, flexaid_output_path, flexaid_result_path, multithreaded)
         ga_path = os.path.join(flexaid_output_path, 'ga_inp.dat')
         edit_ga(os.path.join(os.path.dirname(__file__), 'ga_inp.dat'), ga_path, setting_dictionary)
         toggle_buttons(form, True)
@@ -254,8 +260,7 @@ def run_flexaid(flexaid_output_path, form, process_ligand_path, flexaid_path, si
         #     f.write(flexaid_command)
         form.output_box.append(f'Please wait...Running Flexaid with command: \n{flexaid_command}')
         form.flexaid_tab.setCurrentIndex(2)
-        if form.flexaid_multithread_button.isChecked():
+        if multithreaded:
             run_flexaid_worker(flexaid_command, form, flexaid_result_path, hex_colour_list, max_generations)
         else:
             run_flexaid_same_thread(flexaid_command, flexaid_result_path, form, hex_colour_list, max_generations)
-
