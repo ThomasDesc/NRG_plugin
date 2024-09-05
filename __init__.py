@@ -104,7 +104,8 @@ def make_dialog():
     form.stackedWidget.setCurrentIndex(0)
     form.flexaid_tab.setTabEnabled(2, False)
     form.NRGDock_settings.setTabEnabled(2, False)
-    form.flexaid_multithread_button.setChecked(True)
+    if folder == 'mac':
+        form.flexaid_multithread_button.setChecked(True)
 
     general_functions.refresh_dropdown(form.cleft_select_object, form.output_box, no_warning=True)
     general_functions.refresh_folder(ligand_set_folder_path, form.nrgdock_select_ligand)
