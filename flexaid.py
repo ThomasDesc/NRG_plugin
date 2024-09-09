@@ -227,8 +227,10 @@ def run_flexaid_same_thread(command, update_file_path, form, hex_colour_list, ma
     update_table(update_file_path, form.flexaid_result_table, hex_colour_list, num_results=5)
 
 
-def run_flexaid(flexaid_output_path, form, process_ligand_path, flexaid_path, simulation_folder_path, hex_colour_list, operating_system):
+def run_flexaid(temp_path, form, process_ligand_path, flexaid_path, simulation_folder_path, hex_colour_list, operating_system, nrgsuite_base_path):
     flexaid_path.replace('\\', '/')
+    flexaid_output_path = os.path.join(temp_path, 'FlexAID')
+    flexaid_deps_path = os.path.join(nrgsuite_base_path, 'deps', 'flexaid_deps')
     if form.flexaid_button_start.text() == 'Start':
         max_results = 10
         multithreaded = form.flexaid_multithread_button.isChecked()
@@ -257,7 +259,7 @@ def run_flexaid(flexaid_output_path, form, process_ligand_path, flexaid_path, si
         ligand_inp_path = os.path.splitext(ligand_save_path)[0] + '.inp'
         config_file_path = write_config(target_inp_path, binding_site_path, ligand_inp_path, max_results, flexaid_output_path, flexaid_result_path, multithreaded).replace('\\', '/')
         ga_path = os.path.join(flexaid_output_path, 'ga_inp.dat').replace('\\', '/')
-        edit_ga(os.path.join(os.path.dirname(__file__), 'ga_inp.dat'), ga_path, setting_dictionary)
+        edit_ga(os.path.join(flexaid_deps_path, 'ga_inp.dat'), ga_path, setting_dictionary)
         toggle_buttons(form, True)
         flexaid_command = f'"{flexaid_path}" "{config_file_path}" "{ga_path}" "{flexaid_result_name_path}"'
         # with open(os.path.join(tmp_path, 'flex_cmd.txt'), 'w') as f:
