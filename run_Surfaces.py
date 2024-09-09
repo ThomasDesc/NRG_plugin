@@ -62,7 +62,10 @@ def retrieve_flexaid_result(flexaid_simulation_folder):
                 cmd.load(file_path)
 
 
-def run_run_surfaces(selected_result, surfaces_output_path, flexaid_simulation_folder, main_folder_path, vcon_path):
+def run_run_surfaces(selected_result, surfaces_output_path, flexaid_simulation_folder, main_folder_path,
+                     binary_folder_path, binary_suffix):
+
+    vcon_binary_path = os.path.join(binary_folder_path, f'vcon{binary_suffix}')
     def_file = os.path.join(main_folder_path, "surfaces_defs", 'AMINO_FlexAID.def')
     flexaid_dat_path = os.path.join(main_folder_path, "surfaces_defs", 'FlexAID.dat')
     color_rgb_path = os.path.join(main_folder_path, "surfaces_defs", 'color_rgb.txt')
@@ -83,5 +86,5 @@ def run_run_surfaces(selected_result, surfaces_output_path, flexaid_simulation_f
     clean_pdb_file.close()
     vcon_out_file = os.path.join(os.path.dirname(surfaces_output_path), 'vcon_file.txt')
     csv_path = os.path.join(surfaces_output_path, 'csv_output.csv')
-    list_file_path, image_file_path = surface_cont_lig(cleaned_file_path, 'ABC', 'LIG', csv_path, custom_def_path, flexaid_dat_path, vcon_path, vcon_out_file)
+    list_file_path, image_file_path = surface_cont_lig(cleaned_file_path, 'ABC', 'LIG', csv_path, custom_def_path, flexaid_dat_path, vcon_binary_path, vcon_out_file)
     generate_session(cleaned_file_path, image_file_path, list_file_path, color_rgb_path)

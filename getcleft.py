@@ -73,8 +73,20 @@ def test_submit_command(getcleft_command):
     subprocess.run(getcleft_command, shell=True)
 
 
-def run_getcleft(form, getcleft_path, getcleft_output_path, cleft_save_path, color_list):
-    shutil.rmtree(getcleft_output_path)
+def load_color_list(color_list_path):
+    with open(color_list_path, 'r') as file:
+        color_list = [line.strip() for line in file]
+    return color_list
+
+
+def run_getcleft(form, binary_folder_path, binary_suffix, temp_path, nrgsuite_base_path):
+    getcleft_binary_path = os.path.join(binary_folder_path, f'GetCleft{binary_suffix}')
+    getcleft_output_path = os.path.join(temp_path, 'GetCleft')
+    cleft_save_path = os.path.join(getcleft_output_path, 'Clefts')
+    color_list_path = os.path.join(nrgsuite_base_path, 'deps', 'getcleft', 'color_list.txt')
+    color_list = load_color_list(color_list_path)
+    if os.path.exists(getcleft_output_path):
+        shutil.rmtree(getcleft_output_path)
     os.mkdir(getcleft_output_path)
     os.mkdir(cleft_save_path)
     pymol_object = form.cleft_select_object.currentText()
@@ -84,7 +96,7 @@ def run_getcleft(form, getcleft_path, getcleft_output_path, cleft_save_path, col
     else:
         print('No object selected')
         return
-    getcleft_command = get_arg_str(form, getcleft_path, object_save_path, cleft_save_path)
+    getcleft_command = get_arg_str(form, getcleft_binary_path, object_save_path, cleft_save_path)
     print(getcleft_command)
     form.output_box.append(f'Running GetCleft...')
     form.output_box.repaint()

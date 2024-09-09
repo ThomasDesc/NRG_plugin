@@ -56,18 +56,17 @@ def write_config(target_inp_path, cleft, ligand_inp_path, max_results, flexaid_o
 
 
 def process_ligand(process_ligand_path, input_path, istarget=False):
-    # file_name = os.path.splitext(os.path.basename(input_path))[0]
     if istarget:
         process_ligand_command = f'"{process_ligand_path}" -f "{input_path}" -target'
+        # file_name = os.path.splitext(os.path.basename(input_path))[0]
+        # print('removing: ', os.path.splitext(input_path)[0] + '.mol2.tmp')
+        # os.remove(os.path.splitext(input_path)[0] + '.mol2.tmp')
+        # print('\nto: ', os.path.join(process_ligand_output, 'flexaid_target.inp.pdb'))
+        # shutil.move(os.path.splitext(input_path)[0] + '.inp.pdb', os.path.join(process_ligand_output, f"{file_name}.inp.pdb"))
     else:
         process_ligand_command = f'"{process_ligand_path}" -f "{input_path}" --atom_index 90000 -ref'
     print(process_ligand_command)
     subprocess.run(process_ligand_command, shell=True)
-    # if istarget:
-    #     print('removing: ', os.path.splitext(input_path)[0] + '.mol2.tmp')
-    #     os.remove(os.path.splitext(input_path)[0] + '.mol2.tmp')
-    #     print('\nto: ', os.path.join(process_ligand_output, 'flexaid_target.inp.pdb'))
-    #     shutil.move(os.path.splitext(input_path)[0] + '.inp.pdb', os.path.join(process_ligand_output, f"{file_name}.inp.pdb"))
 
 
 def get_simulation_settings(form):
@@ -227,10 +226,23 @@ def run_flexaid_same_thread(command, update_file_path, form, hex_colour_list, ma
     update_table(update_file_path, form.flexaid_result_table, hex_colour_list, num_results=5)
 
 
-def run_flexaid(temp_path, form, process_ligand_path, flexaid_path, simulation_folder_path, hex_colour_list, operating_system, nrgsuite_base_path):
-    flexaid_path.replace('\\', '/')
+def load_color_list(color_list_path):
+    with open(color_list_path, 'r') as file:
+        color_list = [line.strip() for line in file]
+    return color_list
+
+
+def run_flexaid(form, temp_path, binary_folder_path, operating_system, binary_suffix, nrgsuite_base_path):
+
+    flexaid_binary_path = os.path.join(binary_folder_path, f'FlexAID{binary_suffix}')
+    process_ligand_path = os.path.join(binary_folder_path, f'Process_ligand{binary_suffix}')
     flexaid_output_path = os.path.join(temp_path, 'FlexAID')
-    flexaid_deps_path = os.path.join(nrgsuite_base_path, 'deps', 'flexaid_deps')
+    flexaid_deps_path = os.path.join(nrgsuite_base_path, 'deps', 'flexaid')
+    simulation_folder_path = os.path.join(flexaid_output_path, 'Simulation')
+    os.mkdir(flexaid_output_path)
+    os.mkdir(simulation_folder_path)
+    color_list_path = os.path.join(flexaid_deps_path, 'color_list.txt')
+    hex_color_list = load_color_list(color_list_path)
     if form.flexaid_button_start.text() == 'Start':
         max_results = 10
         multithreaded = form.flexaid_multithread_button.isChecked()
@@ -261,12 +273,10 @@ def run_flexaid(temp_path, form, process_ligand_path, flexaid_path, simulation_f
         ga_path = os.path.join(flexaid_output_path, 'ga_inp.dat').replace('\\', '/')
         edit_ga(os.path.join(flexaid_deps_path, 'ga_inp.dat'), ga_path, setting_dictionary)
         toggle_buttons(form, True)
-        flexaid_command = f'"{flexaid_path}" "{config_file_path}" "{ga_path}" "{flexaid_result_name_path}"'
-        # with open(os.path.join(tmp_path, 'flex_cmd.txt'), 'w') as f:
-        #     f.write(flexaid_command)
+        flexaid_command = f'"{flexaid_binary_path}" "{config_file_path}" "{ga_path}" "{flexaid_result_name_path}"'
         form.output_box.append(f'Please wait...Running Flexaid with command: \n{flexaid_command}')
         form.flexaid_tab.setCurrentIndex(2)
         if multithreaded:
-            run_flexaid_worker(flexaid_command, form, flexaid_result_path, hex_colour_list, max_generations)
+            run_flexaid_worker(flexaid_command, form, flexaid_result_path, hex_color_list, max_generations)
         else:
-            run_flexaid_same_thread(flexaid_command, flexaid_result_path, form, hex_colour_list, max_generations, operating_system)
+            run_flexaid_same_thread(flexaid_command, flexaid_result_path, form, hex_color_list, max_generations, operating_system)

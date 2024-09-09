@@ -88,7 +88,7 @@ QPushButton:checked{
      </widget>
     </item>
     <item>
-     <widget class="QPushButton" name="button_Surfaces">
+     <widget class="QPushButton" name="button_surfaces">
       <property name="text">
        <string>Surfaces</string>
       </property>
@@ -101,7 +101,7 @@ QPushButton:checked{
      </widget>
     </item>
     <item>
-     <widget class="QPushButton" name="button_gpcr">
+     <widget class="QPushButton" name="button_nrgten">
       <property name="text">
        <string>NRGTEN</string>
       </property>
@@ -114,7 +114,7 @@ QPushButton:checked{
      </widget>
     </item>
     <item>
-     <widget class="QPushButton" name="button_gpcr_2">
+     <widget class="QPushButton" name="button_modeller">
       <property name="text">
        <string>Modeller</string>
       </property>
