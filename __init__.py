@@ -51,7 +51,7 @@ def make_dialog():
     import platform
     import spheres
     import run_Surfaces
-    import thread_test
+    import flexaid_thread
     import nrgdock
     dialog = QtWidgets.QDialog()
 

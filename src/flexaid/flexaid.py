@@ -5,7 +5,7 @@ from pymol.Qt import QtWidgets
 import shutil
 import subprocess
 import datetime
-import thread_test
+import flexaid_thread
 import time
 import general_functions
 
@@ -181,7 +181,7 @@ def retrieve_nrgdock_ligands(nrgdock_output_path):
 
 
 def run_flexaid_worker(command, form, simulation_folder, hex_colour_list, max_generations):
-    worker = thread_test.WorkerThread(command, simulation_folder, form.flexaid_result_table, hex_colour_list, max_generations)
+    worker = thread.WorkerThread(command, simulation_folder, form.flexaid_result_table, hex_colour_list, max_generations)
     time.sleep(1)
     worker.start()
     worker.table_signal_received.connect(receive_list)
