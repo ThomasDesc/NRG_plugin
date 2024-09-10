@@ -1,6 +1,6 @@
 from pymol import cmd
 import numpy as np
-import wizard
+from src.getcleft import wizard
 from general_functions import read_coords_cleft
 import os
 
@@ -20,11 +20,19 @@ def get_max_coords(cleft_coordinates, center):
     return radius
 
 
-def display_sphere(cleft_object_name, slider, partition_sphere_select):
+def display_sphere(cleft_object_name, slider, partition_sphere_select, temp_path):
     if cleft_object_name == '':
         print('No cleft object selected in step 1')
         return
     else:
+        cmd.hide("everything", cleft_object_name)
+        cmd.show("surface", cleft_object_name)
+        getcleft_output_path = os.path.join(temp_path, 'GetCleft')
+        cleft_save_folder_path = os.path.join(getcleft_output_path, 'Clefts')
+        if not os.path.exists(cleft_save_folder_path):
+            os.makedirs(cleft_save_folder_path)
+        cleft_save_path = os.path.join(cleft_save_folder_path, cleft_object_name + '.pdb')
+        cmd.save(cleft_save_path, cleft_object_name)
         sphere_name = 'SPHERE_1'
         cleft_coordinates = np.array(cmd.get_model(cleft_object_name, 1).get_coord_list())
         center_coordinate = get_center(cleft_coordinates)
@@ -61,11 +69,14 @@ def move_sphere(cleft_name):
     cmd.set_wizard(wiz)
 
 
-def crop_cleft(object_name, sphere_vdw, cleft_save_path, cleft_name):
+def crop_cleft(object_name, sphere_vdw, temp_path, cleft_name):
+    getcleft_output_path = os.path.join(temp_path, 'GetCleft')
+    cleft_save_path = os.path.join(getcleft_output_path, 'Clefts')
     sphere_coords = np.array(cmd.get_model(object_name).atom[0].coord)
     min_coords = np.array([sphere_coords-sphere_vdw])
     max_coords = np.array([sphere_coords+sphere_vdw])
-    lines, partition_coords = read_coords_cleft(os.path.join(cleft_save_path, cleft_name + '.pdb'))
+    cleft_path = os.path.join(cleft_save_path, cleft_name + '.pdb')
+    lines, partition_coords = read_coords_cleft(cleft_path)
     indices = np.where((partition_coords > min_coords).all(axis=1) & (partition_coords < max_coords).all(axis=1))[0] + 1
     lines_to_output = [lines[0]] + [lines[i] for i in indices]
     partition_path = os.path.join(cleft_save_path, cleft_name + '_cropped.pdb')

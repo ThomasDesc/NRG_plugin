@@ -49,6 +49,7 @@ def make_dialog():
     from src.getcleft import getcleft
     from src.surfaces import surfaces
     from src.nrgdock import nrgdock
+    from src.getcleft import spheres
     import general_functions
     import platform
     # import spheres
@@ -75,7 +76,6 @@ def make_dialog():
     ligand_set_folder_path = os.path.join(install_dir, 'nrgdock_ligand_sets')
     plugin_tmp_output_path = os.path.join(os.path.expanduser('~'), 'Documents', 'NRGSuite_Qt')
     temp_path = os.path.join(plugin_tmp_output_path, 'temp')
-    getcleft_output_path = os.path.join(temp_path, 'GetCleft')
     nrgdock_output_path = os.path.join(temp_path, 'NRGDock')
     surfaces_output_path = os.path.join(temp_path, 'Surfaces')
 
@@ -107,11 +107,11 @@ def make_dialog():
     form.button_start.clicked.connect(lambda: getcleft.run_getcleft(form, binary_folder_path, binary_suffix, temp_path,
                                                                     install_dir))
     # Partition Cleft
-    # form.cleft_partition_button_add.clicked.connect(lambda: spheres.display_sphere(form.cleft_partition_select_object.currentText(), form.cleft_partition_radius_slider, form.partition_sphere_select))
-    # form.cleft_partition_button_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.cleft_partition_select_object, form.output_box, filter_for='_sph'))
-    # form.cleft_partition_button_move.clicked.connect(lambda: spheres.move_sphere(form.partition_sphere_select.currentText()))
-    # form.cleft_partition_radius_slider.valueChanged.connect(lambda: spheres.resize_sphere(form.partition_sphere_select.currentText(), form.cleft_partition_radius_slider.value()))
-    # form.cleft_partition_crop_button.clicked.connect(lambda: spheres.crop_cleft(form.partition_sphere_select.currentText(), form.cleft_partition_radius_slider.value()/100, cleft_save_path, form.cleft_partition_select_object.currentText()))
+    form.cleft_partition_button_add.clicked.connect(lambda: spheres.display_sphere(form.cleft_partition_select_object.currentText(), form.cleft_partition_radius_slider, form.partition_sphere_select, temp_path))
+    form.cleft_partition_button_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.cleft_partition_select_object, form.output_box, filter_for='_sph'))
+    form.cleft_partition_button_move.clicked.connect(lambda: spheres.move_sphere(form.partition_sphere_select.currentText()))
+    form.cleft_partition_radius_slider.valueChanged.connect(lambda: spheres.resize_sphere(form.partition_sphere_select.currentText(), form.cleft_partition_radius_slider.value()))
+    form.cleft_partition_crop_button.clicked.connect(lambda: spheres.crop_cleft(form.partition_sphere_select.currentText(), form.cleft_partition_radius_slider.value()/100, temp_path, form.cleft_partition_select_object.currentText()))
 
     # FlexAID:
     form.flexaid_target_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.flexaid_select_target, form.output_box, exclude='_sph'))
@@ -119,7 +119,7 @@ def make_dialog():
     form.flexaid_binding_site_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.flexaid_select_binding_site, form.output_box, filter_for='_sph'))
     form.flexaid_button_start.clicked.connect(lambda: form.flexaid_tab.setTabEnabled(2, True))
     form.flexaid_retrieve_nrgdock_ligands.clicked.connect(lambda: flexaid.retrieve_nrgdock_ligands(nrgdock_output_path))
-    form.flexaid_button_start.clicked.connect(lambda: flexaid.run_flexaid(form, temp_path, binary_folder_path, binary_suffix, operating_system, install_dir))
+    form.flexaid_button_start.clicked.connect(lambda: flexaid.run_flexaid(form, temp_path, binary_folder_path, operating_system, binary_suffix, install_dir))
     form.flexaid_button_pause.clicked.connect(lambda: flexaid.pause_resume_simulation(form))
     form.flexaid_button_stop.clicked.connect(lambda: flexaid.stop_simulation(form))
     form.flexaid_button_abort.clicked.connect(lambda: flexaid.abort_simulation(form))
@@ -137,7 +137,7 @@ def make_dialog():
 
     # Surfaces:
     form.surfaces_refresh_button.clicked.connect(lambda: general_functions.refresh_dropdown(form.surface_select_result, form.output_box, filter_for='RESULT'))
-    form.surfaces_run_button.clicked.connect(lambda: surfaces.run_run_surfaces(form.surface_select_result.currentText(), surfaces_output_path, form.simulate_folder_path.text(), install_dir, binary_folder_path, binary_suffix))
+    form.surfaces_run_button.clicked.connect(lambda: surfaces.run_run_surfaces(form.surface_select_result.currentText(), surfaces_output_path, form.simulate_folder_path.text(), binary_folder_path, binary_suffix, install_dir))
     form.surfaces_run_button.clicked.connect(lambda: general_functions.surfaces_enable_buttons(form))
     form.surfaces_retreive_flexaid_result.clicked.connect(lambda: surfaces.retrieve_flexaid_result(form.simulate_folder_path.text()))
     form.surfaces_retreive_flexaid_result.clicked.connect(lambda: general_functions.refresh_dropdown(form.surface_select_result, form.output_box, filter_for='RESULT'))

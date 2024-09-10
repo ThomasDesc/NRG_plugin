@@ -62,12 +62,13 @@ def retrieve_flexaid_result(flexaid_simulation_folder):
                 cmd.load(file_path)
 
 
-def run_run_surfaces(selected_result, surfaces_output_path, flexaid_simulation_folder, main_folder_path,
-                     binary_folder_path, binary_suffix):
+def run_run_surfaces(selected_result, surfaces_output_path, flexaid_simulation_folder, binary_folder_path,
+                     binary_suffix, install_dir):
+    surfaces_deps_path = os.path.join(install_dir, 'deps', 'surfaces')
     vcon_binary_path = os.path.join(binary_folder_path, f'vcon{binary_suffix}')
-    def_file = os.path.join(main_folder_path, "surfaces_defs", 'AMINO_FlexAID.def')
-    flexaid_dat_path = os.path.join(main_folder_path, "surfaces_defs", 'FlexAID.dat')
-    color_rgb_path = os.path.join(main_folder_path, "surfaces_defs", 'color_rgb.txt')
+    def_file = os.path.join(surfaces_deps_path, 'AMINO_FlexAID.def')
+    flexaid_dat_path = os.path.join(surfaces_deps_path, 'FlexAID.dat')
+    color_rgb_path = os.path.join(surfaces_deps_path, 'color_rgb.txt')
     open_def_file = open(def_file, "r")
     flexaid_result_file = os.path.join(flexaid_simulation_folder, selected_result + '.pdb')
     processed_result_path = os.path.join(surfaces_output_path, os.path.basename(flexaid_result_file)[:-4] + '_processed.pdb')

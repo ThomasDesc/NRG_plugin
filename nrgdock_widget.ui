@@ -178,20 +178,20 @@ color:rgb(255, 255, 255);</string>
     </rect>
    </property>
    <property name="currentIndex">
-    <number>4</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="page_3">
     <widget class="QTabWidget" name="tabWidget_2">
      <property name="geometry">
       <rect>
        <x>9</x>
-       <y>10</y>
-       <width>611</width>
-       <height>421</height>
+       <y>0</y>
+       <width>621</width>
+       <height>431</height>
       </rect>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tab_9">
       <attribute name="title">
@@ -413,7 +413,7 @@ font-size:14px;
         <item>
          <widget class="QLabel" name="label_42">
           <property name="text">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Cleft objects:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Cleft object:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
          </widget>
         </item>
@@ -431,7 +431,7 @@ font-size:14px;
          </spacer>
         </item>
         <item>
-         <widget class="QComboBox" name="cleft_partition_select_object_2">
+         <widget class="QComboBox" name="cleft_partition_select_object">
           <property name="sizePolicy">
            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -441,7 +441,7 @@ font-size:14px;
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="cleft_partition_button_refresh_2">
+         <widget class="QPushButton" name="cleft_partition_button_refresh">
           <property name="text">
            <string>Refresh</string>
           </property>
@@ -468,14 +468,14 @@ font-size:14px;
        </property>
        <layout class="QGridLayout" name="gridLayout_14">
         <item row="0" column="5">
-         <widget class="QPushButton" name="cleft_partition_button_delete_2">
+         <widget class="QPushButton" name="cleft_partition_button_delete">
           <property name="text">
            <string>Delete</string>
           </property>
          </widget>
         </item>
         <item row="0" column="6">
-         <widget class="QPushButton" name="cleft_partition_button_move_2">
+         <widget class="QPushButton" name="cleft_partition_button_move">
           <property name="text">
            <string>Move</string>
           </property>
@@ -495,7 +495,7 @@ font-size:14px;
          </spacer>
         </item>
         <item row="0" column="3">
-         <widget class="QComboBox" name="partition_sphere_select_2">
+         <widget class="QComboBox" name="partition_sphere_select">
           <property name="sizePolicy">
            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -505,7 +505,7 @@ font-size:14px;
          </widget>
         </item>
         <item row="0" column="4">
-         <widget class="QPushButton" name="cleft_partition_button_add_2">
+         <widget class="QPushButton" name="cleft_partition_button_add">
           <property name="text">
            <string>Add</string>
           </property>
@@ -526,7 +526,7 @@ font-size:14px;
          </widget>
         </item>
         <item row="1" column="2">
-         <widget class="QSlider" name="cleft_partition_radius_slider_2">
+         <widget class="QSlider" name="cleft_partition_radius_slider">
           <property name="enabled">
            <bool>false</bool>
           </property>
@@ -546,7 +546,7 @@ font-size:14px;
         </item>
        </layout>
       </widget>
-      <widget class="QPushButton" name="cleft_partition_crop_button_2">
+      <widget class="QPushButton" name="cleft_partition_crop_button">
        <property name="geometry">
         <rect>
          <x>250</x>
@@ -559,6 +559,54 @@ font-size:14px;
         <string>Crop Cleft</string>
        </property>
       </widget>
+      <widget class="QGroupBox" name="groupBox_16">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>230</y>
+         <width>591</width>
+         <height>75</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QGroupBox{
+font-size:14px;
+}</string>
+       </property>
+       <property name="title">
+        <string>STEP 3 (optional): Rename binding site</string>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_8">
+        <item>
+         <widget class="QLabel" name="label_43">
+          <property name="text">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Cleft object:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_10">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="lineEdit"/>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="tab_11">
+      <attribute name="title">
+       <string>Estimate Volune</string>
+      </attribute>
      </widget>
     </widget>
    </widget>

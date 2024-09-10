@@ -5,7 +5,7 @@ from pymol.Qt import QtWidgets
 import shutil
 import subprocess
 import datetime
-# import flexaid_thread
+from src.flexaid import flexaid_thread
 import time
 import general_functions
 
@@ -25,7 +25,6 @@ def write_config(target_inp_path, cleft, ligand_inp_path, max_results, flexaid_o
     with open(os.path.join(flexaid_deps_path, 'template_config.inp'), "r") as t1:
         lines = t1.readlines()
     config_file_output_path = os.path.join(flexaid_output_path, 'config.inp')
-    flexaid_deps_path = os.path.join(os.path.dirname(__file__), 'flexaid_deps')
     matrix_path = os.path.join(flexaid_deps_path, 'MC_st0r5.2_6.dat')
     with open(config_file_output_path, "w") as t2:
         for line in lines:
@@ -182,7 +181,7 @@ def retrieve_nrgdock_ligands(nrgdock_output_path):
 
 
 def run_flexaid_worker(command, form, simulation_folder, hex_colour_list, max_generations):
-    worker = thread.WorkerThread(command, simulation_folder, form.flexaid_result_table, hex_colour_list, max_generations)
+    worker = flexaid_thread.WorkerThread(command, simulation_folder, form.flexaid_result_table, hex_colour_list, max_generations)
     time.sleep(1)
     worker.start()
     worker.table_signal_received.connect(receive_list)
@@ -233,12 +232,12 @@ def load_color_list(color_list_path):
     return color_list
 
 
-def run_flexaid(form, temp_path, binary_folder_path, operating_system, binary_suffix, nrgsuite_base_path):
+def run_flexaid(form, temp_path, binary_folder_path, operating_system, binary_suffix, install_dir):
 
     flexaid_binary_path = os.path.join(binary_folder_path, f'FlexAID{binary_suffix}')
     process_ligand_path = os.path.join(binary_folder_path, f'Process_ligand{binary_suffix}')
     flexaid_output_path = os.path.join(temp_path, 'FlexAID')
-    flexaid_deps_path = os.path.join(nrgsuite_base_path, 'deps', 'flexaid')
+    flexaid_deps_path = os.path.join(install_dir, 'deps', 'flexaid')
     simulation_folder_path = os.path.join(flexaid_output_path, 'Simulation')
     os.mkdir(flexaid_output_path)
     os.mkdir(simulation_folder_path)
