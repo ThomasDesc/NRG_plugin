@@ -1,10 +1,10 @@
 import os
 import shutil
 from pymol import cmd
-from ligand_atomtypes import add_pdb
-from clean_structure import main as clean_structure
-from surface_cont_lig import main as surface_cont_lig
-from pymol_image_surfaces_lig import generate_session
+from src.surfaces.ligand_atomtypes import add_pdb
+from src.surfaces.clean_structure import main as clean_structure
+from src.surfaces.surface_cont_lig import main as surface_cont_lig
+from src.surfaces.pymol_image_surfaces_lig import generate_session
 
 
 def process_result_flexaid(flexaid_result_file, output):
@@ -64,7 +64,6 @@ def retrieve_flexaid_result(flexaid_simulation_folder):
 
 def run_run_surfaces(selected_result, surfaces_output_path, flexaid_simulation_folder, main_folder_path,
                      binary_folder_path, binary_suffix):
-
     vcon_binary_path = os.path.join(binary_folder_path, f'vcon{binary_suffix}')
     def_file = os.path.join(main_folder_path, "surfaces_defs", 'AMINO_FlexAID.def')
     flexaid_dat_path = os.path.join(main_folder_path, "surfaces_defs", 'FlexAID.dat')

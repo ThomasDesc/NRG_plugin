@@ -3,7 +3,7 @@ from pymol import cmd
 import sys
 import subprocess
 from PyQt5.QtWidgets import QApplication
-sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'nrgdock', 'src'))
+
 try:
     import numpy
 except ImportError:
@@ -20,8 +20,8 @@ try:
     import pandas
 except ImportError:
     subprocess.check_call([sys.executable, "-m", "pip", "install", 'pandas'])
-from process_target import main as process_target
-from main_processed_target import main as nrgdock_main
+from src.nrgdock.process_target import main as process_target
+from src.nrgdock.main_processed_target import main as nrgdock_main
 import pandas as pd
 import glob
 import numpy as np
@@ -55,9 +55,9 @@ def manage_poses(top_n_name_list, ligand_poses_folder):
             cmd.load(file)
 
 
-def run_nrgdock(form, nrgdock_output_path, ligand_set_folder_path, main_folder_path):
-
-    config_path = os.path.join(main_folder_path, 'nrgdock', 'deps', 'config.txt')
+def run_nrgdock(form, nrgdock_output_path, ligand_set_folder_path, install_dir):
+    deps_path = os.path.join(install_dir, 'deps', 'nrgdock')
+    config_path = os.path.join(deps_path, 'config.txt')
     n_poses_to_save = form.nrgdock_top_n_poses.text()
     starting_ligand = int(form.nrgdock_start_ligand.text())
     print(n_poses_to_save)
@@ -90,7 +90,7 @@ def run_nrgdock(form, nrgdock_output_path, ligand_set_folder_path, main_folder_p
     form.output_box.append("Processing target...")
     form.output_box.repaint()
     QApplication.processEvents()
-    process_target(nrgdock_output_path, ['target'], overwrite=True, run_getcleft=False)
+    process_target(nrgdock_output_path, ['target'], overwrite=True, run_getcleft=False, deps_path=deps_path)
     form.output_box.append("Running NRGDock...")
     form.output_box.repaint()
     form.nrgdock_progress.setEnabled(True)

@@ -1,13 +1,12 @@
 import os
 import numpy as np
 from numba import njit
-from get_clash import get_clash
-from main_processed_target import get_params_dict, write_test
+from src.nrgdock.main_processed_target import get_params_dict, write_test
 import shutil
-from process_ligands import preprocess_ligands_one_target as preprocess_ligand
+# from process_ligands import preprocess_ligands_one_target as preprocess_ligand
 import timeit
 import concurrent.futures
-from itertools import repeat
+# from itertools import repeat
 import argparse
 from pathlib import Path
 import json
@@ -178,7 +177,7 @@ def get_radius_list_from_nums(rad_dict, target_path, constant_radius):
     return num_rad_list
 
 
-def prepare_preprocess_output(path_to_target, params_dict):
+def prepare_preprocess_output(path_to_target, params_dict, config_file_path):
     numpy_output_path = os.path.join(path_to_target, 'preprocessing_files')
     if not os.path.isdir(numpy_output_path):
         os.mkdir(numpy_output_path)
@@ -190,7 +189,7 @@ def prepare_preprocess_output(path_to_target, params_dict):
         while os.path.isfile(os.path.join(numpy_output_path, config_file_name + f'_{config_file_number}.txt')):
             config_file_number += 1
         config_output = os.path.join(numpy_output_path, config_file_name + f'_{config_file_number}.txt')
-    shutil.copyfile("./deps/config.txt", config_output)
+    shutil.copyfile(config_file_path, config_output)
     return numpy_output_path
 
 
@@ -322,8 +321,35 @@ def save_files(min_xyz, cell_width, preprocessed_file_path):
     np.save(os.path.join(preprocessed_file_path, f"cell_width"), cell_width)
 
 
+@njit
+def get_clash(ligand_atom_coord, target_grid, min_xyz, cell_width, target_atoms_xyz, use_clash):
+    # TODO: test if clashes per radius associated to each type is better
+    # array_to_fill = np.full(type_to_test[:, 1].size, default_cf, dtype=np.float32)
+    clash = False
+    # for counter, radius in enumerate(type_to_test):
+    grid_index = ((ligand_atom_coord - min_xyz) / cell_width).astype(np.int32)
+    for i_offset in [-1, 0, 1]:
+        for j_offset in [-1, 0, 1]:
+            for k_offset in [-1, 0, 1]:
+                i = i_offset + grid_index[0]
+                j = j_offset + grid_index[1]
+                k = k_offset + grid_index[2]
+                if 0 <= i < len(target_grid) and 0 <= j < len(target_grid[0]) and 0 <= k < len(target_grid[0][0]):
+                    if target_grid[i][j][k][0] != -1:
+                        for neighbour in target_grid[i][j][k]:
+                            if neighbour == -1:
+                                break
+                            else:
+                                if use_clash is not None:
+                                    dist = np.linalg.norm(target_atoms_xyz[neighbour] - ligand_atom_coord)
+                                    if dist <= 2.0:
+                                        clash = True
+                                        return clash
+    return clash
+
+
 def preprocess_one_target(target, main_path, params_dict, energy_matrix, time_start, overwrite, run_getcleft,
-                          ligand_name=None, verbose=True):
+                          config_file_path, deps_path, ligand_name=None, verbose=True):
     if verbose:
         print(f"Target: {target}")
     target_path = str(os.path.join(main_path, target))
@@ -341,8 +367,8 @@ def preprocess_one_target(target, main_path, params_dict, energy_matrix, time_st
     # ####################### BUILDING GRIDS #######################
     if verbose:
         print('Building grids')
-    preprocessed_file_path = prepare_preprocess_output(target_path, params_dict)
-    rad_dict = load_rad_dict("./deps/atom_type_radius.json")
+    preprocessed_file_path = prepare_preprocess_output(target_path, params_dict, config_file_path)
+    rad_dict = load_rad_dict(os.path.join(deps_path, "atom_type_radius.json"))
     use_clash = params_dict["USE_CLASH"]
     use_constant_radius = params_dict['CONSTANT_RADIUS']
     grid_distance = params_dict['PRELOAD_GRID_DISTANCE']
@@ -424,15 +450,15 @@ def get_args():
     main(path_to_targets, target_list, overwrite=args.overwrite, run_getcleft=args.run_getcleft, ligand_name=args.ligand_name)
 
 
-def main(path_to_targets, target_list, overwrite=False, run_getcleft=False, ligand_name=None):
+def main(path_to_targets, target_list, overwrite=False, run_getcleft=False, ligand_name=None, deps_path=os.path.join('.', 'deps')):
     # print('WARNING randomly assigning atom type when calculating cf')
     root_software_path = Path(__file__).resolve().parents[1]
     os.chdir(root_software_path)
     time_start = timeit.default_timer()
-    config_file = "./deps/config.txt"
+    config_file = os.path.join(deps_path, "config.txt")
     params_dict = get_params_dict(config_file)
     matrix_name = params_dict['PRECALC_MATRIX_NAME']
-    matrix_path = fr"./deps/matrix/{matrix_name}.npy"
+    matrix_path = os.path.join(deps_path, fr"matrix/{matrix_name}.npy")
     energy_matrix = np.load(matrix_path)
     verbose = True
     if len(target_list) > 1:
@@ -441,7 +467,7 @@ def main(path_to_targets, target_list, overwrite=False, run_getcleft=False, liga
     else:
         print('Preprocessing target: ', target_list[0])
     preprocess_one_target(target_list[0], path_to_targets, params_dict, energy_matrix, time_start, overwrite,
-                          run_getcleft, ligand_name, verbose)
+                          run_getcleft, config_file, deps_path, ligand_name, verbose)
     # with concurrent.futures.ProcessPoolExecutor(max_workers=32) as executor:
     #     executor.map(preprocess_one_target, target_list, repeat(path_to_targets), repeat(params_dict),
     #                  repeat(energy_matrix), repeat(time_start), repeat(overwrite), repeat(run_getcleft),

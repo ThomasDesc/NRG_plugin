@@ -45,14 +45,14 @@ def make_dialog():
 
     install_dir = os.path.dirname(__file__)
     sys.path.append(install_dir)
-    import getcleft
+    from src.flexaid import flexaid
+    from src.getcleft import getcleft
+    from src.surfaces import surfaces
+    from src.nrgdock import nrgdock
     import general_functions
-    import flexaid
     import platform
-    import spheres
-    import run_Surfaces
-    import flexaid_thread
-    import nrgdock
+    # import spheres
+    # import flexaid_thread
     dialog = QtWidgets.QDialog()
 
     OS = platform.system().upper()
@@ -72,7 +72,7 @@ def make_dialog():
     print('binary path: ', binary_folder_path)
     test_binary(binary_folder_path, operating_system)
 
-    ligand_set_folder_path = os.path.join(install_dir, 'nrgdock', 'ligand_sets')
+    ligand_set_folder_path = os.path.join(install_dir, 'nrgdock_ligand_sets')
     plugin_tmp_output_path = os.path.join(os.path.expanduser('~'), 'Documents', 'NRGSuite_Qt')
     temp_path = os.path.join(plugin_tmp_output_path, 'temp')
     getcleft_output_path = os.path.join(temp_path, 'GetCleft')
@@ -137,13 +137,13 @@ def make_dialog():
 
     # Surfaces:
     form.surfaces_refresh_button.clicked.connect(lambda: general_functions.refresh_dropdown(form.surface_select_result, form.output_box, filter_for='RESULT'))
-    form.surfaces_run_button.clicked.connect(lambda: run_Surfaces.run_run_surfaces(form.surface_select_result.currentText(), surfaces_output_path, form.simulate_folder_path.text(), install_dir, binary_folder_path, binary_suffix))
+    form.surfaces_run_button.clicked.connect(lambda: surfaces.run_run_surfaces(form.surface_select_result.currentText(), surfaces_output_path, form.simulate_folder_path.text(), install_dir, binary_folder_path, binary_suffix))
     form.surfaces_run_button.clicked.connect(lambda: general_functions.surfaces_enable_buttons(form))
-    form.surfaces_retreive_flexaid_result.clicked.connect(lambda: run_Surfaces.retrieve_flexaid_result(form.simulate_folder_path.text()))
+    form.surfaces_retreive_flexaid_result.clicked.connect(lambda: surfaces.retrieve_flexaid_result(form.simulate_folder_path.text()))
     form.surfaces_retreive_flexaid_result.clicked.connect(lambda: general_functions.refresh_dropdown(form.surface_select_result, form.output_box, filter_for='RESULT'))
     form.surfaces_result_browse_button.clicked.connect(
         lambda: general_functions.folder_browser(form.surfaces_load_result_text, os.path.join(install_dir, 'result_demo'), "PDB file (*.pdb)"))
     form.surfaces_load_result_button.clicked.connect(
-        lambda: run_Surfaces.load_surfaces_result(form, surfaces_output_path))
+        lambda: surfaces.load_surfaces_result(form, surfaces_output_path))
     # form.class_test.clicked.connect(lambda: getcleft.test_submit_command())
     return dialog

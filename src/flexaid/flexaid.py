@@ -5,7 +5,7 @@ from pymol.Qt import QtWidgets
 import shutil
 import subprocess
 import datetime
-import flexaid_thread
+# import flexaid_thread
 import time
 import general_functions
 
@@ -20,8 +20,9 @@ def count_flex(ligand_inp_file_path):
     return count
 
 
-def write_config(target_inp_path, cleft, ligand_inp_path, max_results, flexaid_output_path, flexaid_result_path, multithread):
-    with open(os.path.join(os.path.dirname(__file__), 'template_config.inp'), "r") as t1:
+def write_config(target_inp_path, cleft, ligand_inp_path, max_results, flexaid_output_path, flexaid_result_path,
+                 multithread, flexaid_deps_path):
+    with open(os.path.join(flexaid_deps_path, 'template_config.inp'), "r") as t1:
         lines = t1.readlines()
     config_file_output_path = os.path.join(flexaid_output_path, 'config.inp')
     flexaid_deps_path = os.path.join(os.path.dirname(__file__), 'flexaid_deps')
@@ -241,7 +242,7 @@ def run_flexaid(form, temp_path, binary_folder_path, operating_system, binary_su
     simulation_folder_path = os.path.join(flexaid_output_path, 'Simulation')
     os.mkdir(flexaid_output_path)
     os.mkdir(simulation_folder_path)
-    color_list_path = os.path.join(flexaid_deps_path, 'color_list.txt')
+    color_list_path = os.path.join(flexaid_deps_path, 'hex_colors.txt')
     hex_color_list = load_color_list(color_list_path)
     if form.flexaid_button_start.text() == 'Start':
         max_results = 10
@@ -269,7 +270,7 @@ def run_flexaid(form, temp_path, binary_folder_path, operating_system, binary_su
         process_ligand(process_ligand_path, ligand_save_path)
         target_inp_path = os.path.splitext(target_save_path)[0] + '.inp.pdb'
         ligand_inp_path = os.path.splitext(ligand_save_path)[0] + '.inp'
-        config_file_path = write_config(target_inp_path, binding_site_path, ligand_inp_path, max_results, flexaid_output_path, flexaid_result_path, multithreaded).replace('\\', '/')
+        config_file_path = write_config(target_inp_path, binding_site_path, ligand_inp_path, max_results, flexaid_output_path, flexaid_result_path, multithreaded, flexaid_deps_path).replace('\\', '/')
         ga_path = os.path.join(flexaid_output_path, 'ga_inp.dat').replace('\\', '/')
         edit_ga(os.path.join(flexaid_deps_path, 'ga_inp.dat'), ga_path, setting_dictionary)
         toggle_buttons(form, True)
