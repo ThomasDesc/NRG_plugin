@@ -6,6 +6,7 @@ import shutil
 import general_functions
 from PyQt5.QtWidgets import QApplication
 
+
 class WorkerThread(QtCore.QThread):
     def __init__(self, command):
         super(WorkerThread, self).__init__()
