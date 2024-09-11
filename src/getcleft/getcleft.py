@@ -8,20 +8,23 @@ from PyQt5.QtWidgets import QApplication
 
 
 class WorkerThread(QtCore.QThread):
+    finished = QtCore.pyqtSignal()
+    emit_exception = QtCore.pyqtSignal(Exception)
+
     def __init__(self, command):
         super(WorkerThread, self).__init__()
         self.command = command
 
-    finished = QtCore.pyqtSignal()
-    emit_exception = QtCore.pyqtSignal(Exception)
-
     def run(self):
-        self.submit_command()
-        self.finished.emit()
+        try:
+            self.submit_command()
+            self.finished.emit()  # Emit finished signal if successful
+        except Exception as e:
+            self.emit_exception.emit(e)  # Emit exception signal if an error occurs
 
     def submit_command(self):
-        print('submitting command')
-        subprocess.run(self.command, shell=True)
+        print('Submitting command...')
+        subprocess.run(self.command, shell=True)  # Use caution with shell=True
 
 
 def get_arg_str(form, getcleft_path, object_path, cleft_save_path):
