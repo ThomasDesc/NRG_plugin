@@ -1,25 +1,6 @@
 import os
 from pymol import cmd
-import sys
-import subprocess
 from PyQt5.QtWidgets import QApplication
-
-try:
-    import numpy
-except ImportError:
-    subprocess.check_call([sys.executable, "-m", "pip", "install", 'numpy=2.0'])
-try:
-    import scipy
-except ImportError:
-    subprocess.check_call([sys.executable, "-m", "pip", "install", 'scipy'])
-try:
-    import numba
-except ImportError:
-    subprocess.check_call([sys.executable, "-m", "pip", "install", 'numba'])
-try:
-    import pandas
-except ImportError:
-    subprocess.check_call([sys.executable, "-m", "pip", "install", 'pandas'])
 from src.nrgdock.process_target import main as process_target
 from src.nrgdock.main_processed_target import main as nrgdock_main
 import pandas as pd

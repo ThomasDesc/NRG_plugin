@@ -5,17 +5,17 @@ from PyQt5.QtCore import QThread
 from PyQt5.QtWidgets import QFileDialog
 
 
-def output_message(output_box, text, type):
+def output_message(output_box, text, message_type):
     # Type can be error, warning or valid
     out_color = None
     red = '<span style="color:red;">{}</span>'
     yellow = '<span style="color:orange;">{}</span>'
     green = '<span style="color:green;">{}</span>'
-    if type == 'error':
+    if message_type == 'error':
         out_color = red
-    elif type == 'warning':
+    elif message_type == 'warning':
         out_color = yellow
-    elif type == ' valid':
+    elif message_type == ' valid':
         out_color = green
     output_box.append(out_color.format(text))
 
@@ -97,6 +97,14 @@ def read_coords_cleft(cleft_path):
             coords.append(temp_coords)
     coords = np.array(coords)
     return lines, coords
+
+
+def get_residue_info(selection):
+    unique_residues = set()
+    residue_info = []
+    cmd.iterate(selection, 'unique_residues.add((resn, resi, chain))', space={'unique_residues': unique_residues})
+    residue_info = [[resname, resn, chain] for resname, resn, chain in unique_residues]
+    return residue_info
 
 
 def create_number_list(length_TotColor, length_TotalColorList):

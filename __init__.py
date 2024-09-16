@@ -4,6 +4,7 @@ import os
 import sys
 import shutil
 import subprocess
+import importlib.metadata
 
 
 def __init_plugin__(app):
@@ -39,18 +40,44 @@ def test_binary(binary_folder_path, operating_system):
                 print('Could not run: ', file)
 
 
+def install_package(package, main_folder_path):
+    try:
+        __import__(package)
+        print(f"{package} is already installed.")
+    except ImportError:
+        if package == 'modeller':
+            print('Modeller install not detected. Please install via conda. For now the modeller tab will be unavailable')
+        else:
+            print(f"Installing {package}...")
+            subprocess.check_call([sys.executable, "-m", "pip", "install", package])
+            if package == 'nrgten':
+                distribution = importlib.metadata.distribution(package)
+                shutil.copy(os.path.join(main_folder_path, 'deps', 'nrgten', 'amino_acids.atomtypes'),
+                            os.path.join(str(distribution.locate_file('')), 'nrgten' 'config' 'amino_acids.atomtypes'))
+                shutil.copy(os.path.join(main_folder_path, 'deps', 'nrgten', 'amino_acids.masses'),
+                            os.path.join(str(distribution.locate_file('')), 'nrgten' 'config' 'amino_acids.masses'))
+
+
 def make_dialog():
     from pymol.Qt import QtGui, QtWidgets
     from pymol.Qt.utils import loadUi
 
     install_dir = os.path.dirname(__file__)
     sys.path.append(install_dir)
+    packages = ['nrgten', 'biopython', 'pandas', 'matplotlib', 'colour', 'scipy', 'numpy=2.0', 'numba', 'pandas']
+    install_package('nrgten', install_dir)
+    install_package('biopython', install_dir)
+    install_package('pandas', install_dir)
+    install_package('matplotlib', install_dir)
+    install_package('colour', install_dir)
     from src.flexaid import flexaid
     from src.getcleft import getcleft
     from src.surfaces import surfaces
     from src.nrgdock import nrgdock
     from src.getcleft import spheres
     import general_functions
+    from src.surfaces import run_Surfaces
+
     import platform
     # import spheres
     # import flexaid_thread
@@ -78,6 +105,7 @@ def make_dialog():
     temp_path = os.path.join(plugin_tmp_output_path, 'temp')
     nrgdock_output_path = os.path.join(temp_path, 'NRGDock')
     surfaces_output_path = os.path.join(temp_path, 'Surfaces')
+    modeller_save_path = os.path.join(temp_path, 'modeller')
 
     if os.path.isdir(plugin_tmp_output_path):
         shutil.rmtree(plugin_tmp_output_path)
@@ -85,21 +113,38 @@ def make_dialog():
     os.mkdir(temp_path)
     os.mkdir(surfaces_output_path)
     os.mkdir(nrgdock_output_path)
+    os.mkdir(modeller_save_path)
     form = loadUi(uifile, dialog)
+    try:
+        import modeller
+    except ModuleNotFoundError:
+        general_functions.output_message(form.output_box, 'Modeller install not detected. '
+                                                          'Please install via conda. For now the modeller tab will be '
+                                                          'unavailable', 'warning')
+        form.button_nrgten.setEnabled(False)
+        form.button_modeller.setEnabled(False)
+        form.button_nrgten.setStyleSheet("background-color: black; color: white;")
+        form.button_modeller.setStyleSheet("background-color: black; color: white;")
+        # form.button_nrgten.hide()
+        # form.button_modeller.hide()
+    else:
+        from src.nrgten import run_NRGTEN
+        from src.modeller import run_modeller
     form.stackedWidget.setCurrentIndex(0)
     form.flexaid_tab.setTabEnabled(2, False)
     form.NRGDock_settings.setTabEnabled(2, False)
     if operating_system == 'mac':
         form.flexaid_multithread_button.setChecked(True)
+    print(form.surface_select_result.currentText())
 
     general_functions.refresh_dropdown(form.cleft_select_object, form.output_box, no_warning=True)
     general_functions.refresh_folder(ligand_set_folder_path, form.nrgdock_select_ligand)
     form.button_getcleft.clicked.connect(lambda: form.stackedWidget.setCurrentIndex(0))
-    # form.button_partition_cleft.clicked.connect(lambda: form.stackedWidget.setCurrentIndex(1))
     form.button_flexaid.clicked.connect(lambda: form.stackedWidget.setCurrentIndex(1))
     form.button_nrgdock.clicked.connect(lambda: form.stackedWidget.setCurrentIndex(2))
-    form.button_surfaces.clicked.connect(lambda: form.stackedWidget.setCurrentIndex(3))
-    form.button_nrgten.clicked.connect(lambda: form.stackedWidget.setCurrentIndex(4))
+    form.button_nrgten.clicked.connect(lambda: form.stackedWidget.setCurrentIndex(3))
+    form.button_surfaces.clicked.connect(lambda: form.stackedWidget.setCurrentIndex(4))
+    form.button_modeller.clicked.connect(lambda: form.stackedWidget.setCurrentIndex(5))
 
     # GetCleft
     form.button_hide.clicked.connect(lambda: general_functions.pymol_hide_structures(form))
@@ -136,14 +181,46 @@ def make_dialog():
     form.nrgdock_result_browse_button.clicked.connect(lambda: general_functions.folder_browser(form.nrgdock_result_path, nrgdock_output_path, "CSV file (*.csv)"))
 
     # Surfaces:
-    form.surfaces_refresh_button.clicked.connect(lambda: general_functions.refresh_dropdown(form.surface_select_result, form.output_box, filter_for='RESULT'))
-    form.surfaces_run_button.clicked.connect(lambda: surfaces.run_run_surfaces(form.surface_select_result.currentText(), surfaces_output_path, form.simulate_folder_path.text(), binary_folder_path, binary_suffix, install_dir))
-    form.surfaces_run_button.clicked.connect(lambda: general_functions.surfaces_enable_buttons(form))
-    form.surfaces_retreive_flexaid_result.clicked.connect(lambda: surfaces.retrieve_flexaid_result(form.simulate_folder_path.text()))
-    form.surfaces_retreive_flexaid_result.clicked.connect(lambda: general_functions.refresh_dropdown(form.surface_select_result, form.output_box, filter_for='RESULT'))
-    form.surfaces_result_browse_button.clicked.connect(
-        lambda: general_functions.folder_browser(form.surfaces_load_result_text, os.path.join(install_dir, 'result_demo'), "PDB file (*.pdb)"))
-    form.surfaces_load_result_button.clicked.connect(
-        lambda: surfaces.load_surfaces_result(form, surfaces_output_path))
+    # form.surfaces_refresh_button.clicked.connect(lambda: general_functions.refresh_dropdown(form.surface_select_result, form.output_box, filter_for='RESULT'))
+    # form.surfaces_run_button.clicked.connect(lambda: surfaces.run_run_surfaces(form.surface_select_result.currentText(), surfaces_output_path, form.simulate_folder_path.text(), binary_folder_path, binary_suffix, install_dir))
+    # form.surfaces_run_button.clicked.connect(lambda: general_functions.surfaces_enable_buttons(form))
+    # form.surfaces_retreive_flexaid_result.clicked.connect(lambda: surfaces.retrieve_flexaid_result(form.simulate_folder_path.text()))
+    # form.surfaces_retreive_flexaid_result.clicked.connect(lambda: general_functions.refresh_dropdown(form.surface_select_result, form.output_box, filter_for='RESULT'))
+    # form.surfaces_result_browse_button.clicked.connect(
+    #     lambda: general_functions.folder_browser(form.surfaces_load_result_text, os.path.join(install_dir, 'result_demo'), "PDB file (*.pdb)"))
+    # form.surfaces_load_result_button.clicked.connect(
+    #     lambda: surfaces.load_surfaces_result(form, surfaces_output_path))
+
     # form.class_test.clicked.connect(lambda: getcleft.test_submit_command())
+
+    # surfaces functions
+
+    form.surfaces_refresh_button.clicked.connect(lambda: general_functions.refresh_dropdown(form.surface_select_result, form.output_box))
+    form.surfaces_refresh_button.clicked.connect(lambda: run_NRGTEN.refresh_dropdown_NRG(form.surface_select_lig, form.output_box))
+    form.surfaces_refresh_button_2.clicked.connect(lambda: run_NRGTEN.refresh_dropdown_NRG(form.surface_select_result_2, form.output_box))
+    form.surfaces_refresh_button_2.clicked.connect(lambda: run_NRGTEN.refresh_dropdown_NRG(form.surface_select_lig_2, form.output_box))
+
+    form.surfaces_run_button.clicked.connect(lambda: run_Surfaces.load_surfaces(form, temp_path, install_dir, binary_folder_path, binary_suffix))
+
+    # nrgten functions
+    form.NRGten_target_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.NRGten_select_target, form.output_box))
+    form.NRGten_target_refresh.clicked.connect(lambda: run_NRGTEN.refresh_dropdown_NRG(form.NRGten_select_ligand, form.output_box))
+    form.NRGten_target_refresh_2.clicked.connect(lambda: run_NRGTEN.refresh_dropdown_NRG(form.NRGten_select_target_2, form.output_box))
+
+    form.NRGten_dynasig_pushButton.clicked.connect(lambda: run_NRGTEN.dynamical_signature(form.NRGten_select_target.currentText(),
+                                                                                          form.NRGten_select_ligand.currentText(),
+                                                                                          form.NRGten_select_target_2.currentText(),
+                                                                                          form.NRGten_dynasig_lineEdit.text(), install_dir, temp_path))
+    form.NRGten_conf_ensem_pushButton.clicked.connect(lambda: run_NRGTEN.conformational_ensemble(form.NRGten_select_target.currentText(),
+                                                                                                 form.NRGten_modes_lineEdit.text(),
+                                                                                                 form.NRGten_step_lineEdit.text(),
+                                                                                                 form.NRGten_max_conf_lineEdit.text(),
+                                                                                                 form.NRGten_max_dis_lineEdit.text(),
+                                                                                                 form.NRGten_optmizestates.isChecked(), install_dir, temp_path))
+
+    # modeller functions
+    form.Modeller_target_refresh_1.clicked.connect(lambda: general_functions.refresh_dropdown(form.Modeller_select_target_1, form.output_box))
+    form.Modeller_target_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.Modeller_select_target, form.output_box))
+    form.Modeller_pushButton.clicked.connect(lambda: run_modeller.model_mutations(form, temp_path))
+    form.Modeller_checkBox_all.clicked.connect(lambda: run_modeller.check_all(form))
     return dialog
