@@ -181,7 +181,7 @@ color:rgb(255, 255, 255);</string>
     </rect>
    </property>
    <property name="currentIndex">
-    <number>2</number>
+    <number>3</number>
    </property>
    <widget class="QWidget" name="getcleft_page">
     <widget class="QTabWidget" name="tabWidget_2">
@@ -608,7 +608,7 @@ font-size:14px;
      </widget>
      <widget class="QWidget" name="tab_11">
       <attribute name="title">
-       <string>Estimate Volune</string>
+       <string>Estimate Volume</string>
       </attribute>
      </widget>
     </widget>
@@ -1755,6 +1755,22 @@ font-size:14px;
         </widget>
        </item>
       </layout>
+     </widget>
+     <widget class="QCheckBox" name="NRGten_optmizestates">
+      <property name="geometry">
+       <rect>
+        <x>40</x>
+        <y>70</y>
+        <width>181</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="toolTip">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <property name="text">
+       <string>optimize states (modeller)</string>
+      </property>
      </widget>
     </widget>
     <widget class="QGroupBox" name="groupBox_19">
