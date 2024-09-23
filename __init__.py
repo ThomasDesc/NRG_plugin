@@ -43,10 +43,9 @@ def test_binary(binary_folder_path, operating_system):
 def install_package(package, main_folder_path):
     try:
         __import__(package)
-        print(f"{package} is already installed.")
     except ImportError:
         if package == 'modeller':
-            print('Modeller install not detected. Please install via conda. For now the modeller tab will be unavailable')
+            print('Modeller install not detected. Please install via conda. The modeller tab will be unavailable')
         else:
             print(f"Installing {package}...")
             subprocess.check_call([sys.executable, "-m", "pip", "install", package])
@@ -125,8 +124,6 @@ def make_dialog():
         form.button_modeller.setEnabled(False)
         form.button_nrgten.setStyleSheet("background-color: black; color: white;")
         form.button_modeller.setStyleSheet("background-color: black; color: white;")
-        # form.button_nrgten.hide()
-        # form.button_modeller.hide()
     else:
         from src.nrgten import run_NRGTEN
         from src.modeller import run_modeller
