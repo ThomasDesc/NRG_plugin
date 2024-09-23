@@ -65,7 +65,6 @@ def make_dialog():
     sys.path.append(install_dir)
     packages = ['nrgten', 'biopython', 'pandas', 'matplotlib', 'colour', 'scipy', 'numpy', 'numba']
     for package in packages:
-        print(package)
         install_package(package, install_dir)
     from src.flexaid import flexaid
     from src.getcleft import getcleft
