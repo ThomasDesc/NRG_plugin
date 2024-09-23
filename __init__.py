@@ -64,15 +64,11 @@ def make_dialog():
 
     install_dir = os.path.dirname(__file__)
     sys.path.append(install_dir)
-    packages = ['nrgten', 'biopython', 'pandas', 'matplotlib', 'colour', 'scipy', 'numpy=2.0', 'numba', 'pandas']
-    install_package('nrgten', install_dir)
-    install_package('biopython', install_dir)
-    install_package('pandas', install_dir)
-    install_package('matplotlib', install_dir)
-    install_package('colour', install_dir)
+    packages = ['nrgten', 'biopython', 'pandas', 'matplotlib', 'colour', 'scipy', 'numpy=2.0', 'numba']
+    for package in packages:
+        install_package(package, install_dir)
     from src.flexaid import flexaid
     from src.getcleft import getcleft
-    from src.surfaces import surfaces
     from src.nrgdock import nrgdock
     from src.getcleft import spheres
     import general_functions
