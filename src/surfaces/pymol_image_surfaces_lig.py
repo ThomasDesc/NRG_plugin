@@ -48,15 +48,15 @@ def read_atom(atom):
             atom_name = atom_name + atom[i]
     return (atom_name, atom_num)
 
-def color_residue(res, color):
+def color_residue(res, color, pdb_file):
     type_res, chain_res, num_res = read_residue(res)
-    selection_string = 'chain ' + chain_res + ' and resi ' + num_res
+    selection_string = os.path.basename(pdb_file[:-4])+'_chain' + chain_res + ' and resi ' + num_res
     pymol.cmd.set_color(res, color)
-    pymol.cmd.select(selection_string)
+    pymol.cmd.select('sele_surf',selection_string)
     #pymol.cmd.show('spheres', 'sele')
-    pymol.cmd.set("cartoon_transparency", 0.00, 'sele')
-    pymol.cmd.color(res, 'sele')
-    pymol.cmd.delete('sele')
+    pymol.cmd.set("cartoon_transparency", 0.00, 'sele_surf')
+    pymol.cmd.color(res, 'sele_surf')
+    pymol.cmd.delete('sele_surf')
     return
 
 
@@ -111,29 +111,30 @@ def generate_color_scale(values, color_scale_range, color_scale, color_rgb_file_
         
     return (color_codes)
 
-def color_distance(pair, value, color, selected_pairs):
+def color_distance(pair, value, color, selected_pairs,pdb_file):
     #create distance object
-    distance_string = 'dashed_' + pair[0] + '-' + pair[1]
+    distance_string = os.path.basename(pdb_file[:-4])+'_dashed_' + pair[0] + '-' + pair[1]
     distance_string = distance_string.replace("'", "")
     type_res, chain_res, num_res = read_residue(pair[0])
     atom_name, atom_num = read_atom(pair[1])
-    selection_string1 = 'chain ' + chain_res + ' and resi ' + num_res + ' and n. CA'
-    selection_string2 = 'id ' + atom_num
+    selection_string1 = os.path.basename(pdb_file[:-4])+'_chain' + chain_res + ' and resi ' + num_res + ' and n. CA'
+    selection_string2 = 'id ' + atom_num +' and '+os.path.basename(pdb_file[:-4])+'_ligand'
     pymol.cmd.set_color(distance_string, color)
     pymol.cmd.distance(distance_string, selection_string1, selection_string2)
     pymol.cmd.color(distance_string, distance_string)
+    pymol.cmd.group(os.path.basename(pdb_file[:-4]) + '_surfaces',distance_string)
     pymol.cmd.hide('labels', distance_string)
     if pair not in selected_pairs:
         pymol.cmd.disable(distance_string)
     return
     
-def label_pairs(pair,selected_pairs):
+def label_pairs(pair,selected_pairs,pdb_file):
     #create selection
     pair_string = pair[0] + '-' + pair[1]
     type_res, chain_res, num_res = read_residue(pair[0])
     atom_name, atom_num = read_atom(pair[1])
-    selection_string1 = 'chain ' + chain_res + ' and resi ' + num_res + ' and n. CA'
-    selection_string2 = 'id ' + atom_num
+    selection_string1 = os.path.basename(pdb_file[:-4])+'_chain' + chain_res + ' and resi ' + num_res + ' and n. CA'
+    selection_string2 = 'id ' + atom_num +' and '+os.path.basename(pdb_file[:-4])+'_ligand'
     pymol.cmd.select(pair_string, selection_string1 + ' ' + selection_string2)
     #label residues
     pymol.cmd.label(selection_string1,"'%s %s %s' %(resn,resi,chain)")
@@ -142,6 +143,7 @@ def label_pairs(pair,selected_pairs):
         pymol.cmd.hide('labels', selection_string1)
     pymol.cmd.disable(pair_string)
     pymol.cmd.set("label_position", "[0,0,6]")
+    pymol.cmd.delete(pair_string)
     return
     
 def pairs_to_residues(pairs):
@@ -180,45 +182,46 @@ def split_states(residues, atoms, pdb_file):
         type_res, chain_res, num_res = read_residue(res)
         if chain_res not in chains:
             chains.append(chain_res)
-    for C in chains:
-        pymol.cmd.select('chain ' + C)
-        pymol.cmd.extract('chain ' + C, 'sele')
     for atom in atoms:
         atom_name, atom_num = read_atom(atom)
         atom_nums.append(atom_num)
     selection_string = ''
     for num in atom_nums:
         selection_string = selection_string + num + '+'
-    pymol.cmd.select('id ' + selection_string[:-1])
-    pymol.cmd.extract('ligand', 'sele')
-    pymol.cmd.delete(pdb_file[:-4])
+    pymol.cmd.select('sele_surfaces','id ' + selection_string[:-1] + ' and '+os.path.basename(pdb_file)[:-4])
+    pymol.cmd.extract(os.path.basename(pdb_file[:-4])+'_ligand', 'sele_surfaces')
+    pymol.cmd.group(os.path.basename(pdb_file[:-4])+'_surfaces',os.path.basename(pdb_file[:-4])+'_ligand')
+    for C in chains:
+        pymol.cmd.select('sele_surfaces','chain ' + C +' and '+os.path.basename(pdb_file[:-4]))
+        pymol.cmd.extract(os.path.basename(pdb_file[:-4])+'_chain' + C, 'sele_surfaces')
+        pymol.cmd.group(os.path.basename(pdb_file[:-4]) + '_surfaces',os.path.basename(pdb_file[:-4])+'_chain' + C)
+    pymol.cmd.delete(os.path.basename(pdb_file[:-4]))
+    pymol.cmd.delete('sele_surfaces')
     return (chains)
 
-def show_separate_surfaces(chains):
+def show_separate_surfaces(chains,pdb_file):
     for C in chains:
-        pymol.cmd.show('surface', 'chain ' + C)
+        pymol.cmd.show('surface', os.path.basename(pdb_file[:-4])+'_chain' + C)
         #pymol.cmd.set('transparency', 0.7, 'chain' + C)
     return
 
-def color_ligands():
-    pymol.cmd.color("cyan", 'ligand')
-    pymol.util.cnc('ligand')
+def color_ligands(pdb_file):
+    pymol.cmd.color("cyan",os.path.basename(pdb_file[:-4])+'_ligand')
+    pymol.util.cnc(os.path.basename(pdb_file[:-4])+'_ligand')
     return
 
 
 def generate_session(pdb_file, image_file, list_file, color_rgb_file_path, residues_of_interest=None, color_scale=None, color_scale_range=None):
     residues, atoms, values_residues, values_atoms = read_image_data(image_file)
     color_codes = generate_color_scale(values_residues, color_scale_range, color_scale, color_rgb_file_path)
-    pdb_file = pdb_file.replace('\\', '/')
-    print(pdb_file)
     pymol.cmd.load(pdb_file)
     pymol.cmd.color('grey60', os.path.basename(pdb_file)[:-4])
     chains = split_states(residues, atoms, pdb_file)
     for C in chains:
-        pymol.cmd.set("cartoon_transparency", 0.55, 'chain ' + C)
+         pymol.cmd.set("cartoon_transparency", 0.55, os.path.basename(pdb_file[:-4])+'_chain' + C)
     for i in range(len(residues)):
-        if values_residues[i] != 0:
-            color_residue(residues[i], color_codes[i])
+         if values_residues[i] != 0:
+             color_residue(residues[i], color_codes[i],pdb_file)
     pairs, values = get_pairs_contacts(list_file)
     if residues_of_interest is None:
         selected_pairs = pairs
@@ -227,11 +230,12 @@ def generate_session(pdb_file, image_file, list_file, color_rgb_file_path, resid
         selected_pairs = all_pairs_from_interest(pairs, residues_of_interest)
     color_codes = generate_color_scale(values, color_scale_range, color_scale, color_rgb_file_path)
     for j in range(len(pairs)):
-        color_distance(pairs[j], values[j], color_codes[j], selected_pairs)
+        color_distance(pairs[j], values[j], color_codes[j], selected_pairs, pdb_file)
     for k in range(len(pairs)):
-        label_pairs(pairs[k], selected_pairs)
-    show_separate_surfaces(chains)
-    color_ligands()
+        label_pairs(pairs[k], selected_pairs,pdb_file)
+    pymol.cmd.group('surfaces_results',os.path.basename(pdb_file[:-4]) + '_surfaces')
+    #show_separate_surfaces(chains,pdb_file)
+    color_ligands(pdb_file)
     return
 
 """

@@ -2,12 +2,14 @@ import os
 from pymol import cmd
 from pymol.Qt import QtGui
 from pymol.Qt import QtWidgets
+from PyQt5.QtWidgets import QTableWidgetItem
 import shutil
 import subprocess
 import datetime
 from src.flexaid import flexaid_thread
 import time
 import general_functions
+from pathlib import Path
 
 
 def count_flex(ligand_inp_file_path):
@@ -40,6 +42,8 @@ def write_config(target_inp_path, cleft, ligand_inp_path, max_results, flexaid_o
                     t2.write(f'OPTIMZ 9999 - {str(flex + 1)}\n')
             elif line.startswith('STATEP'):
                 t2.write(f'STATEP {flexaid_result_path}\n')
+            elif line.startswith('RMSDST'):
+                t2.write(f'RMSDST {ligand_inp_path[:-4]}_ref.pdb\n')
             elif line.startswith('IMATRX'):
                 t2.write(f'IMATRX {matrix_path}\n')
             elif line.startswith('DEPSPA'):
@@ -151,6 +155,7 @@ def load_show_flexaid_result(result_path):
         if file.startswith('RESULT') and not file.endswith('INI.pdb') and file.endswith('.pdb'):
             file_path = os.path.join(result_path, file)
             cmd.load(file_path)
+            cmd.group('flexaid_results',os.path.basename(file_path[:-4]))
 
 
 def pause_resume_simulation(form):
@@ -180,7 +185,7 @@ def retrieve_nrgdock_ligands(nrgdock_output_path):
     cmd.load(os.path.join(target_path, 'get_cleft', 'receptor_sph_1.pdb'))
 
 
-def run_flexaid_worker(command, form, simulation_folder, hex_colour_list, max_generations):
+def run_flexaid_worker(command, form, simulation_folder, hex_colour_list, max_generations,rmsd):
     worker = flexaid_thread.WorkerThread(command, simulation_folder, form.flexaid_result_table, hex_colour_list, max_generations)
     time.sleep(1)
     worker.start()
@@ -192,8 +197,23 @@ def run_flexaid_worker(command, form, simulation_folder, hex_colour_list, max_ge
     worker.finished.connect(lambda: load_show_flexaid_result(simulation_folder))
     worker.finished.connect(lambda: form.flexaid_progress.setValue(max_generations))
     worker.finished.connect(lambda: form.generation_label.setText(f'Generation: {max_generations}/{max_generations}'))
+    if rmsd:
+        worker.finished.connect(lambda: show_rmsd(form,simulation_folder))
     # worker.finished.connect(lambda: load_show_cleft(cleft_save_path, color_list, form.output_box, pymol_object))
 
+def show_rmsd(form,simulation_folder):
+    table = form.flexaid_result_table
+    last_column = table.columnCount() - 1
+    rmsd_list = []
+    for i in range(5):
+        with open(os.path.join(simulation_folder, f'RESULT_{i}.pdb'), 'r') as t1:
+            texto = t1.readlines()
+            for line in texto:
+                if 'RMSD to' in line:
+                    rmsd_list.append(line.split()[1])
+                    break
+    for row in range(5):
+        table.setItem(row, last_column, QTableWidgetItem(rmsd_list[row]))
 
 def update_table(simulation_folder, table_widget, hex_colour_list, num_results=5):
     update_file_path = os.path.join(simulation_folder, "RESULT.cad")
@@ -233,14 +253,16 @@ def load_color_list(color_list_path):
 
 
 def run_flexaid(form, temp_path, binary_folder_path, operating_system, binary_suffix, install_dir):
-
+    rmsd=form.flexaid_ligref_checkBox.isChecked()
     flexaid_binary_path = os.path.join(binary_folder_path, f'FlexAID{binary_suffix}')
     process_ligand_path = os.path.join(binary_folder_path, f'Process_ligand{binary_suffix}')
     flexaid_output_path = os.path.join(temp_path, 'FlexAID')
     flexaid_deps_path = os.path.join(install_dir, 'deps', 'flexaid')
     simulation_folder_path = os.path.join(flexaid_output_path, 'Simulation')
-    os.mkdir(flexaid_output_path)
-    os.mkdir(simulation_folder_path)
+    if not Path(flexaid_output_path).is_dir():
+        os.mkdir(flexaid_output_path)
+    if not Path(simulation_folder_path).is_dir():
+        os.mkdir(simulation_folder_path)
     color_list_path = os.path.join(flexaid_deps_path, 'hex_colors.txt')
     hex_color_list = load_color_list(color_list_path)
     if form.flexaid_button_start.text() == 'Start':
@@ -277,6 +299,6 @@ def run_flexaid(form, temp_path, binary_folder_path, operating_system, binary_su
         form.output_box.append(f'Please wait...Running Flexaid with command: \n{flexaid_command}')
         form.flexaid_tab.setCurrentIndex(2)
         if multithreaded:
-            run_flexaid_worker(flexaid_command, form, flexaid_result_path, hex_color_list, max_generations)
+            run_flexaid_worker(flexaid_command, form, flexaid_result_path, hex_color_list, max_generations,rmsd)
         else:
             run_flexaid_same_thread(flexaid_command, flexaid_result_path, form, hex_color_list, max_generations, operating_system)

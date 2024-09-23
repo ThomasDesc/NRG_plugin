@@ -68,9 +68,7 @@ def main(pdb_file_path, atomtypes_definition_path, clean_pdb_file):
         if line[:4] == 'ATOM' or line[:4] == 'HETA':
             if check_line(line,res,atoms):
                 clean_pdb_file.write(line)
-        if line[:4] == 'CONE':
-            clean_pdb_file.write(line)
-    clean_pdb_file.write('END')
+            
     pdb_file.close()
     clean_pdb_file.close()
     

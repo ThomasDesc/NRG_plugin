@@ -1,8 +1,8 @@
 from pymol import cmd
 import numpy as np
 import os
-from PyQt5.QtCore import QThread
-from PyQt5.QtWidgets import QFileDialog
+from PyQt5.QtWidgets import QFileDialog,QMessageBox
+import shutil
 
 
 def output_message(output_box, text, message_type):
@@ -19,9 +19,100 @@ def output_message(output_box, text, message_type):
         out_color = green
     output_box.append(out_color.format(text))
 
+def show_popup(self,dir_path,temp_path,save_file):
 
-def refresh_dropdown(dropdown_to_refresh, output_box, filter_for=None, exclude=None, no_warning=False):
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Information)
+        if not save_file:
+            msg.setWindowTitle('No sessions found in this project')
+            msg.setText('No sessions found in this project,\nDo you want to proceed?')
+            msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+
+        if save_file:
+            msg.setWindowTitle('NRGSuite_QT results folder already exists')
+            msg.setText('NRGSuite_QT results folder already exists,\nDo you want to proceed?')
+            msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+
+        response = msg.exec_()
+        if response == QMessageBox.Ok:
+            if not save_file:
+                self.temp_line_edit.setText(dir_path)
+            if save_file:
+                sufix = 2
+                base_dir=os.path.join(dir_path, 'NRGSuite_QT_results')
+                while os.path.exists(f"{base_dir}_{sufix}"):
+                    sufix += 1
+                new_dir = f"{base_dir}_{sufix}"
+                os.mkdir(new_dir)
+                files = os.listdir(temp_path)
+                for file_name in files:
+                    source_file = os.path.join(temp_path, file_name)
+                    target_file = os.path.join(new_dir, file_name)
+                    if '.DS_Store' not in file_name:
+                        if os.path.isdir(source_file):
+                            shutil.copytree(source_file, target_file)
+                        else:
+                            shutil.copy2(source_file, target_file)
+                self.temp_line_edit.setText(os.path.join(new_dir))
+                cmd.save(os.path.join(new_dir,'load_project.pse'))
+        else:
+            show_save_dialog(self, temp_path, save=save_file)
+
+def show_save_dialog(self,temp_path,save=1):
+
+    options = QFileDialog.Options()
+    options |= QFileDialog.DontUseNativeDialog
+    dir_path = QFileDialog.getExistingDirectory(self, "Select Directory", "", options=options)
+    if dir_path:
+        if save:
+            if temp_path!=dir_path:
+                files=os.listdir(temp_path)
+                if os.path.isdir(os.path.join(dir_path, 'NRGSuite_QT_results')):
+                    show_popup(self, dir_path, temp_path, 1)
+                else:
+                    os.mkdir(os.path.join(dir_path, 'NRGSuite_QT_results'))
+                    for file_name in files:
+                        source_file = os.path.join(temp_path,file_name)
+                        target_file = os.path.join(dir_path,'NRGSuite_QT_results',file_name)
+                        if '.DS_Store' not in file_name:
+                            if os.path.isdir(source_file):
+                                shutil.copytree(source_file, target_file)
+                            else:
+                                shutil.copy2(source_file, target_file)
+                    self.temp_line_edit.setText(os.path.join(dir_path,'NRGSuite_QT_results'))
+                    cmd.save(os.path.join(dir_path,'NRGSuite_QT_results','load_project.pse'))
+            else:
+                cmd.save('load_project.pse')
+        if not save:
+            files=os.listdir(dir_path)
+            for file in files:
+                if file=='load_project.pse':
+                    cmd.load(os.path.join(dir_path,'load_project.pse'))
+                    self.temp_line_edit.setText(dir_path)
+                    break
+            else:
+                show_popup(self,dir_path,temp_path,0)
+
+
+
+def refresh_dropdown(dropdown_to_refresh, output_box, filter_for='', no_warning=False,exclude=None, non_group=1, lig=0, add_none=0):
     list_pymol_objects = cmd.get_names('all')
+    if non_group and not lig:
+        list_pymol_objects_filtered = cmd.get_object_list('all')
+        if 'surfaces_results' in list_pymol_objects:
+            list_surfaces=cmd.get_object_list('surfaces_results')
+            final_list=[]
+            if list_surfaces:
+                for obj in list_pymol_objects_filtered:
+                    if obj not in list_surfaces:
+                        final_list.append(obj)
+                list_pymol_objects=final_list
+        else:
+            list_pymol_objects=list_pymol_objects_filtered
+    if lig:
+        list_pymol_objects = cmd.get_names('selections')
+    if add_none:
+        list_pymol_objects.append('None')
     if filter_for:
         list_pymol_objects = [x for x in list_pymol_objects if filter_for in x]
     if exclude:

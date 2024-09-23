@@ -23,24 +23,24 @@ def get_sum_per_residue(surfaces_file):
     for y in range(len(sum_row)):
         values_residues.append(sum_row[y])
         residues.append(surf.index[y])
-    return (residues, atoms, values_residues, values_atoms)
+    return residues, atoms, values_residues, values_atoms
 
 def get_pairs_contacts(surfaces_file):
     pairs = []
     values = []
     surf = pd.read_csv(surfaces_file, index_col=0)
-    for i in range (len(surf.index)):
-        for j in range (len(surf.columns)):
-            if surf.loc[surf.index[i],surf.columns[j]] != 0:
-                pairs.append([surf.index[i],surf.columns[j]])
-                values.append(surf.loc[surf.index[i],surf.columns[j]])
-    return (pairs, values)
+    for i in range(len(surf.index)):
+        for j in range(len(surf.columns)):
+            if surf.loc[surf.index[i], surf.columns[j]] != 0:
+                pairs.append([surf.index[i], surf.columns[j]])
+                values.append(surf.loc[surf.index[i], surf.columns[j]])
+    return pairs, values
 
 def read_residue(res):
     type_res = res[:3]
     chain_res = res[-1]
     num_res = res[3:-1]
-    return (type_res, chain_res, num_res)
+    return type_res, chain_res, num_res
 
 def read_atom(atom):
     atom_num = ''
@@ -48,25 +48,23 @@ def read_atom(atom):
     num = True
     for i in range(len(atom)):
         if atom[i].isnumeric() and num:
-            atom_num = atom_num + atom[i]
+            atom_num += atom[i]
         else:
             num = False
-            atom_name = atom_name + atom[i]
-    return (atom_name, atom_num)
+            atom_name += atom[i]
+    return atom_name, atom_num
 
 def color_residue(res, color):
     type_res, chain_res, num_res = read_residue(res)
     selection_string = 'chain' + chain_res + ' and resi ' + num_res
     pymol.cmd.set_color(res, color)
     pymol.cmd.select(selection_string)
-    #pymol.cmd.show('spheres', 'sele')
     pymol.cmd.set("cartoon_transparency", 0.00, 'sele')
     pymol.cmd.color(res, 'sele')
     pymol.cmd.delete('sele')
     return
 
 def generate_color_scale(values, color_scale_range, color_scale):
-
     if color_scale is None:
         top_color = "red"
         mid_color = "white"
@@ -87,7 +85,6 @@ def generate_color_scale(values, color_scale_range, color_scale):
     for i in range(5):
         c = Color(top_color, saturation=1/(5-i))
         Total_colors.append(c.rgb)
-    #print (Total_colors)
 
     if color_scale_range is None:
         max_value = max(values)
@@ -114,10 +111,9 @@ def generate_color_scale(values, color_scale_range, color_scale):
             n = len(Total_colors)
         color_codes.append(list(Total_colors[n]))
 
-    return (color_codes)
+    return color_codes
 
 def color_distance(pair, value, color, selected_pairs):
-    #create distance object
     distance_string = 'dashed_' + pair[0] + '-' + pair[1]
     distance_string = distance_string.replace("'", "")
     type_res, chain_res, num_res = read_residue(pair[0])
@@ -138,8 +134,7 @@ def color_distance(pair, value, color, selected_pairs):
         pymol.cmd.disable(distance_string)
     return
 
-def label_pairs(pair,selected_pairs):
-    #create selection
+def label_pairs(pair, selected_pairs):
     pair_string = pair[0] + '-' + pair[1]
     type_res, chain_res, num_res = read_residue(pair[0])
     atom_name, atom_num = read_atom(pair[1])
@@ -147,8 +142,7 @@ def label_pairs(pair,selected_pairs):
     selection_string2 = 'id ' + atom_num
     pymol.cmd.select(selection_string1 + ' ' + selection_string2)
     pymol.cmd.set_name('sele', pair_string)
-    #label residues
-    pymol.cmd.label(selection_string1,"'%s %s %s' %(resn,resi,chain)")
+    pymol.cmd.label(selection_string1, "'%s %s %s' %(resn,resi,chain)")
     selected_residues = pairs_to_residues(selected_pairs)
     if pair[0] not in selected_residues:
         pymol.cmd.hide('labels', selection_string1)
@@ -161,12 +155,12 @@ def pairs_to_residues(pairs):
         for j in range(len(pairs[0])):
             if pairs[i][j] not in residues:
                 residues.append(pairs[i][j])
-    return (residues)
+    return residues
 
 def get_top_10(pairs, values):
     top_pairs = []
     absolute_values = []
-    size_10_percent = len(values)//10
+    size_10_percent = len(values) // 10
     for value in values:
         absolute_values.append(abs(value))
     absolute_values.sort(reverse=True)
@@ -175,14 +169,14 @@ def get_top_10(pairs, values):
         if len(top_pairs) <= len(top_values):
             if (values[f] in top_values) or (-1*values[f] in top_values):
                 top_pairs.append(pairs[f])
-    return (top_pairs)
+    return top_pairs
 
 def all_pairs_from_interest(pairs, residues_of_interest):
     selected_pairs = []
     for pair in pairs:
         if pair[0] in residues_of_interest or pair[1] in residues_of_interest:
             selected_pairs.append(pair)
-    return (selected_pairs)
+    return selected_pairs
 
 def split_states(residues, atoms, pdb_file):
     chains = []
@@ -199,20 +193,19 @@ def split_states(residues, atoms, pdb_file):
         atom_nums.append(atom_num)
     selection_string = ''
     for num in atom_nums:
-        selection_string = selection_string + num + '+'
+        selection_string += num + '+'
     pymol.cmd.select('id ' + selection_string[:-1])
     pymol.cmd.extract('ligand', 'sele')
-    pymol.cmd.delete(pdb_file[:-4])
-    return (chains)
+    pymol.cmd.delete(os.path.splitext(pdb_file)[0])
+    return chains
 
 def show_separate_surfaces(chains):
     for C in chains:
         pymol.cmd.show('surface', 'chain' + C)
-        #pymol.cmd.set('transparency', 0.7, 'chain' + C)
     return
 
 def color_ligands():
-    pymol.cmd.color("cyan",'ligand')
+    pymol.cmd.color("cyan", 'ligand')
     pymol.util.cnc('ligand')
     return
 
@@ -220,7 +213,7 @@ def generate_session(pdb_file, surfaces_file, residues_of_interest, color_scale,
     residues, atoms, values_residues, values_atoms = get_sum_per_residue(surfaces_file)
     color_codes = generate_color_scale(values_residues, color_scale_range, color_scale)
     pymol.cmd.load(pdb_file)
-    pymol.cmd.color('grey60', pdb_file[:-4])
+    pymol.cmd.color('grey60', os.path.splitext(pdb_file)[0])
     chains = split_states(residues, atoms, pdb_file)
     for C in chains:
         pymol.cmd.set("cartoon_transparency", 0.55, 'chain' + C)
@@ -242,20 +235,19 @@ def generate_session(pdb_file, surfaces_file, residues_of_interest, color_scale,
     pymol.cmd.save(session_file_name, format='pse')
     return
 
-
 def main():
-
-    parser= argparse.ArgumentParser(description="the arguments.", add_help=False)
-    parser.add_argument("-f","--pdb_file", action="store")
-    parser.add_argument("-c","--input_csv_file", action="store")
-    parser.add_argument("-o","--pymol_session_output_name", action="store")
-    parser.add_argument("-cs","--color_scale", action="store")
-    parser.add_argument("-cs_range","--color_scale_range", action="store")
-    parser.add_argument("-res","--residues_of_interest", action="store")
-    args=parser.parse_args()
+    parser = argparse.ArgumentParser(description="the arguments.", add_help=False)
+    parser.add_argument("-f", "--pdb_file", action="store")
+    parser.add_argument("-c", "--input_csv_file", action="store")
+    parser.add_argument("-o", "--pymol_session_output_name", action="store")
+    parser.add_argument("-cs", "--color_scale", action="store")
+    parser.add_argument("-cs_range", "--color_scale_range", action="store")
+    parser.add_argument("-res", "--residues_of_interest", action="store")
+    args = parser.parse_args()
 
     generate_session(args.pdb_file, args.input_csv_file, args.residues_of_interest, args.color_scale, args.color_scale_range, args.pymol_session_output_name)
 
     return
 
-main()
+if __name__ == '__main__':
+    main()

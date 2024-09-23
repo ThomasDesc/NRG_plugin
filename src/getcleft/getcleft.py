@@ -58,6 +58,7 @@ def load_show_cleft(cleft_save_path, color_list, output_box, pymol_object):
     for cleft_counter, Cleft in enumerate(sph_file_list):
         try:
             cmd.load(Cleft['path'], Cleft['name'], state=1)
+            cmd.group('Clefts',Cleft['name'])
             cmd.hide('everything', Cleft['name'])
             if cleft_counter >= len(color_list):
                 cmd.color('grey50', Cleft['name'])

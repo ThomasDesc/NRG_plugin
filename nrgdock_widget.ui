@@ -19,7 +19,7 @@
   <widget class="QWidget" name="verticalWidget" native="true">
    <property name="geometry">
     <rect>
-     <x>10</x>
+     <x>20</x>
      <y>20</y>
      <width>161</width>
      <height>431</height>
@@ -142,6 +142,32 @@ QPushButton:checked{
       </property>
      </spacer>
     </item>
+    <item>
+     <widget class="QPushButton" name="button_save">
+      <property name="text">
+       <string>Save Project</string>
+      </property>
+      <property name="checkable">
+       <bool>true</bool>
+      </property>
+      <property name="autoExclusive">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="button_load">
+      <property name="text">
+       <string>Load project</string>
+      </property>
+      <property name="checkable">
+       <bool>true</bool>
+      </property>
+      <property name="autoExclusive">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
    </layout>
   </widget>
   <widget class="QGroupBox" name="groupBox">
@@ -150,7 +176,7 @@ QPushButton:checked{
      <x>10</x>
      <y>450</y>
      <width>821</width>
-     <height>201</height>
+     <height>211</height>
     </rect>
    </property>
    <property name="title">
@@ -170,18 +196,31 @@ QPushButton:checked{
 color:rgb(255, 255, 255);</string>
     </property>
    </widget>
+   <widget class="QLabel" name="temp_line_edit">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>190</y>
+      <width>801</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>TextLabel</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QStackedWidget" name="stackedWidget">
    <property name="geometry">
     <rect>
-     <x>180</x>
-     <y>10</y>
+     <x>190</x>
+     <y>20</y>
      <width>651</width>
      <height>441</height>
     </rect>
    </property>
    <property name="currentIndex">
-    <number>3</number>
+    <number>1</number>
    </property>
    <widget class="QWidget" name="getcleft_page">
     <widget class="QTabWidget" name="tabWidget_2">
@@ -194,7 +233,7 @@ color:rgb(255, 255, 255);</string>
       </rect>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tab_9">
       <attribute name="title">
@@ -608,7 +647,7 @@ font-size:14px;
      </widget>
      <widget class="QWidget" name="tab_11">
       <attribute name="title">
-       <string>Estimate Volume</string>
+       <string>Estimate Volune</string>
       </attribute>
      </widget>
     </widget>
@@ -639,7 +678,7 @@ font-size:14px;
       <enum>QTabWidget::Rounded</enum>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <property name="usesScrollButtons">
       <bool>false</bool>
@@ -655,9 +694,9 @@ font-size:14px;
        <property name="geometry">
         <rect>
          <x>100</x>
-         <y>-1</y>
+         <y>30</y>
          <width>411</width>
-         <height>401</height>
+         <height>341</height>
         </rect>
        </property>
        <layout class="QFormLayout" name="formLayout">
@@ -708,7 +747,7 @@ font-size:14px;
           </property>
          </widget>
         </item>
-        <item row="4" column="0">
+        <item row="7" column="0">
          <spacer name="verticalSpacer_4">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
@@ -730,6 +769,20 @@ font-size:14px;
         </item>
         <item row="3" column="1">
          <widget class="QRadioButton" name="flexaid_multithread_button">
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="0">
+         <widget class="QLabel" name="label_15">
+          <property name="text">
+           <string>Ligand pose as reference</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="1">
+         <widget class="QCheckBox" name="flexaid_ligref_checkBox">
           <property name="text">
            <string/>
           </property>
@@ -1106,7 +1159,7 @@ font-size:14px;
       <enum>QTabWidget::Rounded</enum>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <property name="usesScrollButtons">
       <bool>false</bool>
@@ -1628,9 +1681,9 @@ font-size:14px;
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>200</y>
+       <y>210</y>
        <width>631</width>
-       <height>111</height>
+       <height>161</height>
       </rect>
      </property>
      <property name="title">
@@ -1639,7 +1692,7 @@ font-size:14px;
      <widget class="QPushButton" name="NRGten_conf_ensem_pushButton">
       <property name="geometry">
        <rect>
-        <x>250</x>
+        <x>430</x>
         <y>70</y>
         <width>113</width>
         <height>32</height>
@@ -1759,17 +1812,49 @@ font-size:14px;
      <widget class="QCheckBox" name="NRGten_optmizestates">
       <property name="geometry">
        <rect>
-        <x>40</x>
-        <y>70</y>
+        <x>20</x>
+        <y>80</y>
         <width>181</width>
-        <height>20</height>
+        <height>21</height>
        </rect>
       </property>
-      <property name="toolTip">
-       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <property name="text">
+       <string>optmize states (modeller)</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="NRGten_label">
+      <property name="geometry">
+       <rect>
+        <x>290</x>
+        <y>110</y>
+        <width>211</width>
+        <height>16</height>
+       </rect>
       </property>
       <property name="text">
-       <string>optimize states (modeller)</string>
+       <string>State: 0/0</string>
+      </property>
+     </widget>
+     <widget class="QProgressBar" name="NRGten_progress">
+      <property name="geometry">
+       <rect>
+        <x>40</x>
+        <y>130</y>
+        <width>561</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="autoFillBackground">
+       <bool>false</bool>
+      </property>
+      <property name="maximum">
+       <number>500</number>
+      </property>
+      <property name="value">
+       <number>0</number>
+      </property>
+      <property name="textVisible">
+       <bool>true</bool>
       </property>
      </widget>
     </widget>
@@ -1916,18 +2001,15 @@ font-size:14px;
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>320</y>
+       <y>370</y>
        <width>631</width>
-       <height>121</height>
+       <height>71</height>
       </rect>
      </property>
      <property name="title">
       <string>Overlap</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_18">
-      <item row="0" column="1" colspan="2">
-       <widget class="QLineEdit" name="NRGten_overlap_lineEdit"/>
-      </item>
       <item row="0" column="0">
        <widget class="QLabel" name="label_55">
         <property name="text">
@@ -1935,14 +2017,10 @@ font-size:14px;
         </property>
        </widget>
       </item>
-      <item row="1" column="0" colspan="2">
-       <widget class="QCheckBox" name="NRGten_overlap_checkBox">
-        <property name="text">
-         <string>Alanine scan</string>
-        </property>
-       </widget>
+      <item row="0" column="2">
+       <widget class="QLineEdit" name="NRGten_overlap_lineEdit"/>
       </item>
-      <item row="1" column="2">
+      <item row="0" column="3">
        <widget class="QPushButton" name="NRGten_overlap_pushButton">
         <property name="text">
          <string>Run</string>
@@ -2013,162 +2091,66 @@ font-size:14px;
     </widget>
    </widget>
    <widget class="QWidget" name="surfaces_page">
-    <widget class="QPushButton" name="surfaces_run_button">
+    <widget class="QTabWidget" name="tabWidget_3">
      <property name="geometry">
       <rect>
-       <x>360</x>
-       <y>300</y>
-       <width>241</width>
-       <height>32</height>
+       <x>0</x>
+       <y>0</y>
+       <width>641</width>
+       <height>441</height>
       </rect>
      </property>
-     <property name="text">
-      <string>Run Surfaces</string>
+     <property name="currentIndex">
+      <number>0</number>
      </property>
-    </widget>
-    <widget class="QGroupBox" name="groupBox_9">
-     <property name="geometry">
-      <rect>
-       <x>60</x>
-       <y>30</y>
-       <width>241</width>
-       <height>341</height>
-      </rect>
-     </property>
-     <property name="title">
-      <string>Surfaces selection:</string>
-     </property>
-     <widget class="QWidget" name="horizontalLayoutWidget_5">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>20</y>
-        <width>241</width>
-        <height>61</height>
-       </rect>
-      </property>
-      <layout class="QHBoxLayout" name="horizontalLayout_9">
-       <item>
-        <widget class="QLabel" name="label_3">
-         <property name="text">
-          <string>Object:</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QComboBox" name="surface_select_result">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="currentText">
-          <string/>
-         </property>
-         <property name="currentIndex">
-          <number>-1</number>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="surfaces_refresh_button">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text">
-          <string>Refresh</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="layoutWidget">
-      <property name="geometry">
-       <rect>
-        <x>30</x>
-        <y>220</y>
-        <width>186</width>
-        <height>82</height>
-       </rect>
-      </property>
-      <layout class="QVBoxLayout" name="verticalLayout">
-       <item>
-        <widget class="QLabel" name="label_17">
-         <property name="text">
-          <string>Protein-Protein Interactions</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_11">
+     <widget class="QWidget" name="tab_14">
+      <attribute name="title">
+       <string>Run</string>
+      </attribute>
+      <widget class="QPushButton" name="surfaces_run_button">
+       <property name="geometry">
+        <rect>
+         <x>360</x>
+         <y>290</y>
+         <width>241</width>
+         <height>32</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Run Surfaces</string>
+       </property>
+      </widget>
+      <widget class="QGroupBox" name="groupBox_17">
+       <property name="geometry">
+        <rect>
+         <x>320</x>
+         <y>10</y>
+         <width>311</width>
+         <height>181</height>
+        </rect>
+       </property>
+       <property name="title">
+        <string>Surfaces selection 2:</string>
+       </property>
+       <widget class="QWidget" name="horizontalLayoutWidget_10">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>20</y>
+          <width>311</width>
+          <height>61</height>
+         </rect>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_29">
          <item>
-          <widget class="QLabel" name="label_9">
+          <widget class="QLabel" name="label_20">
            <property name="text">
-            <string>Chain 1:</string>
+            <string>Object2:</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="lineEdit_2">
-           <property name="text">
-            <string>None</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_12">
-         <item>
-          <widget class="QLabel" name="label_12">
-           <property name="text">
-            <string>Chain 2:</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="lineEdit_3">
-           <property name="text">
-            <string>None</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="layoutWidget_3">
-      <property name="geometry">
-       <rect>
-        <x>30</x>
-        <y>110</y>
-        <width>191</width>
-        <height>58</height>
-       </rect>
-      </property>
-      <layout class="QVBoxLayout" name="verticalLayout_3">
-       <item>
-        <widget class="QLabel" name="label_22">
-         <property name="text">
-          <string>Ligand/Target interacitons</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_13">
-         <item>
-          <widget class="QLabel" name="label_13">
-           <property name="text">
-            <string>Ligand:</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QComboBox" name="surface_select_lig">
+          <widget class="QComboBox" name="surface_select_result_2">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -2188,126 +2170,386 @@ font-size:14px;
            </item>
           </widget>
          </item>
-        </layout>
-       </item>
-      </layout>
-     </widget>
-    </widget>
-    <widget class="QGroupBox" name="groupBox_17">
-     <property name="geometry">
-      <rect>
-       <x>350</x>
-       <y>30</y>
-       <width>251</width>
-       <height>241</height>
-      </rect>
-     </property>
-     <property name="title">
-      <string>Surfaces selection 2:</string>
-     </property>
-     <widget class="QWidget" name="horizontalLayoutWidget_10">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>20</y>
-        <width>246</width>
-        <height>61</height>
-       </rect>
-      </property>
-      <layout class="QHBoxLayout" name="horizontalLayout_29">
-       <item>
-        <widget class="QLabel" name="label_20">
-         <property name="text">
-          <string>Object2:</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QComboBox" name="surface_select_result_2">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="currentText">
-          <string>None</string>
-         </property>
-         <property name="currentIndex">
-          <number>0</number>
-         </property>
          <item>
+          <widget class="QPushButton" name="surfaces_refresh_button_2">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Refresh</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="layoutWidget_17">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>110</y>
+          <width>311</width>
+          <height>58</height>
+         </rect>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_5">
+         <item>
+          <widget class="QLabel" name="label_30">
+           <property name="text">
+            <string>Ligand/Target interacitons</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_30">
+           <item>
+            <widget class="QLabel" name="label_44">
+             <property name="text">
+              <string>Ligand:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="surface_select_lig_2">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="currentText">
+              <string>None</string>
+             </property>
+             <property name="currentIndex">
+              <number>0</number>
+             </property>
+             <item>
+              <property name="text">
+               <string>None</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+      <widget class="QGroupBox" name="groupBox_9">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>10</y>
+         <width>311</width>
+         <height>181</height>
+        </rect>
+       </property>
+       <property name="title">
+        <string>Surfaces selection:</string>
+       </property>
+       <widget class="QWidget" name="horizontalLayoutWidget_5">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>20</y>
+          <width>311</width>
+          <height>61</height>
+         </rect>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_9">
+         <item>
+          <widget class="QLabel" name="label_3">
+           <property name="text">
+            <string>Object:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="surface_select_result">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="currentText">
+            <string/>
+           </property>
+           <property name="currentIndex">
+            <number>-1</number>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="surfaces_refresh_button">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Refresh</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="layoutWidget_3">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>110</y>
+          <width>311</width>
+          <height>58</height>
+         </rect>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <item>
+          <widget class="QLabel" name="label_22">
+           <property name="text">
+            <string>Ligand/Target interacitons</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_13">
+           <item>
+            <widget class="QLabel" name="label_13">
+             <property name="text">
+              <string>Ligand:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="surface_select_lig">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="currentText">
+              <string>None</string>
+             </property>
+             <property name="currentIndex">
+              <number>0</number>
+             </property>
+             <item>
+              <property name="text">
+               <string>None</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+      <widget class="QGroupBox" name="groupBox_6">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>250</y>
+         <width>311</width>
+         <height>131</height>
+        </rect>
+       </property>
+       <property name="title">
+        <string/>
+       </property>
+       <widget class="QWidget" name="layoutWidget">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>20</y>
+          <width>291</width>
+          <height>82</height>
+         </rect>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout">
+         <item>
+          <widget class="QLabel" name="label_17">
+           <property name="text">
+            <string>Protein-Protein Interactions</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_11">
+           <item>
+            <widget class="QLabel" name="label_9">
+             <property name="text">
+              <string>Chain 1:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="chain_lineEdit">
+             <property name="text">
+              <string>None</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_12">
+           <item>
+            <widget class="QLabel" name="label_12">
+             <property name="text">
+              <string>Chain 2:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="chain_lineEdit_1">
+             <property name="text">
+              <string>None</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="tab_15">
+      <attribute name="title">
+       <string>Results</string>
+      </attribute>
+      <widget class="QTableView" name="surfaces_tableView">
+       <property name="geometry">
+        <rect>
+         <x>80</x>
+         <y>50</y>
+         <width>461</width>
+         <height>301</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="surfaces_refresh_button_3">
+       <property name="geometry">
+        <rect>
+         <x>500</x>
+         <y>10</y>
+         <width>77</width>
+         <height>32</height>
+        </rect>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>Refresh</string>
+       </property>
+      </widget>
+      <widget class="QWidget" name="layoutWidget">
+       <property name="geometry">
+        <rect>
+         <x>150</x>
+         <y>370</y>
+         <width>323</width>
+         <height>33</height>
+        </rect>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_5">
+        <item>
+         <widget class="QLabel" name="label">
           <property name="text">
-           <string>None</string>
+           <string>TOP N residues:</string>
           </property>
-         </item>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="surfaces_refresh_button_2">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text">
-          <string>Refresh</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="layoutWidget_17">
-      <property name="geometry">
-       <rect>
-        <x>30</x>
-        <y>110</y>
-        <width>201</width>
-        <height>58</height>
-       </rect>
-      </property>
-      <layout class="QVBoxLayout" name="verticalLayout_5">
-       <item>
-        <widget class="QLabel" name="label_30">
-         <property name="text">
-          <string>Ligand/Target interacitons</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_30">
-         <item>
-          <widget class="QLabel" name="label_44">
-           <property name="text">
-            <string>Ligand:</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QComboBox" name="surface_select_lig_2">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="currentText">
-            <string>None</string>
-           </property>
-           <property name="currentIndex">
-            <number>0</number>
-           </property>
-           <item>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="TOPN_lineEdit_2">
+          <property name="text">
+           <string>ALL</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="Surfaces_pushButton_2">
+          <property name="text">
+           <string>Interface</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="layoutWidget">
+       <property name="geometry">
+        <rect>
+         <x>50</x>
+         <y>10</y>
+         <width>425</width>
+         <height>34</height>
+        </rect>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_21">
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_15">
+          <item>
+           <widget class="QLabel" name="label_2">
             <property name="text">
-             <string>None</string>
+             <string>Individual results:</string>
             </property>
-           </item>
-          </widget>
-         </item>
-        </layout>
-       </item>
-      </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="surface_select_result_3">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="currentText">
+             <string/>
+            </property>
+            <property name="currentIndex">
+             <number>-1</number>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_19">
+          <item>
+           <widget class="QLabel" name="label_14">
+            <property name="text">
+             <string>CF comparison</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="surface_select_result_4">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="currentText">
+             <string/>
+            </property>
+            <property name="currentIndex">
+             <number>-1</number>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
      </widget>
     </widget>
    </widget>

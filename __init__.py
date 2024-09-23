@@ -96,6 +96,7 @@ def make_dialog():
         exit('Unknown operating system')
 
     uifile = os.path.join(install_dir, 'nrgdock_widget.ui')
+    form = loadUi(uifile, dialog)
     binary_folder_path = os.path.join(install_dir, 'bin', operating_system)
     print('binary path: ', binary_folder_path)
     test_binary(binary_folder_path, operating_system)
@@ -103,18 +104,20 @@ def make_dialog():
     ligand_set_folder_path = os.path.join(install_dir, 'nrgdock_ligand_sets')
     plugin_tmp_output_path = os.path.join(os.path.expanduser('~'), 'Documents', 'NRGSuite_Qt')
     temp_path = os.path.join(plugin_tmp_output_path, 'temp')
-    nrgdock_output_path = os.path.join(temp_path, 'NRGDock')
-    surfaces_output_path = os.path.join(temp_path, 'Surfaces')
-    modeller_save_path = os.path.join(temp_path, 'modeller')
+    form.temp_line_edit.setText(temp_path)
+    nrgdock_output_path = os.path.join(form.temp_line_edit.text(), 'NRGDock')
+    surfaces_output_path = os.path.join(form.temp_line_edit.text(), 'Surfaces')
+    modeller_save_path = os.path.join(form.temp_line_edit.text(), 'modeller')
+    nrgten_save_path =os.path.join(form.temp_line_edit.text(), 'NRGTEN')
 
     if os.path.isdir(plugin_tmp_output_path):
         shutil.rmtree(plugin_tmp_output_path)
     os.mkdir(plugin_tmp_output_path)
-    os.mkdir(temp_path)
+    os.mkdir(form.temp_line_edit.text())
     os.mkdir(surfaces_output_path)
     os.mkdir(nrgdock_output_path)
     os.mkdir(modeller_save_path)
-    form = loadUi(uifile, dialog)
+    os.mkdir(nrgten_save_path)
     try:
         import modeller
     except ModuleNotFoundError:
@@ -146,25 +149,30 @@ def make_dialog():
     form.button_surfaces.clicked.connect(lambda: form.stackedWidget.setCurrentIndex(4))
     form.button_modeller.clicked.connect(lambda: form.stackedWidget.setCurrentIndex(5))
 
+    # save/load
+
+    form.button_save.clicked.connect(lambda: general_functions.show_save_dialog(form,form.temp_line_edit.text()))
+    form.button_load.clicked.connect(lambda: general_functions.show_save_dialog(form,form.temp_line_edit.text(),save=0))
+
     # GetCleft
     form.button_hide.clicked.connect(lambda: general_functions.pymol_hide_structures(form))
     form.cleft_button_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.cleft_select_object, form.output_box))
-    form.button_start.clicked.connect(lambda: getcleft.run_getcleft(form, binary_folder_path, binary_suffix, temp_path,
+    form.button_start.clicked.connect(lambda: getcleft.run_getcleft(form, binary_folder_path, binary_suffix, form.temp_line_edit.text(),
                                                                     install_dir))
     # Partition Cleft
-    form.cleft_partition_button_add.clicked.connect(lambda: spheres.display_sphere(form.cleft_partition_select_object.currentText(), form.cleft_partition_radius_slider, form.partition_sphere_select, temp_path))
+    form.cleft_partition_button_add.clicked.connect(lambda: spheres.display_sphere(form.cleft_partition_select_object.currentText(), form.cleft_partition_radius_slider, form.partition_sphere_select, form.temp_line_edit.text()))
     form.cleft_partition_button_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.cleft_partition_select_object, form.output_box, filter_for='_sph'))
     form.cleft_partition_button_move.clicked.connect(lambda: spheres.move_sphere(form.partition_sphere_select.currentText()))
     form.cleft_partition_radius_slider.valueChanged.connect(lambda: spheres.resize_sphere(form.partition_sphere_select.currentText(), form.cleft_partition_radius_slider.value()))
-    form.cleft_partition_crop_button.clicked.connect(lambda: spheres.crop_cleft(form.partition_sphere_select.currentText(), form.cleft_partition_radius_slider.value()/100, temp_path, form.cleft_partition_select_object.currentText()))
+    form.cleft_partition_crop_button.clicked.connect(lambda: spheres.crop_cleft(form.partition_sphere_select.currentText(), form.cleft_partition_radius_slider.value()/100, form.temp_line_edit.text(), form.cleft_partition_select_object.currentText()))
 
     # FlexAID:
     form.flexaid_target_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.flexaid_select_target, form.output_box, exclude='_sph'))
     form.flexaid_ligand_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.flexaid_select_ligand, form.output_box, exclude='_sph'))
     form.flexaid_binding_site_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.flexaid_select_binding_site, form.output_box, filter_for='_sph'))
     form.flexaid_button_start.clicked.connect(lambda: form.flexaid_tab.setTabEnabled(2, True))
-    form.flexaid_retrieve_nrgdock_ligands.clicked.connect(lambda: flexaid.retrieve_nrgdock_ligands(nrgdock_output_path))
-    form.flexaid_button_start.clicked.connect(lambda: flexaid.run_flexaid(form, temp_path, binary_folder_path, operating_system, binary_suffix, install_dir))
+    form.flexaid_retrieve_nrgdock_ligands.clicked.connect(lambda: flexaid.retrieve_nrgdock_ligands(os.path.join(form.temp_line_edit.text(), 'NRGDock')))
+    form.flexaid_button_start.clicked.connect(lambda: flexaid.run_flexaid(form, form.temp_line_edit.text(), binary_folder_path, operating_system, binary_suffix, install_dir))
     form.flexaid_button_pause.clicked.connect(lambda: flexaid.pause_resume_simulation(form))
     form.flexaid_button_stop.clicked.connect(lambda: flexaid.stop_simulation(form))
     form.flexaid_button_abort.clicked.connect(lambda: flexaid.abort_simulation(form))
@@ -177,50 +185,41 @@ def make_dialog():
     form.nrgdock_button_ligandset_add.clicked.connect(lambda: nrgdock.process_ligands())
     form.nrgdock_ligand_set_refresh.clicked.connect(lambda: general_functions.refresh_folder(ligand_set_folder_path, form.nrgdock_select_ligand))
     form.nrgdock_button_start.clicked.connect(
-        lambda: nrgdock.run_nrgdock(form, nrgdock_output_path, ligand_set_folder_path, install_dir))
-    form.nrgdock_result_browse_button.clicked.connect(lambda: general_functions.folder_browser(form.nrgdock_result_path, nrgdock_output_path, "CSV file (*.csv)"))
-
-    # Surfaces:
-    # form.surfaces_refresh_button.clicked.connect(lambda: general_functions.refresh_dropdown(form.surface_select_result, form.output_box, filter_for='RESULT'))
-    # form.surfaces_run_button.clicked.connect(lambda: surfaces.run_run_surfaces(form.surface_select_result.currentText(), surfaces_output_path, form.simulate_folder_path.text(), binary_folder_path, binary_suffix, install_dir))
-    # form.surfaces_run_button.clicked.connect(lambda: general_functions.surfaces_enable_buttons(form))
-    # form.surfaces_retreive_flexaid_result.clicked.connect(lambda: surfaces.retrieve_flexaid_result(form.simulate_folder_path.text()))
-    # form.surfaces_retreive_flexaid_result.clicked.connect(lambda: general_functions.refresh_dropdown(form.surface_select_result, form.output_box, filter_for='RESULT'))
-    # form.surfaces_result_browse_button.clicked.connect(
-    #     lambda: general_functions.folder_browser(form.surfaces_load_result_text, os.path.join(install_dir, 'result_demo'), "PDB file (*.pdb)"))
-    # form.surfaces_load_result_button.clicked.connect(
-    #     lambda: surfaces.load_surfaces_result(form, surfaces_output_path))
-
-    # form.class_test.clicked.connect(lambda: getcleft.test_submit_command())
+        lambda: nrgdock.run_nrgdock(form, os.path.join(form.temp_line_edit.text(), 'NRGDock'), ligand_set_folder_path, install_dir))
+    form.nrgdock_result_browse_button.clicked.connect(lambda: general_functions.folder_browser(form.nrgdock_result_path, os.path.join(form.temp_line_edit.text(), 'NRGDock'), "CSV file (*.csv)"))
 
     # surfaces functions
 
     form.surfaces_refresh_button.clicked.connect(lambda: general_functions.refresh_dropdown(form.surface_select_result, form.output_box))
-    form.surfaces_refresh_button.clicked.connect(lambda: run_NRGTEN.refresh_dropdown_NRG(form.surface_select_lig, form.output_box))
-    form.surfaces_refresh_button_2.clicked.connect(lambda: run_NRGTEN.refresh_dropdown_NRG(form.surface_select_result_2, form.output_box))
-    form.surfaces_refresh_button_2.clicked.connect(lambda: run_NRGTEN.refresh_dropdown_NRG(form.surface_select_lig_2, form.output_box))
+    form.surfaces_refresh_button.clicked.connect(lambda: general_functions.refresh_dropdown(form.surface_select_lig, form.output_box, lig=1 ,    add_none=1  ))
+    form.surfaces_refresh_button_2.clicked.connect(lambda: general_functions.refresh_dropdown(form.surface_select_result_2, form.output_box,     add_none=1  ))
+    form.surfaces_refresh_button_2.clicked.connect(lambda: general_functions.refresh_dropdown(form.surface_select_lig_2, form.output_box,lig=1,     add_none=1  ))
+    form.surfaces_run_button.clicked.connect(lambda: run_Surfaces.load_surfaces(form, form.temp_line_edit.text(), install_dir, binary_folder_path, binary_suffix))
+    form.surface_select_result_3.currentIndexChanged.connect(lambda: run_Surfaces.load_csv_data(form,os.path.join(os.path.join(form.temp_line_edit.text(),'Surfaces'),form.surface_select_result_3.currentText()+'.txt')))
+    form.surfaces_refresh_button_3.clicked.connect(lambda:run_Surfaces.refresh_res(form,os.path.join(form.temp_line_edit.text(),'Surfaces')))
 
-    form.surfaces_run_button.clicked.connect(lambda: run_Surfaces.load_surfaces(form, temp_path, install_dir, binary_folder_path, binary_suffix))
+    form.Surfaces_pushButton_2.clicked.connect(lambda: run_Surfaces.read_and_select_residues(os.path.join(form.temp_line_edit.text(),'Surfaces',form.surface_select_result_3.currentText()+'.txt'),form.surface_select_result_3.currentText()[5:-11],num_rows=form.TOPN_lineEdit_2.text()))
+
 
     # nrgten functions
     form.NRGten_target_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.NRGten_select_target, form.output_box))
-    form.NRGten_target_refresh.clicked.connect(lambda: run_NRGTEN.refresh_dropdown_NRG(form.NRGten_select_ligand, form.output_box))
-    form.NRGten_target_refresh_2.clicked.connect(lambda: run_NRGTEN.refresh_dropdown_NRG(form.NRGten_select_target_2, form.output_box))
+    form.NRGten_target_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.NRGten_select_ligand, form.output_box,lig=1,     add_none=1  ))
+    form.NRGten_target_refresh_2.clicked.connect(lambda: general_functions.refresh_dropdown(form.NRGten_select_target_2, form.output_box,     add_none=1  ))
 
     form.NRGten_dynasig_pushButton.clicked.connect(lambda: run_NRGTEN.dynamical_signature(form.NRGten_select_target.currentText(),
                                                                                           form.NRGten_select_ligand.currentText(),
                                                                                           form.NRGten_select_target_2.currentText(),
-                                                                                          form.NRGten_dynasig_lineEdit.text(), install_dir, temp_path))
+                                                                                          form.NRGten_dynasig_lineEdit.text(), install_dir, form.temp_line_edit.text()))
     form.NRGten_conf_ensem_pushButton.clicked.connect(lambda: run_NRGTEN.conformational_ensemble(form.NRGten_select_target.currentText(),
                                                                                                  form.NRGten_modes_lineEdit.text(),
                                                                                                  form.NRGten_step_lineEdit.text(),
                                                                                                  form.NRGten_max_conf_lineEdit.text(),
                                                                                                  form.NRGten_max_dis_lineEdit.text(),
-                                                                                                 form.NRGten_optmizestates.isChecked(), install_dir, temp_path))
+                                                                                                 form.NRGten_optmizestates.isChecked(), install_dir, form.temp_line_edit.text(),form))
 
     # modeller functions
     form.Modeller_target_refresh_1.clicked.connect(lambda: general_functions.refresh_dropdown(form.Modeller_select_target_1, form.output_box))
-    form.Modeller_target_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.Modeller_select_target, form.output_box))
-    form.Modeller_pushButton.clicked.connect(lambda: run_modeller.model_mutations(form, temp_path))
+    form.Modeller_target_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.Modeller_select_target, form.output_box, lig=1 ))
+    form.Modeller_pushButton.clicked.connect(lambda: run_modeller.model_mutations(form, form.temp_line_edit.text()))
     form.Modeller_checkBox_all.clicked.connect(lambda: run_modeller.check_all(form))
     return dialog
