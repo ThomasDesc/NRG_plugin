@@ -136,6 +136,7 @@ def make_dialog():
     if operating_system == 'mac':
         form.flexaid_multithread_button.setChecked(True)
     print(form.surface_select_result.currentText())
+    form.getcleft_tab_widget.setTabEnabled(2, False)
 
     general_functions.refresh_dropdown(form.cleft_select_object, form.output_box, no_warning=True)
     general_functions.refresh_folder(ligand_set_folder_path, form.nrgdock_select_ligand)
