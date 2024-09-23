@@ -216,7 +216,7 @@ def model_mutations(form, temp_path):
     cmd.save(target_file, target)
     if flex_res(target_file):
         process_result_flexaid(target_file, target_file)
-    res_list=get_residue_info(res_list)
+    res_list = get_residue_info(res_list)
     amino_list = ['ALA', 'ARG', 'ASN', 'ASP', 'CYS', 'GLN', 'GLU', 'GLY', 'HIS', 'ILE', 'LEU', 'LYS', 'MET', 'PHE', 'PRO', 'SER', 'THR', 'TRP', 'TYR', 'VAL']
     count=1
     for res in res_list:

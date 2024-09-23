@@ -19,6 +19,7 @@ def output_message(output_box, text, message_type):
         out_color = green
     output_box.append(out_color.format(text))
 
+
 def show_popup(self,dir_path,temp_path,save_file):
 
         msg = QMessageBox()
