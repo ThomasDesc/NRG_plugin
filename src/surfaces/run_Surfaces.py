@@ -14,6 +14,8 @@ from PyQt5.QtGui import QStandardItemModel, QStandardItem, QColor
 from PyQt5.QtCore import QModelIndex
 import csv
 from Bio import PDB
+from matplotlib.colors import LinearSegmentedColormap
+
 
 def refresh_res(form,out_path):
     l_dir=os.listdir(out_path)
@@ -48,12 +50,13 @@ def load_csv_data(form, csv_file):
 
         normalize = lambda x: 0.5 + (x / (2 * max(abs(min_value), abs(max_value)))) if max_value > min_value else 0.5
 
-        cmap = plt.cm.get_cmap('bwr')
+        colors = [(0, 0, 1), (0, 0, 0), (1, 0, 0)]  # Blue -> Black -> Red
+        cmap = LinearSegmentedColormap.from_list("custom_bkr", colors)
         for row_idx, row in enumerate(data):
             items = []
+            row[-1] = str(round(float(row[-1]), 4))
             for col_idx, field in enumerate(row):
                 item = QStandardItem(field)
-
                 if col_idx == last_column_index:
                     normalized_value = normalize(float(field))
                     color = QColor(*[int(c * 255) for c in cmap(normalized_value)[:3]])
