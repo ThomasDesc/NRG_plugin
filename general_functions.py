@@ -19,7 +19,6 @@ def output_message(output_box, text, message_type):
         out_color = green
     output_box.append(out_color.format(text))
 
-
 def show_popup(self,dir_path,temp_path,save_file):
 
         msg = QMessageBox()
@@ -127,6 +126,8 @@ def refresh_dropdown(dropdown_to_refresh, output_box, filter_for='', no_warning=
         dropdown_to_refresh.setCurrentText(list_pymol_objects[0])
 
 
+
+
 def refresh_folder(folder_path, dropdown_to_refresh):
     folders = next(os.walk(folder_path))[1]
     folders = [item.replace('_', ' ') for item in folders]
@@ -222,3 +223,4 @@ def create_number_list(length_TotColor, length_TotalColorList):
 def surfaces_enable_buttons(form):
     form.flexaid_retrieve_nrgdock_ligands.setEnabled(True)
     form.surfaces_retreive_flexaid_result.setEnabled(True)
+

@@ -8,11 +8,12 @@ from src.surfaces.surface_cont import main as surface_cont
 from src.surfaces.pymol_image_surfaces_lig import generate_session
 from src.surfaces.pymol_image_surfaces import generate_session as generate_session_ppi
 from pymol import cmd
+from src.modeller.run_modeller import get_residue_info
 import pandas as pd
 from PyQt5.QtGui import QStandardItemModel, QStandardItem, QColor
 from PyQt5.QtCore import QModelIndex
 import csv
-
+from Bio import PDB
 
 def refresh_res(form,out_path):
     l_dir=os.listdir(out_path)
@@ -24,7 +25,6 @@ def refresh_res(form,out_path):
     form.surface_select_result_4.clear()
     form.surface_select_result_4.addItems(cf_comp)
 
-
 def load_csv_data(form, csv_file):
 
     model = QStandardItemModel()
@@ -32,8 +32,7 @@ def load_csv_data(form, csv_file):
     with open(csv_file, newline='', encoding='utf-8') as file:
         csv_reader = csv.reader(file)
         data = list(csv_reader)
-
-    if len(data) == 2:
+    if len(data[0]) == 2:
         headers = ['MODEL', 'CF']
         last_column_index = 1
     else:
@@ -66,13 +65,41 @@ def load_csv_data(form, csv_file):
     form.surfaces_tableView.setModel(model)
 
     # Adjust column widths
-    if len(headers) == 2:
-        form.surfaces_tableView.setColumnWidth(0, 230)
-        form.surfaces_tableView.setColumnWidth(1, 200)
-    else:
-        form.surfaces_tableView.setColumnWidth(2, 200)
+    if len(headers)>0:
+        form.surfaces_tableView.setColumnWidth(last_column_index, 175)
     form.surfaces_tableView.clicked.connect(lambda index: open_res(form.surfaces_tableView, index,len(headers)))
 
+
+def get_residues_from_pdb(file_path):
+    parser = PDB.PDBParser(QUIET=True)
+    structure = parser.get_structure("structure", file_path)
+
+    residues = {}
+    for model in structure:
+        for chain in model:
+            for residue in chain:
+                # Skip HETATMs or water molecules
+                if PDB.is_aa(residue, standard=True):
+                    res_id = residue.get_id()[1]
+                    chain_id = chain.get_id()
+                    res_name = residue.get_resname()
+                    residues[(chain_id, res_id)] = res_name
+    return residues
+
+
+def compare_residues(pdb1, pdb2):
+    residues_pdb1 = get_residues_from_pdb(pdb1)
+    residues_pdb2 = get_residues_from_pdb(pdb2)
+
+    differences = []
+
+    for res_id, res_name_pdb1 in residues_pdb1.items():
+        res_name_pdb2 = residues_pdb2.get(res_id)
+        if res_name_pdb2 and res_name_pdb1 != res_name_pdb2:
+            chain, res_num = res_id
+            differences.append(f"{res_name_pdb1}{res_num}{res_name_pdb2}_{chain}")
+
+    return '_'.join(differences)
 
 def open_res(tableView,index,lheaders):
     if lheaders==3:
@@ -81,6 +108,8 @@ def open_res(tableView,index,lheaders):
             cmd.select('sele_surfaces','resname {} and resi {} and chain {}'.format(cell_text[:3],cell_text[3:-1],cell_text[-1]))
             cmd.zoom('sele_surfaces', buffer=10.0)
             cmd.show('lines', 'sele_surfaces')
+
+
 
 
 def process_result_flexaid(flexaid_result_file, output):
@@ -97,7 +126,6 @@ def process_result_flexaid(flexaid_result_file, output):
                     else:
                         t2.write(line)
 
-
 def create_ligand_file(pdb_file_name, lig_path):
     with open(pdb_file_name, "r") as f:
         lines = f.readlines()
@@ -111,7 +139,6 @@ def create_ligand_file(pdb_file_name, lig_path):
     lig_pdb_file.close()
     return
 
-
 def flex_res(target_file):
     with open(target_file, "r") as f:
         texto = f.readlines()
@@ -120,14 +147,12 @@ def flex_res(target_file):
                 return 1
     return 0
 
-
 def get_chains_from_object(object_name):
     chains = cmd.get_chains(object_name)
     str_chain = ''
     for chain in chains:
         str_chain = str_chain + str(chain)
     return str_chain
-
 
 def load_surfaces(form, temp_path, main_folder_path, binary_folder_path, binary_suffix):
     vcon_binary_path = os.path.join(binary_folder_path, f'vcon{binary_suffix}')
@@ -140,7 +165,7 @@ def load_surfaces(form, temp_path, main_folder_path, binary_folder_path, binary_
 
     if lig != 'None':
         if target_2 == 'None':
-            target_file = os.path.join(temp_path, f'{target}.pdb')
+            target_file =  os.path.join(temp_path,'Surfaces', f'{target}.pdb')
             cmd.save(target_file, target)
             ligands = get_residue_info(lig)
             for ligand in ligands:
@@ -148,7 +173,7 @@ def load_surfaces(form, temp_path, main_folder_path, binary_folder_path, binary_
                 interac_dic = run_surfaces_lig(target_file, target_chain, ligand[0], temp_path, main_folder_path, vcon_binary_path,form)
         else:
             cf_dic = {}
-            target_file = os.path.join(temp_path, f'{target}.pdb')
+            target_file =  os.path.join(temp_path,'Surfaces', f'{target}.pdb')
             cmd.save(target_file, target)
             ligands = get_residue_info(lig)
             for ligand in ligands:
@@ -173,10 +198,45 @@ def load_surfaces(form, temp_path, main_folder_path, binary_folder_path, binary_
 
     else:
         if chain_1!='None' and chain_2!='None':
-            target_file = os.path.join(temp_path, f'{target}.pdb')
-            cmd.save(target_file, target)
-            csv_file_surf=run_surfaces_ppi(target_file, chain_1,chain_2,temp_path, main_folder_path, vcon_binary_path,form)
-            read_and_select_residues(csv_file_surf,target,num_rows=10)
+            if target_2 == 'None':
+                target_file =  os.path.join(temp_path,'Surfaces', f'{target}.pdb')
+                cmd.save(target_file, target)
+                csv_file_surf=run_surfaces_ppi(target_file, chain_1,chain_2,temp_path, main_folder_path, vcon_binary_path,form)
+                read_and_select_residues(csv_file_surf,target,num_rows=10)
+            else:
+                target_file = os.path.join(temp_path,'Surfaces', f'{target}.pdb')
+                cmd.save(target_file, target)
+                csv_file_surf = run_surfaces_ppi(target_file, chain_1, chain_2, temp_path, main_folder_path,
+                                                 vcon_binary_path, form)
+                #read_and_select_residues(csv_file_surf, target, num_rows=10)
+                cf_ref=cf_calculatior(csv_file_surf)
+                cf_dic={}
+                for state in range(cmd.count_states(target_2)):
+                    output_file = os.path.join(temp_path,'Surfaces', f'{target_2}_{state + 1}.pdb')
+                    cmd.save(output_file, target_2, state=state + 1)
+                    diff = compare_residues(target_file, output_file)
+                    os.rename(output_file, os.path.join(temp_path, 'Surfaces', f'{target_2}_{diff}.pdb'))
+                    output_file = os.path.join(temp_path, 'Surfaces', f'{target_2}_{diff}.pdb')
+                    csv_file_surf = run_surfaces_ppi(output_file, chain_1, chain_2, temp_path, main_folder_path,
+                                                 vcon_binary_path, form)
+                    cf_dic[os.path.basename(output_file)]=cf_calculatior(csv_file_surf)-cf_ref
+                    os.rename(csv_file_surf, os.path.join(temp_path,'Surfaces', f'List_{target}_{diff}.txt'))
+                csv_file = os.path.join(temp_path, 'Surfaces', '{}_{}'.format(target, target_2) + '_diff.csv')
+                with open(csv_file, 'w') as t1:
+                    for item in list(cf_dic):
+                        t1.write('{},{}\n'.format(item, cf_dic[item]))
+                read_and_select_residues(csv_file, target)
+
+
+def cf_calculatior(res_file):
+    with open(res_file, 'r') as t1:
+        texto=t1.readlines()
+        interaction=0
+        for line in texto:
+            interaction+=float(line.split(',')[-1])
+    return interaction
+
+
 
 
 def read_and_select_residues(file_path, object_name, select_first_column_only=False, num_rows=None):
@@ -235,6 +295,8 @@ def run_surfaces_ppi(target_file,chain_1, chain_2, temp_path, main_folder_path, 
     return os.path.join(os.path.dirname(output_name),"List_" + os.path.basename(output_name[:-4]) + ".txt")
 
 
+
+
 def run_surfaces_lig(target_file, target_chain, lig, temp_path, main_folder_path, vcon_path,form):
     surfaces_output_path = os.path.join(temp_path, 'Surfaces')
     def_file = os.path.join(main_folder_path, "deps", "surfaces", 'AMINO_FlexAID.def')
@@ -270,7 +332,6 @@ def run_surfaces_lig(target_file, target_chain, lig, temp_path, main_folder_path
             else:
                 interact_dic[line.split(',')[0]] = float(line.split(',')[-1][:-1])
     return interact_dic
-
 
 def plot_interactive_table(labels, values):
     df = pd.DataFrame({'Res': labels, 'Value': values})

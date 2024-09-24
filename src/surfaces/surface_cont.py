@@ -189,7 +189,7 @@ def main(pdb_file,chain1,chain2,output_name,atomtypes_definition,atomtypes_inter
         
     vcon(pdb_file,vcon_binary_path)
   
-    matrix = [ [ 0 for i in range(len(res2)) ] for j in range(len(res1)) ]
+    matrix = [ [ 0.0 for i in range(len(res2)) ] for j in range(len(res1)) ]
     matrix = pd.DataFrame(matrix)
     matrix.columns = res2
     matrix.index = res1

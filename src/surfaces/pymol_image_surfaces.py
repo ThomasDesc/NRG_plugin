@@ -17,10 +17,10 @@ def get_sum_per_residue(surfaces_file):
     sum_column = surf.sum()
     sum_row = surf.sum(axis='columns')
     for x in range(len(sum_column)):
-        values.append(sum_column[x])
+        values.append(sum_column.iloc[x])
         residues.append(surf.columns[x])
     for y in range(len(sum_row)):
-        values.append(sum_row[y])
+        values.append(sum_row.iloc[y])
         residues.append(surf.index[y])
     return (residues, values)
 

@@ -12,6 +12,7 @@ def __init_plugin__(app):
     addmenuitemqt('NRGSuite_Qt', run_plugin_gui)
 
 
+
 dialog = None
 
 
@@ -43,9 +44,10 @@ def test_binary(binary_folder_path, operating_system):
 def install_package(package, main_folder_path):
     try:
         __import__(package)
+        print(f"{package} is already installed.")
     except ImportError:
         if package == 'modeller':
-            print('Modeller install not detected. Please install via conda. The modeller tab will be unavailable')
+            print('Modeller install not detected. Please install via conda. For now the modeller tab will be unavailable')
         else:
             print(f"Installing {package}...")
             subprocess.check_call([sys.executable, "-m", "pip", "install", package])
@@ -63,11 +65,15 @@ def make_dialog():
 
     install_dir = os.path.dirname(__file__)
     sys.path.append(install_dir)
-    packages = ['nrgten', 'biopython', 'pandas', 'matplotlib', 'colour', 'scipy', 'numpy', 'numba']
-    for package in packages:
-        install_package(package, install_dir)
+    packages = ['nrgten', 'biopython', 'pandas', 'matplotlib', 'colour', 'scipy', 'numpy=2.0', 'numba', 'pandas']
+    install_package('nrgten', install_dir)
+    install_package('biopython', install_dir)
+    install_package('pandas', install_dir)
+    install_package('matplotlib', install_dir)
+    install_package('colour', install_dir)
     from src.flexaid import flexaid
     from src.getcleft import getcleft
+    from src.surfaces import surfaces
     from src.nrgdock import nrgdock
     from src.getcleft import spheres
     import general_functions
@@ -90,8 +96,10 @@ def make_dialog():
     else:
         exit('Unknown operating system')
 
+
     uifile = os.path.join(install_dir, 'nrgdock_widget.ui')
     form = loadUi(uifile, dialog)
+
     binary_folder_path = os.path.join(install_dir, 'bin', operating_system)
     print('binary path: ', binary_folder_path)
     test_binary(binary_folder_path, operating_system)
@@ -123,6 +131,8 @@ def make_dialog():
         form.button_modeller.setEnabled(False)
         form.button_nrgten.setStyleSheet("background-color: black; color: white;")
         form.button_modeller.setStyleSheet("background-color: black; color: white;")
+        # form.button_nrgten.hide()
+        # form.button_modeller.hide()
     else:
         from src.nrgten import run_NRGTEN
         from src.modeller import run_modeller
@@ -132,7 +142,6 @@ def make_dialog():
     if operating_system == 'mac':
         form.flexaid_multithread_button.setChecked(True)
     print(form.surface_select_result.currentText())
-    form.getcleft_tab_widget.setTabEnabled(2, False)
 
     general_functions.refresh_dropdown(form.cleft_select_object, form.output_box, no_warning=True)
     general_functions.refresh_folder(ligand_set_folder_path, form.nrgdock_select_ligand)
@@ -190,7 +199,11 @@ def make_dialog():
     form.surfaces_refresh_button_2.clicked.connect(lambda: general_functions.refresh_dropdown(form.surface_select_lig_2, form.output_box,lig=1,     add_none=1  ))
     form.surfaces_run_button.clicked.connect(lambda: run_Surfaces.load_surfaces(form, form.temp_line_edit.text(), install_dir, binary_folder_path, binary_suffix))
     form.surface_select_result_3.currentIndexChanged.connect(lambda: run_Surfaces.load_csv_data(form,os.path.join(os.path.join(form.temp_line_edit.text(),'Surfaces'),form.surface_select_result_3.currentText()+'.txt')))
+    form.surface_select_result_4.currentIndexChanged.connect(lambda: run_Surfaces.load_csv_data(form, os.path.join(
+        os.path.join(form.temp_line_edit.text(), 'Surfaces'), form.surface_select_result_4.currentText() + '.csv')))
+
     form.surfaces_refresh_button_3.clicked.connect(lambda:run_Surfaces.refresh_res(form,os.path.join(form.temp_line_edit.text(),'Surfaces')))
+    form.surfaces_refresh_button_3.clicked.connect(lambda: run_Surfaces.load_csv_data(form, os.path.join(form.temp_line_edit.text(), 'Surfaces', form.surface_select_result_4.currentText() + '.csv')))
 
     form.Surfaces_pushButton_2.clicked.connect(lambda: run_Surfaces.read_and_select_residues(os.path.join(form.temp_line_edit.text(),'Surfaces',form.surface_select_result_3.currentText()+'.txt'),form.surface_select_result_3.currentText()[5:-11],num_rows=form.TOPN_lineEdit_2.text()))
 
