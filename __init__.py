@@ -12,7 +12,6 @@ def __init_plugin__(app):
     addmenuitemqt('NRGSuite_Qt', run_plugin_gui)
 
 
-#oi
 dialog = None
 
 

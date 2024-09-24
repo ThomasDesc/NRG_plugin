@@ -220,10 +220,13 @@ color:rgb(255, 255, 255);</string>
     </rect>
    </property>
    <property name="currentIndex">
-    <number>4</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="getcleft_page">
-    <widget class="QTabWidget" name="tabWidget_2">
+    <widget class="QTabWidget" name="getcleft_tab_widget">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>9</x>
@@ -647,7 +650,7 @@ font-size:14px;
      </widget>
      <widget class="QWidget" name="tab_11">
       <attribute name="title">
-       <string>Estimate Volune</string>
+       <string>Estimate Volume</string>
       </attribute>
      </widget>
     </widget>
@@ -2101,7 +2104,7 @@ font-size:14px;
       </rect>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tab_14">
       <attribute name="title">
