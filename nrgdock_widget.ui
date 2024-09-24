@@ -62,6 +62,19 @@ QPushButton:checked{
      </widget>
     </item>
     <item>
+     <widget class="QPushButton" name="button_nrgdock">
+      <property name="text">
+       <string>NRGDock</string>
+      </property>
+      <property name="checkable">
+       <bool>true</bool>
+      </property>
+      <property name="autoExclusive">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item>
      <widget class="QPushButton" name="button_flexaid">
       <property name="text">
        <string>Flexaid</string>
@@ -75,9 +88,9 @@ QPushButton:checked{
      </widget>
     </item>
     <item>
-     <widget class="QPushButton" name="button_nrgdock">
+     <widget class="QPushButton" name="button_surfaces">
       <property name="text">
-       <string>NRGDock</string>
+       <string>Surfaces</string>
       </property>
       <property name="checkable">
        <bool>true</bool>
@@ -97,19 +110,6 @@ QPushButton:checked{
       </property>
       <property name="checked">
        <bool>false</bool>
-      </property>
-      <property name="autoExclusive">
-       <bool>true</bool>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QPushButton" name="button_surfaces">
-      <property name="text">
-       <string>Surfaces</string>
-      </property>
-      <property name="checkable">
-       <bool>true</bool>
       </property>
       <property name="autoExclusive">
        <bool>true</bool>
@@ -220,7 +220,7 @@ color:rgb(255, 255, 255);</string>
     </rect>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>3</number>
    </property>
    <widget class="QWidget" name="getcleft_page">
     <widget class="QTabWidget" name="getcleft_tab_widget">
@@ -2000,38 +2000,6 @@ font-size:14px;
       </layout>
      </widget>
     </widget>
-    <widget class="QGroupBox" name="groupBox_20">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>370</y>
-       <width>631</width>
-       <height>71</height>
-      </rect>
-     </property>
-     <property name="title">
-      <string>Overlap</string>
-     </property>
-     <layout class="QGridLayout" name="gridLayout_18">
-      <item row="0" column="0">
-       <widget class="QLabel" name="label_55">
-        <property name="text">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Gamma:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="2">
-       <widget class="QLineEdit" name="NRGten_overlap_lineEdit"/>
-      </item>
-      <item row="0" column="3">
-       <widget class="QPushButton" name="NRGten_overlap_pushButton">
-        <property name="text">
-         <string>Run</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
     <widget class="QGroupBox" name="groupBox_23">
      <property name="geometry">
       <rect>
@@ -2138,9 +2106,9 @@ font-size:14px;
        <widget class="QWidget" name="horizontalLayoutWidget_10">
         <property name="geometry">
          <rect>
-          <x>0</x>
+          <x>10</x>
           <y>20</y>
-          <width>311</width>
+          <width>291</width>
           <height>61</height>
          </rect>
         </property>
@@ -2191,9 +2159,9 @@ font-size:14px;
        <widget class="QWidget" name="layoutWidget_17">
         <property name="geometry">
          <rect>
-          <x>0</x>
+          <x>10</x>
           <y>110</y>
-          <width>311</width>
+          <width>291</width>
           <height>58</height>
          </rect>
         </property>
@@ -2255,9 +2223,9 @@ font-size:14px;
        <widget class="QWidget" name="horizontalLayoutWidget_5">
         <property name="geometry">
          <rect>
-          <x>0</x>
+          <x>10</x>
           <y>20</y>
-          <width>311</width>
+          <width>291</width>
           <height>61</height>
          </rect>
         </property>
@@ -2303,9 +2271,9 @@ font-size:14px;
        <widget class="QWidget" name="layoutWidget_3">
         <property name="geometry">
          <rect>
-          <x>0</x>
+          <x>10</x>
           <y>110</y>
-          <width>311</width>
+          <width>291</width>
           <height>58</height>
          </rect>
         </property>
