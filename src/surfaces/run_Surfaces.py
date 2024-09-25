@@ -8,7 +8,6 @@ from src.surfaces.surface_cont import main as surface_cont
 from src.surfaces.pymol_image_surfaces_lig import generate_session
 from src.surfaces.pymol_image_surfaces import generate_session as generate_session_ppi
 from pymol import cmd
-from src.modeller.run_modeller import get_residue_info
 import pandas as pd
 from PyQt5.QtGui import QStandardItemModel, QStandardItem, QColor
 from PyQt5.QtCore import QModelIndex
