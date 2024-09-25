@@ -14,8 +14,8 @@ def process_result_flexaid(flexaid_result_file, output):
             for line in text:
                 if 'REMARK' not in line:
                     if 'LIG  9999' in line:
-                        a_name = str(line[12:17].split()[0]) + str(int(line[9:11])) + ' ' * (
-                                    5 - len(line[12:17].split()[0] + str(int(line[9:11]))))
+                        a_name = str(re.sub(r'\d+', '',line[12:17].split()[0])) + str(int(line[9:11])) + ' ' * (
+                                    5 - len(str(re.sub(r'\d+', '',line[12:17].split()[0])) + str(int(line[9:11]))))
                         new_line = line[:12] + a_name + line[17:21] + 'L' + line[22:]
                         t2.write(new_line)
                     else:
