@@ -3,6 +3,7 @@ from modeller import *
 from modeller.optimizers import MolecularDynamics, ConjugateGradients
 from modeller.automodel import autosched
 from PyQt5.QtWidgets import QApplication, QWidget
+import re
 
 from pymol import cmd
 import os
