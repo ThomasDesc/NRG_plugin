@@ -187,6 +187,9 @@ def load_surfaces(form, temp_path, main_folder_path, binary_folder_path, binary_
             for state in range(cmd.count_states(target_2)):
                 output_file = os.path.join(temp_path, f'{target_2}_{state + 1}.pdb')
                 cmd.save(output_file, target_2, state=state + 1)
+                diff = compare_residues(target_file, output_file)
+                os.rename(output_file, os.path.join(temp_path, 'Surfaces', f'{target_2}_{diff}.pdb'))
+                output_file = os.path.join(temp_path, 'Surfaces', f'{target_2}_{diff}.pdb')
                 target_chain = get_chains_from_object(target_2)
                 ligands = get_residue_info(lig_2)
                 for ligand in ligands:
