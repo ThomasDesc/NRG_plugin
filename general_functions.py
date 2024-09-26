@@ -82,7 +82,7 @@ def show_save_dialog(self,temp_path,save=1):
                     self.temp_line_edit.setText(os.path.join(dir_path,'NRGSuite_QT_results'))
                     cmd.save(os.path.join(dir_path,'NRGSuite_QT_results','load_project.pse'))
             else:
-                cmd.save('load_project.pse')
+                cmd.save(os.path.join(dir_path,'load_project.pse'))
         if not save:
             files=os.listdir(dir_path)
             for file in files:
