@@ -136,6 +136,14 @@ def write_b_factor(target, dyna_sig, temp_path, labels):
     return b_factor_dict
 
 
+def prep_labels(labels):
+    labels_list=[]
+    for label in labels:
+        res=int(label.split("|")[1])
+        chain=label.split("|")[2]
+        labels_list.append(f'{res}_{chain}')
+    return(labels_list)
+
 
 
 
@@ -199,7 +207,7 @@ def dynamical_signature(target, lig, target_2, beta, main_folder_path, temp_path
             dyna_sig_no_lig = standardize_to_minus1_plus1(dyna_sig_no_lig)
             #plt.plot(dyna_sig_no_lig, label=diff)
 
-            plots.append(go.Scatter(x=list(range(len(dyna_sig_no_lig))), y=dyna_sig_no_lig, mode='lines', name=f'Diff {diff}'))
+            plots.append(go.Scatter(x=prep_labels(model_no_lig.get_mass_labels()), y=dyna_sig_no_lig, mode='lines', name=f'Diff {diff}'))
 
             write_b_factor(key_base, dyna_sig_no_lig, temp_path, model_no_lig.get_mass_labels())
             cmd.load(os.path.join(temp_path,'NRGTEN', f'{key_base}_dynasig.pdb'), f'{target_2}_dynasigdif_{diff}')
@@ -215,6 +223,15 @@ def dynamical_signature(target, lig, target_2, beta, main_folder_path, temp_path
 
         # Create buttons to toggle visibility of each trace
         buttons = []
+
+        # Add button for showing all plots together
+        all_visible_button = dict(
+            label="All Combined",
+            method="update",
+            args=[{"visible": [True for _ in range(len(plots))]}]  # Show all traces
+        )
+        buttons.append(all_visible_button)
+
         for i in range(len(plots)):
             button = dict(
                 label=f"Diff {diff_list[i]}",
@@ -223,25 +240,24 @@ def dynamical_signature(target, lig, target_2, beta, main_folder_path, temp_path
             )
             buttons.append(button)
 
+
+
         # Update layout with the buttons
         fig.update_layout(
             updatemenus=[dict(type="buttons", showactive=True, buttons=buttons)],
             title=f"Dynamical Signatures of {target_2}",
             xaxis_title="Residue Index",
-            yaxis_title="B-factor",
+            yaxis_title="Fluctuation differential",
         )
 
         # Display the interactive plot
+        fig.write_html(os.path.join(temp_path,'NRGTEN',f'{target_2}_diff.html'))
         fig.show()
 
         for state in diff_list:
             cmd.spectrum(selection=f'{target_2}_dynasigdif_{state}', palette='blue_white_red', expression='b',
                          minimum=-1, maximum=1)
         create_group(f'{target_2}_dynasigdif', object_list)
-        plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
-        plt.tight_layout()
-        plt.savefig(os.path.join(target_file[:-4]+'.png'), dpi=300, bbox_inches='tight')
-        plt.show()
 
 
 def create_group(group_name, object_list):
