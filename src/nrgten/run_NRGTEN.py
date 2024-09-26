@@ -192,7 +192,7 @@ def dynamical_signature(target, lig, target_2, beta, main_folder_path, temp_path
             dyna_sig_no_lig = standardize_to_minus1_plus1(dyna_sig_no_lig)
             plt.plot(dyna_sig_no_lig, label=str(state + 1))
             write_b_factor(key_base, dyna_sig_no_lig, temp_path, model_no_lig.get_mass_labels())
-            cmd.load(os.path.join(temp_path, f'{key_base}_dynasig.pdb'), f'{target_2}_dynasigdif_{state + 1}')
+            cmd.load(os.path.join(temp_path,'NRGTEN', f'{key_base}_dynasig.pdb'), f'{target_2}_dynasigdif_{state + 1}')
             object_list.append(f'{target_2}_dynasigdif_{state + 1}')
         for state in range(cmd.count_states(target_2)):
             cmd.spectrum(selection=f'{target_2}_dynasigdif_{state + 1}', palette='blue_white_red', expression='b',
