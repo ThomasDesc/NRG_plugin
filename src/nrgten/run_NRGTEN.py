@@ -8,6 +8,7 @@ from src.nrgten.model_ensemble import model_states
 import matplotlib.pyplot as plt
 import os
 import numpy as np
+import plotly.graph_objects as go
 
 
 def remove_selection_and_save(object_name, selection, output_file):
@@ -176,6 +177,8 @@ def dynamical_signature(target, lig, target_2, beta, main_folder_path, temp_path
                      expression='b')
         object_list = []
         diff_list=[]
+        plots = []
+
         for state in range(cmd.count_states(target_2)):
             output_file = os.path.join(temp_path,'NRGTEN' ,f'{target_2}_{state}.pdb')
             cmd.save(output_file, target_2, state=state + 1)
@@ -194,10 +197,43 @@ def dynamical_signature(target, lig, target_2, beta, main_folder_path, temp_path
             for b_factor in range(len(dyna_sig_no_lig)):
                 dyna_sig_no_lig[b_factor] = (b_fact_dict[b_factor] / dyna_sig_no_lig[b_factor]) - 1
             dyna_sig_no_lig = standardize_to_minus1_plus1(dyna_sig_no_lig)
-            plt.plot(dyna_sig_no_lig, label=diff)
+            #plt.plot(dyna_sig_no_lig, label=diff)
+
+            plots.append(go.Scatter(x=list(range(len(dyna_sig_no_lig))), y=dyna_sig_no_lig, mode='lines', name=f'Diff {diff}'))
+
             write_b_factor(key_base, dyna_sig_no_lig, temp_path, model_no_lig.get_mass_labels())
             cmd.load(os.path.join(temp_path,'NRGTEN', f'{key_base}_dynasig.pdb'), f'{target_2}_dynasigdif_{diff}')
             object_list.append(f'{target_2}_dynasigdif_{diff}')
+
+        fig = go.Figure()
+
+        # Add traces but set them to be initially invisible, except for the first one
+        for i, plot in enumerate(plots):
+            fig.add_trace(plot)
+            if i != 0:
+                fig.data[i].visible = False
+
+        # Create buttons to toggle visibility of each trace
+        buttons = []
+        for i in range(len(plots)):
+            button = dict(
+                label=f"Diff {diff_list[i]}",
+                method="update",
+                args=[{"visible": [j == i for j in range(len(plots))]}]  # Toggle visibility
+            )
+            buttons.append(button)
+
+        # Update layout with the buttons
+        fig.update_layout(
+            updatemenus=[dict(type="buttons", showactive=True, buttons=buttons)],
+            title=f"Dynamical Signatures of {target_2}",
+            xaxis_title="Residue Index",
+            yaxis_title="B-factor",
+        )
+
+        # Display the interactive plot
+        fig.show()
+
         for state in diff_list:
             cmd.spectrum(selection=f'{target_2}_dynasigdif_{state}', palette='blue_white_red', expression='b',
                          minimum=-1, maximum=1)
