@@ -200,7 +200,7 @@ def dynamical_signature(target, lig, target_2, beta, main_folder_path, temp_path
         create_group(f'{target_2}_dynasigdif', object_list)
         plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
         plt.tight_layout()
-        plt.savefig(os.path.join(target_file[:-4],'.png'), dpi=300, bbox_inches='tight')
+        plt.savefig(os.path.join(target_file[:-4]+'.png'), dpi=300, bbox_inches='tight')
         plt.show()
 
 
