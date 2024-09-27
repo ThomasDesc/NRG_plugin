@@ -213,7 +213,7 @@ def model_mutations(form, temp_path):
                      form.Modeller_checkBox_18.isChecked(),
                      form.Modeller_checkBox_19.isChecked(),
                      form.Modeller_checkBox_20.isChecked()]
-    target_file = temp_path + '/{}.pdb'.format(target)
+    target_file = os.path.join(temp_path,'modeller', '{}.pdb'.format(target))
     cmd.save(target_file, target)
     if flex_res(target_file):
         process_result_flexaid(target_file, target_file)

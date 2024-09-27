@@ -59,8 +59,6 @@ def model_states(input_file, target, temp_path, main_folder_path, form):
         # Load model into PyMOL and show as cartoon
         cmd.load(cleaned_file_path, f'{target}_ensemble', state=i + 1)
         cmd.show('cartoon', f'{target}_ensemble')
-        if i==5:
-            break
 
 
 

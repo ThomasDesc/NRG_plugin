@@ -186,6 +186,7 @@ def dynamical_signature(target, lig, target_2, beta, main_folder_path, temp_path
         object_list = []
         diff_list=[]
         plots = []
+        all_signatures=[[],[]]
 
         for state in range(cmd.count_states(target_2)):
             output_file = os.path.join(temp_path,'NRGTEN' ,f'{target_2}_{state}.pdb')
@@ -208,7 +209,8 @@ def dynamical_signature(target, lig, target_2, beta, main_folder_path, temp_path
             #plt.plot(dyna_sig_no_lig, label=diff)
 
             plots.append(go.Scatter(x=prep_labels(model_no_lig.get_mass_labels()), y=dyna_sig_no_lig, mode='lines', name=f'Diff {diff}'))
-
+            all_signatures[0].append(dyna_sig_no_lig)
+            all_signatures[1].append(f'{target_2}_{diff}')
             write_b_factor(key_base, dyna_sig_no_lig, temp_path, model_no_lig.get_mass_labels())
             cmd.load(os.path.join(temp_path,'NRGTEN', f'{key_base}_dynasig.pdb'), f'{target_2}_dynasigdif_{diff}')
             object_list.append(f'{target_2}_dynasigdif_{diff}')

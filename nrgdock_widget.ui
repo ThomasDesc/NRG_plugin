@@ -1751,7 +1751,7 @@ font-size:14px;
        <item>
         <widget class="QLineEdit" name="NRGten_modes_lineEdit">
          <property name="text">
-          <string>7,8,9</string>
+          <string>7</string>
          </property>
         </widget>
        </item>
