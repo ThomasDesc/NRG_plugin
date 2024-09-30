@@ -155,7 +155,7 @@ def load_show_flexaid_result(result_path):
         if file.startswith('RESULT') and not file.endswith('INI.pdb') and file.endswith('.pdb'):
             file_path = os.path.join(result_path, file)
             cmd.load(file_path)
-            cmd.group('flexaid_results',os.path.basename(file_path[:-4]))
+            cmd.group('flexaid_results', os.path.basename(file_path[:-4]))
 
 
 def pause_resume_simulation(form):
@@ -201,19 +201,21 @@ def run_flexaid_worker(command, form, simulation_folder, hex_colour_list, max_ge
         worker.finished.connect(lambda: show_rmsd(form,simulation_folder))
     # worker.finished.connect(lambda: load_show_cleft(cleft_save_path, color_list, form.output_box, pymol_object))
 
-def show_rmsd(form,simulation_folder):
+
+def show_rmsd(form, simulation_folder):
     table = form.flexaid_result_table
     last_column = table.columnCount() - 1
     rmsd_list = []
     for i in range(5):
         with open(os.path.join(simulation_folder, f'RESULT_{i}.pdb'), 'r') as t1:
-            texto = t1.readlines()
-            for line in texto:
+            lines = t1.readlines()
+            for line in lines:
                 if 'RMSD to' in line:
                     rmsd_list.append(line.split()[1])
                     break
     for row in range(5):
         table.setItem(row, last_column, QTableWidgetItem(rmsd_list[row]))
+
 
 def update_table(simulation_folder, table_widget, hex_colour_list, num_results=5):
     update_file_path = os.path.join(simulation_folder, "RESULT.cad")

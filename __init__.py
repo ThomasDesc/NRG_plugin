@@ -43,10 +43,12 @@ def test_binary(binary_folder_path, operating_system):
 def install_package(package, main_folder_path):
     try:
         __import__(package)
-    except ImportError:
+    except ImportError as e:
         if package == 'modeller':
             print('Modeller install not detected. Please install via conda. The modeller tab will be unavailable')
         else:
+            if package == 'Bio':
+                package = 'biopython'
             print(f"Installing {package}...")
             subprocess.check_call([sys.executable, "-m", "pip", "install", package])
             if package == 'nrgten':
@@ -63,20 +65,16 @@ def make_dialog():
 
     install_dir = os.path.dirname(__file__)
     sys.path.append(install_dir)
-    packages = ['nrgten', 'biopython', 'pandas', 'matplotlib', 'colour', 'scipy', 'numpy', 'numba','plotly']
+    packages = ['nrgten', 'Bio', 'pandas', 'matplotlib', 'colour', 'scipy', 'numpy', 'numba','plotly']
     for package in packages:
         install_package(package, install_dir)
     from src.flexaid import flexaid
     from src.getcleft import getcleft
-    from src.surfaces import surfaces
     from src.nrgdock import nrgdock
     from src.getcleft import spheres
     import general_functions
     from src.surfaces import run_Surfaces
-
     import platform
-    # import spheres
-    # import flexaid_thread
     dialog = QtWidgets.QDialog()
 
     OS = platform.system().upper()
@@ -87,7 +85,6 @@ def make_dialog():
         operating_system = 'mac'
     elif OS == 'WINDOWS' or OS == 'MICROSOFT' or OS == 'WIN32':
         operating_system = 'win'
-        binary_suffix = '.exe'
     else:
         exit('Unknown operating system')
 
@@ -118,8 +115,8 @@ def make_dialog():
         import modeller
     except ModuleNotFoundError:
         general_functions.output_message(form.output_box, 'Modeller install not detected. '
-                                                          'Please install via conda. For now the modeller tab will be '
-                                                          'unavailable', 'warning')
+                                                          'The modeller tab will be unavailable. '
+                                                          'Please install via conda.', 'warning')
         form.button_nrgten.setEnabled(False)
         form.button_modeller.setEnabled(False)
         form.button_nrgten.setStyleSheet("background-color: black; color: white;")
@@ -129,7 +126,6 @@ def make_dialog():
         from src.modeller import run_modeller
     form.stackedWidget.setCurrentIndex(0)
     form.flexaid_tab.setTabEnabled(2, False)
-    form.NRGDock_settings.setTabEnabled(2, False)
     if operating_system == 'mac':
         form.flexaid_multithread_button.setChecked(True)
     print(form.surface_select_result.currentText())
@@ -145,7 +141,6 @@ def make_dialog():
     form.button_modeller.clicked.connect(lambda: form.stackedWidget.setCurrentIndex(5))
 
     # save/load
-
     form.button_save.clicked.connect(lambda: general_functions.show_save_dialog(form,form.temp_line_edit.text()))
     form.button_load.clicked.connect(lambda: general_functions.show_save_dialog(form,form.temp_line_edit.text(),save=0))
 
@@ -182,9 +177,9 @@ def make_dialog():
     form.nrgdock_button_start.clicked.connect(
         lambda: nrgdock.run_nrgdock(form, os.path.join(form.temp_line_edit.text(), 'NRGDock'), ligand_set_folder_path, install_dir))
     form.nrgdock_result_browse_button.clicked.connect(lambda: general_functions.folder_browser(form.nrgdock_result_path, os.path.join(form.temp_line_edit.text(), 'NRGDock'), "CSV file (*.csv)"))
+    form.nrgdock_load_csv_button.clicked.connect(lambda: nrgdock.get_nrgdock_result_model(form.nrgdock_result_path.text(), form))
 
-    # surfaces functions
-
+    # Surfaces
     form.surfaces_refresh_button.clicked.connect(lambda: general_functions.refresh_dropdown(form.surface_select_result, form.output_box))
     form.surfaces_refresh_button.clicked.connect(lambda: general_functions.refresh_dropdown(form.surface_select_lig, form.output_box, lig=1 ,    add_none=1  ))
     form.surfaces_refresh_button_2.clicked.connect(lambda: general_functions.refresh_dropdown(form.surface_select_result_2, form.output_box,     add_none=1  ))
@@ -193,14 +188,11 @@ def make_dialog():
     form.surface_select_result_3.currentIndexChanged.connect(lambda: run_Surfaces.load_csv_data(form,os.path.join(os.path.join(form.temp_line_edit.text(),'Surfaces'),form.surface_select_result_3.currentText()+'.txt')))
     form.surface_select_result_4.currentIndexChanged.connect(lambda: run_Surfaces.load_csv_data(form, os.path.join(
         os.path.join(form.temp_line_edit.text(), 'Surfaces'), form.surface_select_result_4.currentText() + '.csv')))
-
     form.surfaces_refresh_button_3.clicked.connect(lambda:run_Surfaces.refresh_res(form,os.path.join(form.temp_line_edit.text(),'Surfaces')))
     form.surfaces_refresh_button_3.clicked.connect(lambda: run_Surfaces.load_csv_data(form, os.path.join(form.temp_line_edit.text(), 'Surfaces', form.surface_select_result_4.currentText() + '.csv')))
-
     form.Surfaces_pushButton_2.clicked.connect(lambda: run_Surfaces.read_and_select_residues(os.path.join(form.temp_line_edit.text(),'Surfaces',form.surface_select_result_3.currentText()+'.txt'),form.surface_select_result_3.currentText()[5:-11],num_rows=form.TOPN_lineEdit_2.text()))
 
-
-    # nrgten functions
+    # NRGTEN
     form.NRGten_target_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.NRGten_select_target, form.output_box))
     form.NRGten_target_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.NRGten_select_ligand, form.output_box,lig=1,     add_none=1  ))
     form.NRGten_target_refresh_2.clicked.connect(lambda: general_functions.refresh_dropdown(form.NRGten_select_target_2, form.output_box,     add_none=1  ))
@@ -216,7 +208,7 @@ def make_dialog():
                                                                                                  form.NRGten_max_dis_lineEdit.text(),
                                                                                                  form.NRGten_optmizestates.isChecked(), install_dir, form.temp_line_edit.text(),form))
 
-    # modeller functions
+    # Modeller
     form.Modeller_target_refresh_1.clicked.connect(lambda: general_functions.refresh_dropdown(form.Modeller_select_target_1, form.output_box))
     form.Modeller_target_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.Modeller_select_target, form.output_box, lig=1 ))
     form.Modeller_pushButton.clicked.connect(lambda: run_modeller.model_mutations(form, form.temp_line_edit.text()))

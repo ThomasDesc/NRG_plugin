@@ -10,7 +10,6 @@ from src.surfaces.pymol_image_surfaces import generate_session as generate_sessi
 from pymol import cmd
 import pandas as pd
 from PyQt5.QtGui import QStandardItemModel, QStandardItem, QColor
-from PyQt5.QtCore import QModelIndex
 import csv
 from Bio import PDB
 import re
@@ -26,6 +25,7 @@ def refresh_res(form,out_path):
     load_csv_data(form,os.path.join(out_path,form.surface_select_result_3.currentText()+'.txt'))
     form.surface_select_result_4.clear()
     form.surface_select_result_4.addItems(cf_comp)
+
 
 def load_csv_data(form, csv_file):
 
@@ -61,13 +61,11 @@ def load_csv_data(form, csv_file):
                     normalized_value = normalize(float(field))
                     color = QColor(*[int(c * 255) for c in cmap(normalized_value)[:3]])
                     item.setBackground(color)
-
                 items.append(item)
             model.appendRow(items)
 
     form.surfaces_tableView.setModel(model)
 
-    # Adjust column widths
     if len(headers)>0:
         form.surfaces_tableView.setColumnWidth(last_column_index, 175)
     form.surfaces_tableView.clicked.connect(lambda index: open_res(form.surfaces_tableView, index,len(headers)))
@@ -104,6 +102,7 @@ def compare_residues(pdb1, pdb2):
 
     return '_'.join(differences)
 
+
 def open_res(tableView,index,lheaders):
     if lheaders==3:
         if index.column()==0 or index.column()==1:
@@ -111,8 +110,6 @@ def open_res(tableView,index,lheaders):
             cmd.select('sele_surfaces','resname {} and resi {} and chain {}'.format(cell_text[:3],cell_text[3:-1],cell_text[-1]))
             cmd.zoom('sele_surfaces', buffer=10.0)
             cmd.show('lines', 'sele_surfaces')
-
-
 
 
 def process_result_flexaid(flexaid_result_file, output):
@@ -129,6 +126,7 @@ def process_result_flexaid(flexaid_result_file, output):
                     else:
                         t2.write(line)
 
+
 def create_ligand_file(pdb_file_name, lig_path):
     with open(pdb_file_name, "r") as f:
         lines = f.readlines()
@@ -142,6 +140,7 @@ def create_ligand_file(pdb_file_name, lig_path):
     lig_pdb_file.close()
     return
 
+
 def flex_res(target_file):
     with open(target_file, "r") as f:
         texto = f.readlines()
@@ -150,12 +149,14 @@ def flex_res(target_file):
                 return 1
     return 0
 
+
 def get_chains_from_object(object_name):
     chains = cmd.get_chains(object_name)
     str_chain = ''
     for chain in chains:
         str_chain = str_chain + str(chain)
     return str_chain
+
 
 def load_surfaces(form, temp_path, main_folder_path, binary_folder_path, binary_suffix):
     vcon_binary_path = os.path.join(binary_folder_path, f'vcon{binary_suffix}')
@@ -243,8 +244,6 @@ def cf_calculatior(res_file):
     return interaction
 
 
-
-
 def read_and_select_residues(file_path, object_name, select_first_column_only=False, num_rows=None):
     with open(file_path, 'r') as file:
         lines = file.readlines()
@@ -301,8 +300,6 @@ def run_surfaces_ppi(target_file,chain_1, chain_2, temp_path, main_folder_path, 
     return os.path.join(os.path.dirname(output_name),"List_" + os.path.basename(output_name[:-4]) + ".txt")
 
 
-
-
 def run_surfaces_lig(target_file, target_chain, lig, temp_path, main_folder_path, vcon_path,form):
     surfaces_output_path = os.path.join(temp_path, 'Surfaces')
     def_file = os.path.join(main_folder_path, "deps", "surfaces", 'AMINO_FlexAID.def')
@@ -327,7 +324,7 @@ def run_surfaces_lig(target_file, target_chain, lig, temp_path, main_folder_path
     vcon_out_file = os.path.join(os.path.dirname(surfaces_output_path), 'vcon_file.txt')
     csv_path = os.path.join(surfaces_output_path, f'{os.path.basename(target_file)[:-4]}_csv_output.csv')
     list_file_path, image_file_path = surface_cont_lig(cleaned_file_path, target_chain, lig, csv_path, custom_def_path, flexaid_dat_path, vcon_path, vcon_out_file)
-    load_csv_data(form,list_file_path)
+    load_csv_data(form, list_file_path)
     generate_session(cleaned_file_path, image_file_path, list_file_path, color_rgb_path)
     interact_dic = {}
     with open(list_file_path, 'r') as f:
@@ -338,6 +335,7 @@ def run_surfaces_lig(target_file, target_chain, lig, temp_path, main_folder_path
             else:
                 interact_dic[line.split(',')[0]] = float(line.split(',')[-1][:-1])
     return interact_dic
+
 
 def plot_interactive_table(labels, values):
     df = pd.DataFrame({'Res': labels, 'Value': values})

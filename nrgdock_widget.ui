@@ -16,6 +16,10 @@
   <property name="autoFillBackground">
    <bool>false</bool>
   </property>
+  <property name="styleSheet">
+   <string notr="true">QGroupBox{
+font-size:14px}</string>
+  </property>
   <widget class="QWidget" name="verticalWidget" native="true">
    <property name="geometry">
     <rect>
@@ -220,7 +224,7 @@ color:rgb(255, 255, 255);</string>
     </rect>
    </property>
    <property name="currentIndex">
-    <number>3</number>
+    <number>2</number>
    </property>
    <widget class="QWidget" name="getcleft_page">
     <widget class="QTabWidget" name="getcleft_tab_widget">
@@ -1137,7 +1141,7 @@ font-size:14px;
     </widget>
    </widget>
    <widget class="QWidget" name="nrgdock_page">
-    <widget class="QTabWidget" name="NRGDock_settings">
+    <widget class="QTabWidget" name="NRGDock_tabs">
      <property name="enabled">
       <bool>true</bool>
      </property>
@@ -1162,7 +1166,7 @@ font-size:14px;
       <enum>QTabWidget::Rounded</enum>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <property name="usesScrollButtons">
       <bool>false</bool>
@@ -1621,60 +1625,55 @@ font-size:14px;
       <attribute name="title">
        <string>Results</string>
       </attribute>
-      <widget class="QTableWidget" name="tableWidget">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>40</y>
-         <width>591</width>
-         <height>351</height>
-        </rect>
-       </property>
-      </widget>
       <widget class="QWidget" name="gridLayoutWidget_8">
        <property name="geometry">
         <rect>
          <x>20</x>
          <y>10</y>
-         <width>551</width>
+         <width>571</width>
          <height>33</height>
         </rect>
        </property>
        <layout class="QGridLayout" name="gridLayout_12">
-        <item row="0" column="2">
-         <widget class="QLineEdit" name="nrgdock_result_path"/>
-        </item>
-        <item row="0" column="1">
-         <spacer name="horizontalSpacer_5">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeType">
-           <enum>QSizePolicy::Preferred</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="0" column="0">
-         <widget class="QLabel" name="label_6">
+        <item row="0" column="3">
+         <widget class="QPushButton" name="nrgdock_load_csv_button">
           <property name="text">
-           <string>Result csv</string>
+           <string>Load CSV</string>
           </property>
          </widget>
         </item>
-        <item row="0" column="3">
+        <item row="0" column="1">
+         <widget class="QLineEdit" name="nrgdock_result_path">
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="2">
          <widget class="QPushButton" name="nrgdock_result_browse_button">
           <property name="text">
            <string>Browse</string>
           </property>
          </widget>
         </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_6">
+          <property name="text">
+           <string>Result CSV</string>
+          </property>
+         </widget>
+        </item>
        </layout>
+      </widget>
+      <widget class="QTableView" name="nrgdock_result_table">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>50</y>
+         <width>571</width>
+         <height>341</height>
+        </rect>
+       </property>
       </widget>
      </widget>
     </widget>
@@ -2072,7 +2071,7 @@ font-size:14px;
       </rect>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tab_14">
       <attribute name="title">
@@ -2211,9 +2210,9 @@ font-size:14px;
       <widget class="QGroupBox" name="groupBox_9">
        <property name="geometry">
         <rect>
-         <x>0</x>
+         <x>10</x>
          <y>10</y>
-         <width>311</width>
+         <width>301</width>
          <height>181</height>
         </rect>
        </property>
@@ -2323,32 +2322,28 @@ font-size:14px;
       <widget class="QGroupBox" name="groupBox_6">
        <property name="geometry">
         <rect>
-         <x>0</x>
+         <x>10</x>
          <y>250</y>
-         <width>311</width>
-         <height>131</height>
+         <width>301</width>
+         <height>121</height>
         </rect>
        </property>
+       <property name="styleSheet">
+        <string notr="true">font-size: 14px;</string>
+       </property>
        <property name="title">
-        <string/>
+        <string>Protein-Protein Interactions</string>
        </property>
        <widget class="QWidget" name="layoutWidget">
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>20</y>
-          <width>291</width>
+          <y>30</y>
+          <width>281</width>
           <height>82</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout">
-         <item>
-          <widget class="QLabel" name="label_17">
-           <property name="text">
-            <string>Protein-Protein Interactions</string>
-           </property>
-          </widget>
-         </item>
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_11">
            <item>
