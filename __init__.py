@@ -215,5 +215,5 @@ def make_dialog():
     form.Modeller_checkBox_all.clicked.connect(lambda: run_modeller.check_all(form))
 
     #isomif functions
-
+    form
     return dialog
