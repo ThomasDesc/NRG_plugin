@@ -1,6 +1,7 @@
 import os
 from pymol import cmd
 from PyQt5.QtWidgets import QApplication
+from PyQt5.QtGui import QStandardItemModel, QStandardItem
 from src.nrgdock.process_target import main as process_target
 from src.nrgdock.main_processed_target import main as nrgdock_main
 import pandas as pd
@@ -15,15 +16,16 @@ def process_ligands():
 
 
 def merge_csv(folder):
+    csv_output_path = os.path.join(folder, "nrgdock_result.csv")
     csv_files = glob.glob(os.path.join(folder, "*.csv"))
     merged_df = pd.concat((pd.read_csv(file) for file in csv_files), ignore_index=True)
     filtered_df = merged_df[merged_df['CF'] != 100000000]
     sorted_df = filtered_df.sort_values(by='CF')
-    sorted_df.to_csv(os.path.join(folder, "nrgdock_result.csv"), index=False)
+    sorted_df.to_csv(csv_output_path, index=False)
     for file in csv_files:
         os.remove(file)
     top_10_names = sorted_df['Name'].head(20).tolist()
-    return top_10_names
+    return top_10_names, csv_output_path
 
 
 def manage_poses(top_n_name_list, ligand_poses_folder):
@@ -34,6 +36,22 @@ def manage_poses(top_n_name_list, ligand_poses_folder):
             os.remove(file)
         else:
             cmd.load(file)
+
+
+def get_nrgdock_result_model(csv_result, form):
+    df = pd.read_csv(csv_result)
+    df = df[['Name', 'CF']]
+    model = QStandardItemModel()
+    model.setHorizontalHeaderLabels(df.columns.tolist())
+    for index, row in df.iterrows():
+        item_list = []
+        for data in row:
+            item = QStandardItem(str(data))
+            item_list.append(item)
+        model.appendRow(item_list)
+    form.nrgdock_result_table.setModel(model)
+    form.nrgdock_result_table.resizeColumnsToContents()
+    form.NRGDock_tabs.setCurrentIndex(2)
 
 
 def run_nrgdock(form, nrgdock_output_path, ligand_set_folder_path, install_dir):
@@ -75,7 +93,7 @@ def run_nrgdock(form, nrgdock_output_path, ligand_set_folder_path, install_dir):
     form.output_box.append("Running NRGDock...")
     form.output_box.repaint()
     form.nrgdock_progress.setEnabled(True)
-    form.nrgdock_progress_label.setText(f'Generation: 0/{ligand_number}')
+    form.nrgdock_progress_label.setText(f'Molecules docked: 0/{ligand_number}')
     form.nrgdock_progress_bar.setMaximum(ligand_number)
     form.nrgdock_progress_label.repaint()
     form.nrgdock_progress.repaint()
@@ -96,5 +114,8 @@ def run_nrgdock(form, nrgdock_output_path, ligand_set_folder_path, install_dir):
     form.output_box.append("Done NRGDock")
     form.output_box.repaint()
     QApplication.processEvents()
-    top_n_name_list = merge_csv(os.path.join(nrgdock_result_folder, target_name))
+    top_n_name_list, csv_output_path = merge_csv(os.path.join(nrgdock_result_folder, target_name))
     manage_poses(top_n_name_list, os.path.join(nrgdock_output_path, 'ligand_poses', target_name))
+    get_nrgdock_result_model(csv_output_path, form)
+    form.NRGDock_settings.setTabEnabled(2, True)
+
