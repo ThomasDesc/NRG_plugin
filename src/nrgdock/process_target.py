@@ -112,7 +112,7 @@ def load_binding_site_grid(dot_division, a, target_path, padding):
         for y_coord in y:
             for z_coord in z:
                 bd_site_box.append([x_coord, y_coord, z_coord])
-    write_test(bd_site_box, f"{os.path.split(target_path)[-1]}_bd_site_box", f'./temp/ligand_poses', None, None)
+    # write_test(bd_site_box, f"{os.path.split(target_path)[-1]}_bd_site_box", f'./temp/ligand_poses', None, None)
     x_range = np.arange(x[0], x[1], dot_division)
     y_range = np.arange(y[0], y[1], dot_division)
     z_range = np.arange(z[0], z[1], dot_division)
@@ -241,7 +241,7 @@ def clean_binding_site_grid(params, target_grid, binding_site_grid, min_xyz, cel
 
                                     break
     cleaned_binding_site_grid = np.delete(binding_site_grid, index, 0)
-    write_test(cleaned_binding_site_grid, "cleaned grid", f'./temp/ligand_poses/', None, None)
+    # write_test(cleaned_binding_site_grid, "cleaned grid", f'./temp/ligand_poses/', None, None)
     np.save(os.path.join(target_path, 'preprocessing_files', f"cleaned_grid_{dot_division}"), cleaned_binding_site_grid)
 
 
