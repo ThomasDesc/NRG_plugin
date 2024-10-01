@@ -9,7 +9,8 @@ import glob
 import numpy as np
 # TODO: run on more than 1 bd site
 # TODO: load own ligands (generate library from smiles)
-
+# TODO: group results
+# TODO load results in order
 
 def process_ligands():
     print()
