@@ -221,4 +221,7 @@ def make_dialog():
     form.Modeller_target_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.Modeller_select_target, form.output_box, lig=1 ))
     form.Modeller_pushButton.clicked.connect(lambda: run_modeller.model_mutations(form, form.temp_line_edit.text()))
     form.Modeller_checkBox_all.clicked.connect(lambda: run_modeller.check_all(form))
+
+    #isomif functions
+
     return dialog
