@@ -124,6 +124,11 @@ def make_dialog():
     else:
         from src.nrgten import run_NRGTEN
         from src.modeller import run_modeller
+
+    # Disable isomif
+    form.button_isomif.setEnabled(False)
+    form.button_isomif.setStyleSheet("background-color: black; color: white;")
+
     form.stackedWidget.setCurrentIndex(0)
     form.flexaid_tab.setTabEnabled(2, False)
     if operating_system == 'mac':
@@ -215,5 +220,6 @@ def make_dialog():
     form.Modeller_checkBox_all.clicked.connect(lambda: run_modeller.check_all(form))
 
     #isomif functions
+
 
     return dialog

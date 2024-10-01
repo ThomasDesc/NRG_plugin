@@ -134,7 +134,7 @@ QPushButton:checked{
      </widget>
     </item>
     <item>
-     <widget class="QPushButton" name="button_modeller_2">
+     <widget class="QPushButton" name="button_isomif">
       <property name="text">
        <string>ISOMIF</string>
       </property>
