@@ -74,6 +74,7 @@ def make_dialog():
     from src.getcleft import spheres
     import general_functions
     from src.surfaces import run_Surfaces
+    from src.isomif import run_isomif
     import platform
     dialog = QtWidgets.QDialog()
 
@@ -102,6 +103,7 @@ def make_dialog():
     surfaces_output_path = os.path.join(form.temp_line_edit.text(), 'Surfaces')
     modeller_save_path = os.path.join(form.temp_line_edit.text(), 'modeller')
     nrgten_save_path =os.path.join(form.temp_line_edit.text(), 'NRGTEN')
+    isomif_save_path = os.path.join(form.temp_line_edit.text(), 'ISOMIF')
 
     if os.path.isdir(plugin_tmp_output_path):
         shutil.rmtree(plugin_tmp_output_path)
@@ -111,6 +113,7 @@ def make_dialog():
     os.mkdir(nrgdock_output_path)
     os.mkdir(modeller_save_path)
     os.mkdir(nrgten_save_path)
+    os.mkdir(isomif_save_path)
     try:
         import modeller
     except ModuleNotFoundError:
@@ -139,6 +142,7 @@ def make_dialog():
     form.button_nrgten.clicked.connect(lambda: form.stackedWidget.setCurrentIndex(3))
     form.button_surfaces.clicked.connect(lambda: form.stackedWidget.setCurrentIndex(4))
     form.button_modeller.clicked.connect(lambda: form.stackedWidget.setCurrentIndex(5))
+    form.button_ISOMIF.clicked.connect(lambda: form.stackedWidget.setCurrentIndex(6))
 
     # save/load
     form.button_save.clicked.connect(lambda: general_functions.show_save_dialog(form,form.temp_line_edit.text()))
@@ -215,5 +219,12 @@ def make_dialog():
     form.Modeller_checkBox_all.clicked.connect(lambda: run_modeller.check_all(form))
 
     #isomif functions
+    form.ISOMIF_target_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.ISOMIF_select_target, form.output_box))
+    form.ISOMIF_target_refresh_1.clicked.connect(lambda:general_functions.refresh_dropdown(form.ISOMIF_select_target_1, form.output_box,add_none=1))
+    form.ISOMIF_cleft_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.ISOMIF_select_cleft, form.output_box,filter_for='_sph'))
+    form.ISOMIF_cleft_refresh_1.clicked.connect(lambda: general_functions.refresh_dropdown(form.ISOMIF_select_cleft_1,
+                                                                                  form.output_box,filter_for='_sph' ,add_none=1))
+    form.ISOMIF_pushButton.clicked.connect(lambda: run_isomif.mif_plot(form, form.output_box,binary_folder_path, binary_suffix,operating_system))
+
 
     return dialog
