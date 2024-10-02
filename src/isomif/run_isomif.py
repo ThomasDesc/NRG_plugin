@@ -35,13 +35,18 @@ def mif_plot(form, outputbox, binary_folder_path, binary_suffix,operating_system
     if target_2!="None":
         if cleft_name_2!="None":
             run_mif(target_2, form, temp_path, cleft_name_2, mif_binary_path, mifView_binary_path, ISOMIF_res)
-    run_isomif(target,target_2,cleft_name, cleft_name_2,form,temp_path, isomif_binary_path, mifView_binary_path, ISOMIF_res)
+    run_isomif(target,target_2,cleft_name, cleft_name_2,form,temp_path, isomif_binary_path, isoMifView_binary_path, ISOMIF_res)
 
 def run_isomif(target,target_2,cleft_name, cleft_name_2,form,temp_path, isomif_binary_path, isoMifView_binary_path, ISOMIF_res):
 
-    command_isomif = f'{isomif_binary_path} -p1 {os.path.join(ISOMIF_res,target+'_h.mif')} -p2 {os.path.join(ISOMIF_res,target_2+'_h.mif')} -o {os.path.join(ISOMIF_res,f'{target}_{target_2}')} -c 1 -d 2.0'
-    print(command_isomif)
+    command_isomif = f'{isomif_binary_path} -p1 {os.path.join(ISOMIF_res,target+"_h.mif")} -p2 {os.path.join(ISOMIF_res,target_2+"_h.mif")} -o {os.path.join(ISOMIF_res,"iso_")} -c 1 -d 2.0'
     os.system(command_isomif)
+    print(command_isomif)
+    isomif_file=os.path.join(ISOMIF_res,f'iso_{target}_h_match_{target_2}_h.isomif')
+    command_ismifView=f'{isoMifView_binary_path} -m {isomif_file} -o {os.path.join(ISOMIF_res,'view_')} -g 1'
+    print(command_ismifView)
+    os.system(command_ismifView)
+
 
 def run_mif(target,form,temp_path,cleft_name,mif_binary_path,mifView_binary_path, ISOMIF_res):
             target_file=os.path.join(temp_path,'ISOMIF',f'{target}.pdb')
