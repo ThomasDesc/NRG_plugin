@@ -127,6 +127,11 @@ def make_dialog():
     else:
         from src.nrgten import run_NRGTEN
         from src.modeller import run_modeller
+
+    # Disable isomif
+    form.button_isomif.setEnabled(False)
+    form.button_isomif.setStyleSheet("background-color: black; color: white;")
+
     form.stackedWidget.setCurrentIndex(0)
     form.flexaid_tab.setTabEnabled(2, False)
     if operating_system == 'mac':
@@ -225,6 +230,7 @@ def make_dialog():
     form.ISOMIF_cleft_refresh_1.clicked.connect(lambda: general_functions.refresh_dropdown(form.ISOMIF_select_cleft_1,
                                                                                   form.output_box,filter_for='_sph' ,add_none=1))
     form.ISOMIF_pushButton.clicked.connect(lambda: run_isomif.mif_plot(form, form.output_box,binary_folder_path, binary_suffix,operating_system))
+
 
 
     return dialog

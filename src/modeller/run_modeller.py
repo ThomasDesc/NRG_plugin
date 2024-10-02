@@ -7,6 +7,8 @@ import re
 
 from pymol import cmd
 import os
+# TODO group residues by property
+
 
 def process_result_flexaid(flexaid_result_file, output):
     with open(flexaid_result_file, 'r') as t1:

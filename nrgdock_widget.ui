@@ -134,7 +134,7 @@ QPushButton:checked{
      </widget>
     </item>
     <item>
-     <widget class="QPushButton" name="button_ISOMIF">
+     <widget class="QPushButton" name="button_modeller_2">
       <property name="text">
        <string>ISOMIF</string>
       </property>
@@ -237,7 +237,7 @@ color:rgb(255, 255, 255);</string>
     </rect>
    </property>
    <property name="currentIndex">
-    <number>6</number>
+    <number>2</number>
    </property>
    <widget class="QWidget" name="getcleft_page">
     <widget class="QTabWidget" name="getcleft_tab_widget">
@@ -1179,7 +1179,7 @@ font-size:14px;
       <enum>QTabWidget::Rounded</enum>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <property name="usesScrollButtons">
       <bool>false</bool>
@@ -2084,7 +2084,7 @@ font-size:14px;
       </rect>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tab_14">
       <attribute name="title">
@@ -2977,7 +2977,7 @@ font-size:14px;
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="ISOMIF_target_refresh">
+        <widget class="QPushButton" name="ISOMIF_select_target_2">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -3020,7 +3020,7 @@ font-size:14px;
        </sizepolicy>
       </property>
      </widget>
-     <widget class="QPushButton" name="ISOMIF_cleft_refresh">
+     <widget class="QPushButton" name="ISOMIF_select_cleft_2">
       <property name="geometry">
        <rect>
         <x>400</x>
@@ -3070,22 +3070,17 @@ font-size:14px;
         </widget>
        </item>
        <item>
-        <widget class="QComboBox" name="ISOMIF_select_target_1">
+        <widget class="QComboBox" name="Modeller_select_target_6">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
-         <item>
-          <property name="text">
-           <string>None</string>
-          </property>
-         </item>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="ISOMIF_target_refresh_1">
+        <widget class="QPushButton" name="Modeller_target_refresh_6">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -3112,7 +3107,7 @@ font-size:14px;
        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Cleft&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
      </widget>
-     <widget class="QComboBox" name="ISOMIF_select_cleft_1">
+     <widget class="QComboBox" name="Modeller_select_target_7">
       <property name="geometry">
        <rect>
         <x>230</x>
@@ -3127,13 +3122,8 @@ font-size:14px;
         <verstretch>0</verstretch>
        </sizepolicy>
       </property>
-      <item>
-       <property name="text">
-        <string>None</string>
-       </property>
-      </item>
      </widget>
-     <widget class="QPushButton" name="ISOMIF_cleft_refresh_1">
+     <widget class="QPushButton" name="Modeller_target_refresh_7">
       <property name="geometry">
        <rect>
         <x>400</x>
@@ -3153,7 +3143,7 @@ font-size:14px;
       </property>
      </widget>
     </widget>
-    <widget class="QPushButton" name="ISOMIF_pushButton">
+    <widget class="QPushButton" name="Modeller_pushButton_2">
      <property name="geometry">
       <rect>
        <x>290</x>

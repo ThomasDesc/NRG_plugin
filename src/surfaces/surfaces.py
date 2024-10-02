@@ -5,7 +5,7 @@ from src.surfaces.ligand_atomtypes import add_pdb
 from src.surfaces.clean_structure import main as clean_structure
 from src.surfaces.surface_cont_lig import main as surface_cont_lig
 from src.surfaces.pymol_image_surfaces_lig import generate_session
-
+#TODO: hide everything when loading result
 
 def process_result_flexaid(flexaid_result_file, output):
     with open(flexaid_result_file, 'r') as t1:
