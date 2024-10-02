@@ -33,7 +33,8 @@ def get_arg_str(form, getcleft_path, object_path, cleft_save_path):
     resnumc = form.input_residue_in_contact.text()
     max_cleft_show = form.input_max_cleft_show.text()
     print('getcleft output path: ', cleft_save_path)
-    getcleft_output_name = os.path.join(cleft_save_path, 'receptor')
+    receptor=os.path.basename(form.cleft_select_object.currentText())
+    getcleft_output_name = os.path.join(cleft_save_path, receptor)
     arg_string = f'{getcleft_path} -p "{object_path}" -l {min_radius} -u {max_radius} -t {max_cleft_show} -o "{getcleft_output_name}" -s'
     # TODO: Check if correct
     if resnumc != "":
@@ -90,10 +91,11 @@ def run_getcleft(form, binary_folder_path, binary_suffix, temp_path, nrgsuite_ba
     cleft_save_path = os.path.join(getcleft_output_path, 'Clefts')
     color_list_path = os.path.join(nrgsuite_base_path, 'deps', 'getcleft', 'color_list.txt')
     color_list = load_color_list(color_list_path)
-    if os.path.exists(getcleft_output_path):
-        shutil.rmtree(getcleft_output_path)
-    os.mkdir(getcleft_output_path)
-    os.mkdir(cleft_save_path)
+    if not os.path.exists(getcleft_output_path):
+        os.mkdir(getcleft_output_path)
+    #     shutil.rmtree(getcleft_output_path)
+    if not os.path.exists(cleft_save_path):
+        os.mkdir(cleft_save_path)
     pymol_object = form.cleft_select_object.currentText()
     if pymol_object != '':
         object_save_path = os.path.join(getcleft_output_path, 'tmp.pdb')
