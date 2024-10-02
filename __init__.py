@@ -129,8 +129,8 @@ def make_dialog():
         from src.modeller import run_modeller
 
     # Disable isomif
-    form.button_isomif.setEnabled(False)
-    form.button_isomif.setStyleSheet("background-color: black; color: white;")
+    form.button_ISOMIF.setEnabled(False)
+    form.button_ISOMIF.setStyleSheet("background-color: black; color: white;")
 
     form.stackedWidget.setCurrentIndex(0)
     form.flexaid_tab.setTabEnabled(2, False)
