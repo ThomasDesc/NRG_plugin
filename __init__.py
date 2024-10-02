@@ -226,9 +226,9 @@ def make_dialog():
     #isomif functions
     form.ISOMIF_target_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.ISOMIF_select_target, form.output_box))
     form.ISOMIF_target_refresh_1.clicked.connect(lambda:general_functions.refresh_dropdown(form.ISOMIF_select_target_1, form.output_box,add_none=1))
-    form.ISOMIF_cleft_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.ISOMIF_select_cleft, form.output_box,filter_for='_sph'))
+    form.ISOMIF_cleft_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.ISOMIF_select_cleft, form.output_box,lig=1))
     form.ISOMIF_cleft_refresh_1.clicked.connect(lambda: general_functions.refresh_dropdown(form.ISOMIF_select_cleft_1,
-                                                                                  form.output_box,filter_for='_sph' ,add_none=1))
+                                                                                  form.output_box,lig=1 ,add_none=1))
     form.ISOMIF_pushButton.clicked.connect(lambda: run_isomif.mif_plot(form, form.output_box,binary_folder_path, binary_suffix,operating_system))
 
 
