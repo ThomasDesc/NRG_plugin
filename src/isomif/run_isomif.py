@@ -45,8 +45,10 @@ def mif_plot(form, outputbox, binary_folder_path, binary_suffix, operating_syste
         if form.ISOMIF_select_cleft:
             target_file = os.path.join(temp_path, 'ISOMIF', f'{target}.pdb')
             cmd.save(target_file, target)
+
             cleft_name=os.path.join(ISOMIF_res,lig_name+'.pdb')
-            shutil.copyfile(os.path.join(temp_path,'GetCleft','Clefts',lig_name+'.pdb'),cleft_name)
+            cmd.save(os.path.join(ISOMIF_res,lig_name+'.pdb'),lig_name)
+            #shutil.copyfile(os.path.join(temp_path,'GetCleft','Clefts',lig_name+'.pdb'),cleft_name)
 
             #cleft_name=run_cleft_lig(target,target_file,lig_name,get_cleft_bineary_path,ISOMIF_res)
             run_mif(target, form, temp_path, cleft_name, mif_binary_path, mifView_binary_path, ISOMIF_res)
@@ -54,8 +56,11 @@ def mif_plot(form, outputbox, binary_folder_path, binary_suffix, operating_syste
         if lig_name_2!="None":
             target_file_2 = os.path.join(temp_path, 'ISOMIF', f'{target}.pdb')
             cmd.save(target_file_2, target_2)
+
             cleft_name_2 = os.path.join(ISOMIF_res, lig_name_2+'.pdb')
-            shutil.copyfile(os.path.join(temp_path, 'GetCleft', 'Clefts', lig_name_2+'.pdb'), cleft_name_2)
+            cmd.save(os.path.join(ISOMIF_res,lig_name_2+'.pdb'),lig_name_2)
+
+            #shutil.copyfile(os.path.join(temp_path, 'GetCleft', 'Clefts', lig_name_2+'.pdb'), cleft_name_2)
 
             #cleft_name_2 = run_cleft_lig(target_2, target_file_2, lig_name_2, get_cleft_bineary_path, ISOMIF_res)
             run_mif(target_2, form, temp_path, cleft_name_2, mif_binary_path, mifView_binary_path, ISOMIF_res)
@@ -73,6 +78,12 @@ def run_isomif(target,target_2,cleft_name, cleft_name_2,form,temp_path, isomif_b
 
     print(command_isomifView)
     os.system(command_isomifView)
+
+    initial_objects = set(cmd.get_object_list())
+    cmd.load(os.path.join(ISOMIF_res,f'view_{target}_h_{target_2}_h.pml'))
+    new_objects = set(cmd.get_object_list()) - initial_objects
+    cmd.group(f'isomif_{target}_{target_2}'," ".join(new_objects))
+    cmd.group('isomif_results',f'isomif_{target}_{target_2}')
 
 
 def run_mif(target,form,temp_path,cleft_file,mif_binary_path,mifView_binary_path, ISOMIF_res):
