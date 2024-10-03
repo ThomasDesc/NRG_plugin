@@ -69,7 +69,7 @@ def run_isomif(target,target_2,cleft_name, cleft_name_2,form,temp_path, isomif_b
     print(command_isomif)
 
     isomif_file=os.path.join(ISOMIF_res,f'iso_{target}_h_match_{target_2}_h.isomif')
-    command_isomifView=f'{isoMifView_binary_path} -m {isomif_file} -o {os.path.join(ISOMIF_res,'view_')} -g 2'
+    command_isomifView=f'{isoMifView_binary_path} -m {isomif_file} -o {os.path.join(ISOMIF_res,"view_")} -g 2'
 
     print(command_isomifView)
     os.system(command_isomifView)
@@ -85,7 +85,7 @@ def run_mif(target,form,temp_path,cleft_file,mif_binary_path,mifView_binary_path
             cmd.save(target_file[:-4]+'_h.pdb',f'{target}_h')
             cmd.delete(f'{target}_h')
 
-            command_mif=f'{mif_binary_path} -p {target_file[:-4]+'_h.pdb'} -g {cleft_file} -o {ISOMIF_res} -s 1'
+            command_mif=f'{mif_binary_path} -p {target_file[:-4]+"_h.pdb"} -g {cleft_file} -o {ISOMIF_res} -s 1'
 
             print(command_mif)
 
