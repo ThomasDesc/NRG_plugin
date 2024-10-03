@@ -79,6 +79,12 @@ def run_isomif(target,target_2,cleft_name, cleft_name_2,form,temp_path, isomif_b
     print(command_isomifView)
     os.system(command_isomifView)
 
+    initial_objects = set(cmd.get_object_list())
+    cmd.load(os.path.join(ISOMIF_res,f'view_{target}_h_{target_2}_h.pml'))
+    new_objects = set(cmd.get_object_list()) - initial_objects
+    cmd.group(f'isomif_{target}_{target_2}'," ".join(new_objects))
+    cmd.group('isomif_results',f'isomif_{target}_{target_2}')
+
 
 def run_mif(target,form,temp_path,cleft_file,mif_binary_path,mifView_binary_path, ISOMIF_res):
             target_file=os.path.join(temp_path,'ISOMIF',f'{target}.pdb')
