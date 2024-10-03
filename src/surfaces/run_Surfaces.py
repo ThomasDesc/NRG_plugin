@@ -137,6 +137,8 @@ def create_ligand_file(pdb_file_name, lig_path):
             res = line[17:20].strip()
             if res == lig_name:
                 lig_pdb_file.write(line)
+        if 'CONECT' in line:
+            lig_pdb_file.write(line)
     lig_pdb_file.close()
     return
 
