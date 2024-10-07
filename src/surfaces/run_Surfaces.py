@@ -152,6 +152,7 @@ def flex_res(target_file):
     return 0
 
 
+
 def get_chains_from_object(object_name):
     chains = cmd.get_chains(object_name)
     str_chain = ''
