@@ -2943,7 +2943,7 @@ font-size:14px;
        <x>30</x>
        <y>30</y>
        <width>611</width>
-       <height>101</height>
+       <height>151</height>
       </rect>
      </property>
      <property name="title">
@@ -3024,7 +3024,7 @@ font-size:14px;
       <property name="geometry">
        <rect>
         <x>400</x>
-        <y>60</y>
+        <y>80</y>
         <width>77</width>
         <height>32</height>
        </rect>
@@ -3039,14 +3039,48 @@ font-size:14px;
        <string>Refresh</string>
       </property>
      </widget>
+     <widget class="QComboBox" name="ISOMIF_select_lig">
+      <property name="geometry">
+       <rect>
+        <x>230</x>
+        <y>100</y>
+        <width>161</width>
+        <height>32</height>
+       </rect>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <item>
+       <property name="text">
+        <string>None</string>
+       </property>
+      </item>
+     </widget>
+     <widget class="QLabel" name="label_64">
+      <property name="geometry">
+       <rect>
+        <x>100</x>
+        <y>100</y>
+        <width>120</width>
+        <height>26</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;LIG&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+     </widget>
     </widget>
     <widget class="QGroupBox" name="groupBox_28">
      <property name="geometry">
       <rect>
        <x>30</x>
-       <y>160</y>
+       <y>210</y>
        <width>611</width>
-       <height>101</height>
+       <height>131</height>
       </rect>
      </property>
      <property name="title">
@@ -3077,6 +3111,11 @@ font-size:14px;
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
+         <item>
+          <property name="text">
+           <string>None</string>
+          </property>
+         </item>
         </widget>
        </item>
        <item>
@@ -3122,12 +3161,17 @@ font-size:14px;
         <verstretch>0</verstretch>
        </sizepolicy>
       </property>
+      <item>
+       <property name="text">
+        <string>None</string>
+       </property>
+      </item>
      </widget>
      <widget class="QPushButton" name="ISOMIF_cleft_refresh_1">
       <property name="geometry">
        <rect>
         <x>400</x>
-        <y>60</y>
+        <y>80</y>
         <width>77</width>
         <height>32</height>
        </rect>
@@ -3142,12 +3186,46 @@ font-size:14px;
        <string>Refresh</string>
       </property>
      </widget>
+     <widget class="QComboBox" name="ISOMIF_select_lig_1">
+      <property name="geometry">
+       <rect>
+        <x>230</x>
+        <y>100</y>
+        <width>163</width>
+        <height>32</height>
+       </rect>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <item>
+       <property name="text">
+        <string>None</string>
+       </property>
+      </item>
+     </widget>
+     <widget class="QLabel" name="label_68">
+      <property name="geometry">
+       <rect>
+        <x>100</x>
+        <y>100</y>
+        <width>120</width>
+        <height>26</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;LIG&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+     </widget>
     </widget>
     <widget class="QPushButton" name="ISOMIF_pushButton">
      <property name="geometry">
       <rect>
        <x>290</x>
-       <y>330</y>
+       <y>370</y>
        <width>100</width>
        <height>32</height>
       </rect>

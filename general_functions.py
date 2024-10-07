@@ -115,6 +115,8 @@ def refresh_dropdown(dropdown_to_refresh, output_box, filter_for='', no_warning=
         list_pymol_objects.append('None')
     if filter_for:
         list_pymol_objects = [x for x in list_pymol_objects if filter_for in x]
+        if add_none:
+            list_pymol_objects.append('None')
     if exclude:
         list_pymol_objects = [item for item in list_pymol_objects if exclude not in item]
     if len(list_pymol_objects) == 0 and no_warning is False:

@@ -38,33 +38,44 @@ def mif_plot(form, outputbox, binary_folder_path, binary_suffix, operating_syste
     get_cleft_bineary_path=os.path.join(binary_folder_path, f'GetCleft{binary_suffix}')
     temp_path = form.temp_line_edit.text()
     ISOMIF_res=os.path.join(temp_path,'ISOMIF')
-    lig_name = form.ISOMIF_select_cleft.currentText()
+    clef_name = form.ISOMIF_select_cleft.currentText()
+    lig_name=form.ISOMIF_select_lig.currentText()
+
     target = form.ISOMIF_select_target.currentText()
-    lig_name_2 = form.ISOMIF_select_cleft_1.currentText()
+    clef_name_2 = form.ISOMIF_select_cleft_1.currentText()
+    lig_name_2=form.ISOMIF_select_lig_1.currentText()
+
     target_2 = form.ISOMIF_select_target_1.currentText()
     if form.ISOMIF_select_target:
         if form.ISOMIF_select_cleft:
             target_file = os.path.join(temp_path, 'ISOMIF', f'{target}.pdb')
             cmd.save(target_file, target)
 
-            cleft_name=os.path.join(ISOMIF_res,lig_name+'.pdb')
-            cmd.save(os.path.join(ISOMIF_res,lig_name+'.pdb'),lig_name)
-            #shutil.copyfile(os.path.join(temp_path,'GetCleft','Clefts',lig_name+'.pdb'),cleft_name)
+            cleft_name=os.path.join(ISOMIF_res,clef_name+'.pdb')
+            cmd.save(os.path.join(ISOMIF_res,clef_name+'.pdb'),clef_name)
+            #shutil.copyfile(os.path.join(temp_path,'GetCleft','Clefts',clef_name+'.pdb'),cleft_name)
 
-            #cleft_name=run_cleft_lig(target,target_file,lig_name,get_cleft_bineary_path,ISOMIF_res)
-            run_mif(target, form, temp_path, cleft_name, mif_binary_path, mifView_binary_path, ISOMIF_res,py_vers)
+            #cleft_name=run_cleft_lig(target,target_file,clef_name,get_cleft_bineary_path,ISOMIF_res)
+            lig_str=''
+            if lig_name!="None":
+                lig_str=get_residue_string(lig_name)
+            run_mif(target, form, temp_path, cleft_name, mif_binary_path, mifView_binary_path, ISOMIF_res,py_vers,lig_str)
     if target_2!="None":
-        if lig_name_2!="None":
+        if clef_name_2!="None":
             target_file_2 = os.path.join(temp_path, 'ISOMIF', f'{target}.pdb')
             cmd.save(target_file_2, target_2)
 
-            cleft_name_2 = os.path.join(ISOMIF_res, lig_name_2+'.pdb')
-            cmd.save(os.path.join(ISOMIF_res,lig_name_2+'.pdb'),lig_name_2)
+            cleft_name_2 = os.path.join(ISOMIF_res, clef_name_2+'.pdb')
+            cmd.save(os.path.join(ISOMIF_res,clef_name_2+'.pdb'),clef_name_2)
 
-            #shutil.copyfile(os.path.join(temp_path, 'GetCleft', 'Clefts', lig_name_2+'.pdb'), cleft_name_2)
+            #shutil.copyfile(os.path.join(temp_path, 'GetCleft', 'Clefts', clef_name_2+'.pdb'), cleft_name_2)
 
-            #cleft_name_2 = run_cleft_lig(target_2, target_file_2, lig_name_2, get_cleft_bineary_path, ISOMIF_res)
-            run_mif(target_2, form, temp_path, cleft_name_2, mif_binary_path, mifView_binary_path, ISOMIF_res,py_vers)
+            #cleft_name_2 = run_cleft_lig(target_2, target_file_2, clef_name_2, get_cleft_bineary_path, ISOMIF_res)
+            lig_str_2='None'
+            if lig_name_2!="None":
+                lig_str_2=get_residue_string(lig_name_2)
+
+            run_mif(target_2, form, temp_path, cleft_name_2, mif_binary_path, mifView_binary_path, ISOMIF_res,py_vers,lig_str_2)
             run_isomif(target,target_2,cleft_name, cleft_name_2,form,temp_path, isomif_binary_path, isoMifView_binary_path, ISOMIF_res,py_vers)
 
 def run_isomif(target,target_2,cleft_name, cleft_name_2,form,temp_path, isomif_binary_path, isoMifView_binary_path, ISOMIF_res, py_vers):
@@ -87,49 +98,54 @@ def run_isomif(target,target_2,cleft_name, cleft_name_2,form,temp_path, isomif_b
     cmd.group('isomif_results',f'isomif_{target}_{target_2}')
 
 
-def run_mif(target,form,temp_path,cleft_file,mif_binary_path,mifView_binary_path, ISOMIF_res,py_vers):
-            target_file=os.path.join(temp_path,'ISOMIF',f'{target}.pdb')
+def run_mif(target,form,temp_path,cleft_file,mif_binary_path,mifView_binary_path, ISOMIF_res,py_vers,lig_str):
 
-            form.output_box.append(f'Running ISOMIF...')
 
-            cmd.create(f'{target}_h', target)
-            cmd.h_add(f'{target}_h')
-            cmd.save(target_file[:-4]+'_h.pdb',f'{target}_h')
-            cmd.delete(f'{target}_h')
+    target_file=os.path.join(temp_path,'ISOMIF',f'{target}.pdb')
 
-            command_mif=f'{mif_binary_path} -p {target_file[:-4]+"_h.pdb"} -g {cleft_file} -o {ISOMIF_res} -s 1'
+    form.output_box.append(f'Running ISOMIF...')
 
-            print(command_mif)
+    cmd.create(f'{target}_h', target)
+    cmd.h_add(f'{target}_h')
+    cmd.save(target_file[:-4]+'_h.pdb',f'{target}_h')
+    cmd.delete(f'{target}_h')
 
-            os.system(command_mif)
+    command_mif=f'{mif_binary_path} -p {target_file[:-4]+"_h.pdb"} -g {cleft_file} -o {ISOMIF_res} -s 1'
+    if lig_str!='None':
+        command_mif = f'{mif_binary_path} -p {target_file[:-4] + "_h.pdb"} -g {cleft_file} -o {ISOMIF_res} -s 1 -l {lig_str}'
+        if lig_str[-2:]=='9-':
+             command_mif = f'{mif_binary_path} -p {target_file[:-4] + "_h.pdb"} -g {cleft_file} -o {ISOMIF_res} -s 1 -l {lig_str}-'
+    print(command_mif)
 
-            command_view=f'python{py_vers} {mifView_binary_path} -m {target_file[:-4]}_h.mif -o {ISOMIF_res}'
-            os.system(command_view)
-            cmd.load(target_file[:-4]+'_h.pml')
-            cmd.delete(target+'_h')
+    os.system(command_mif)
 
-            cmd.set_name('neg_100',f'{target}_neg_100')
-            cmd.group(f'{target}_isomif', f'{target}_neg_100')
+    command_view=f'python{py_vers} {mifView_binary_path} -m {target_file[:-4]}_h.mif -o {ISOMIF_res}'
+    os.system(command_view)
+    cmd.load(target_file[:-4]+'_h.pml')
+    cmd.delete(target+'_h')
 
-            cmd.set_name('don_100',f'{target}_don_100')
-            cmd.group(f'{target}_isomif', f'{target}_don_100')
+    cmd.set_name('neg_100',f'{target}_neg_100')
+    cmd.group(f'{target}_isomif', f'{target}_neg_100')
 
-            cmd.set_name('acc_100',f'{target}_acc_100')
-            cmd.group(f'{target}_isomif', f'{target}_acc_100')
+    cmd.set_name('don_100',f'{target}_don_100')
+    cmd.group(f'{target}_isomif', f'{target}_don_100')
 
-            cmd.set_name('pos_100',f'{target}_pos_100')
-            cmd.group(f'{target}_isomif', f'{target}_pos_100')
+    cmd.set_name('acc_100',f'{target}_acc_100')
+    cmd.group(f'{target}_isomif', f'{target}_acc_100')
 
-            cmd.set_name('arm_100',f'{target}_arm_100')
-            cmd.group(f'{target}_isomif', f'{target}_arm_100')
+    cmd.set_name('pos_100',f'{target}_pos_100')
+    cmd.group(f'{target}_isomif', f'{target}_pos_100')
 
-            cmd.set_name('hyd_100',f'{target}_hyd_100')
-            cmd.group(f'{target}_isomif', f'{target}_hyd_100')
+    cmd.set_name('arm_100',f'{target}_arm_100')
+    cmd.group(f'{target}_isomif', f'{target}_arm_100')
 
-            cmd.set_name('100', f'{target}_100')
-            cmd.group(f'{target}_isomif', f'{target}_100')
+    cmd.set_name('hyd_100',f'{target}_hyd_100')
+    cmd.group(f'{target}_isomif', f'{target}_hyd_100')
 
-            cmd.group('isomif_results', f'{target}_isomif')
+    cmd.set_name('100', f'{target}_100')
+    cmd.group(f'{target}_isomif', f'{target}_100')
 
-            #mif_to_pml(target_file[:-4]+'_h.mif',ISOMIF_res,"")
+    cmd.group('isomif_results', f'{target}_isomif')
+
+    #mif_to_pml(target_file[:-4]+'_h.mif',ISOMIF_res,"")
 

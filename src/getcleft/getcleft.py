@@ -38,7 +38,7 @@ def get_arg_str(form, getcleft_path, object_path, cleft_save_path):
     arg_string = f'{getcleft_path} -p "{object_path}" -l {min_radius} -u {max_radius} -t {max_cleft_show} -o "{getcleft_output_name}" -s'
     # TODO: Check if correct
     if resnumc != "":
-        arg_string += f' -a {resnumc}-'
+        arg_string += f' -a {resnumc}'
     return arg_string
 
 
