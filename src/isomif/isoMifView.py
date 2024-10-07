@@ -266,7 +266,7 @@ def print_mif_pml(mif_v, mif_v_int, probe_num, tag, sphere_scale, full_tag):
     return pml_str
 
 # Define NPML output file
-with open(f"{outDir}{tag}_py.pml", "w") as NPML:
+with open(f"{outDir}{tag}.pml", "w") as NPML:
     # Initial PML settings
     NPML.write(f"{p1str}{p2str}show cartoon\n")
     NPML.write(f"hide lines\n")
@@ -341,7 +341,6 @@ with open(f"{outDir}{tag}_py.pml", "w") as NPML:
         str2 = 'cmd.read_pdbstr("""'
         strSel = ""
         for j in range(6):  # For each probe
-            print(j)
             nodes = data[cg][j].split("\n")[:-1]
             if nodes:
                 start = ids
