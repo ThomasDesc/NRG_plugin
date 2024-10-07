@@ -215,7 +215,7 @@ def print_mif(mif_id, mif_data, mif_int):
                             ncoor[k] = cen[1][k]
                             for l in range(3):
                                 ncoor[k] += (coor[l] - cen[0][l]) * rot[k][l]
-                    pdb_str += f"HETATM{it:5d}  N   {i:3} A0000    {ncoor[0]:8.3f}{ncoor[1]:8.3f}{ncoor[2]:8.3f}  0.00 10.00           N  \\\n"
+                    pdb_str += f"HETATM{it:5d}  N   {i:3} A0000    {ncoor[0]:8.3f}{ncoor[1]:8.3f}{ncoor[2]:8.3f}  0.00 10.00           N\\\n"
                     it += 1
             mif_int[i][res][1] = it - 1
     pdb_str += "TER \\\n\"\"\",\"{}_mif{}\")\n".format(tag, mif_id)
@@ -242,9 +242,14 @@ p1str += f"TER \\\n\"\"\",\"{mif1}\")\n"
 
 p2str = 'cmd.read_pdbstr("""'
 with open(p2Path, 'r') as f:
-    for line in f:
+    for line_counter, line in enumerate(f):
         line = line.strip()  # Equivalent to chomp in Perl
-        p2str += line + "  \\\n"
+        if line_counter != 0 and line != 'TER' and not line.startswith('CONECT'):
+            while len(line) < 80:
+                line += ' '
+        if line == 'TER':
+            line += '   '
+        p2str += line + "\\\n"
 p2str += 'TER \\\n""","' + mif2 + '")\n'
 
 def print_mif_pml(mif_v, mif_v_int, probe_num, tag, sphere_scale, full_tag):
