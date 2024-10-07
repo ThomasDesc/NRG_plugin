@@ -1,7 +1,7 @@
 from src.surfaces.run_Surfaces import flex_res, process_result_flexaid
 from pymol import cmd
 import os
-from src.isomif.MifView import mif_to_pml
+import sys
 import shutil
 
 
@@ -28,12 +28,13 @@ def run_cleft_lig(target,target_file,lig, get_cleft, ISOMIF_res):
 
 
 
-def mif_plot(form, outputbox, binary_folder_path, binary_suffix, operating_system):
+def mif_plot(form, outputbox, binary_folder_path, binary_suffix, operating_system,install_dir):
+    py_vers = f'{sys.version.split(".")[0]}.{sys.version_info[1]}'
     processlig_binary_path = mif_binary_path = os.path.join(binary_folder_path,f'Process_Ligand{binary_suffix}')
     mif_binary_path = os.path.join(binary_folder_path, f'mif{binary_suffix}')
     isomif_binary_path = os.path.join(binary_folder_path, f'isomif{binary_suffix}')
-    mifView_binary_path = os.path.join(binary_folder_path, f'mifView{binary_suffix}')
-    isoMifView_binary_path = os.path.join(binary_folder_path, f'isoMifView{binary_suffix}')
+    mifView_binary_path = os.path.join(install_dir,'src','isomif', f'mifView.py')
+    isoMifView_binary_path = os.path.join(install_dir,'src','isomif', f'isoMifView.py')
     get_cleft_bineary_path=os.path.join(binary_folder_path, f'GetCleft{binary_suffix}')
     temp_path = form.temp_line_edit.text()
     ISOMIF_res=os.path.join(temp_path,'ISOMIF')
@@ -51,7 +52,7 @@ def mif_plot(form, outputbox, binary_folder_path, binary_suffix, operating_syste
             #shutil.copyfile(os.path.join(temp_path,'GetCleft','Clefts',lig_name+'.pdb'),cleft_name)
 
             #cleft_name=run_cleft_lig(target,target_file,lig_name,get_cleft_bineary_path,ISOMIF_res)
-            run_mif(target, form, temp_path, cleft_name, mif_binary_path, mifView_binary_path, ISOMIF_res)
+            run_mif(target, form, temp_path, cleft_name, mif_binary_path, mifView_binary_path, ISOMIF_res,py_vers)
     if target_2!="None":
         if lig_name_2!="None":
             target_file_2 = os.path.join(temp_path, 'ISOMIF', f'{target}.pdb')
@@ -63,10 +64,10 @@ def mif_plot(form, outputbox, binary_folder_path, binary_suffix, operating_syste
             #shutil.copyfile(os.path.join(temp_path, 'GetCleft', 'Clefts', lig_name_2+'.pdb'), cleft_name_2)
 
             #cleft_name_2 = run_cleft_lig(target_2, target_file_2, lig_name_2, get_cleft_bineary_path, ISOMIF_res)
-            run_mif(target_2, form, temp_path, cleft_name_2, mif_binary_path, mifView_binary_path, ISOMIF_res)
-            run_isomif(target,target_2,cleft_name, cleft_name_2,form,temp_path, isomif_binary_path, isoMifView_binary_path, ISOMIF_res)
+            run_mif(target_2, form, temp_path, cleft_name_2, mif_binary_path, mifView_binary_path, ISOMIF_res,py_vers)
+            run_isomif(target,target_2,cleft_name, cleft_name_2,form,temp_path, isomif_binary_path, isoMifView_binary_path, ISOMIF_res,py_vers)
 
-def run_isomif(target,target_2,cleft_name, cleft_name_2,form,temp_path, isomif_binary_path, isoMifView_binary_path, ISOMIF_res):
+def run_isomif(target,target_2,cleft_name, cleft_name_2,form,temp_path, isomif_binary_path, isoMifView_binary_path, ISOMIF_res, py_vers):
 
     command_isomif = f'{isomif_binary_path} -p1 {os.path.join(ISOMIF_res,target+"_h.mif")} -p2 {os.path.join(ISOMIF_res,target_2+"_h.mif")} -o {os.path.join(ISOMIF_res,"iso_")} -c 2'
     os.system(command_isomif)
@@ -74,7 +75,7 @@ def run_isomif(target,target_2,cleft_name, cleft_name_2,form,temp_path, isomif_b
     print(command_isomif)
 
     isomif_file=os.path.join(ISOMIF_res,f'iso_{target}_h_match_{target_2}_h.isomif')
-    command_isomifView=f'{isoMifView_binary_path} -m {isomif_file} -o {os.path.join(ISOMIF_res,"view_")} -g 2'
+    command_isomifView=f'python{py_vers} {isoMifView_binary_path} -m {isomif_file} -o {os.path.join(ISOMIF_res,"view_")} -g 2'
 
     print(command_isomifView)
     os.system(command_isomifView)
@@ -86,7 +87,7 @@ def run_isomif(target,target_2,cleft_name, cleft_name_2,form,temp_path, isomif_b
     cmd.group('isomif_results',f'isomif_{target}_{target_2}')
 
 
-def run_mif(target,form,temp_path,cleft_file,mif_binary_path,mifView_binary_path, ISOMIF_res):
+def run_mif(target,form,temp_path,cleft_file,mif_binary_path,mifView_binary_path, ISOMIF_res,py_vers):
             target_file=os.path.join(temp_path,'ISOMIF',f'{target}.pdb')
 
             form.output_box.append(f'Running ISOMIF...')
@@ -102,7 +103,7 @@ def run_mif(target,form,temp_path,cleft_file,mif_binary_path,mifView_binary_path
 
             os.system(command_mif)
 
-            command_view=f'{mifView_binary_path} -m {target_file[:-4]}_h.mif -o {ISOMIF_res}'
+            command_view=f'python{py_vers} {mifView_binary_path} -m {target_file[:-4]}_h.mif -o {ISOMIF_res}'
             os.system(command_view)
             cmd.load(target_file[:-4]+'_h.pml')
             cmd.delete(target+'_h')
