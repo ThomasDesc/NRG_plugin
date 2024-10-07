@@ -124,6 +124,7 @@ def get_data(matchIn):
                 pb = int(line.split()[0])
                 if pb > max_pb:
                     max_pb = pb
+    max_pb = 5
     return temp_tcg, max_pb
 
 temp_tcg, max_pb = get_data(matchIn)
@@ -214,7 +215,7 @@ def print_mif(mif_id, mif_data, mif_int):
                             ncoor[k] = cen[1][k]
                             for l in range(3):
                                 ncoor[k] += (coor[l] - cen[0][l]) * rot[k][l]
-                    pdb_str += f"HETATM{it:5d}  N   {i:3} A0000    {ncoor[0]:8.3f}{ncoor[1]:8.3f}{ncoor[2]:8.3f}  0.00 10.00           N\\\n"
+                    pdb_str += f"HETATM{it:5d}  N   {i:3} A0000    {ncoor[0]:8.3f}{ncoor[1]:8.3f}{ncoor[2]:8.3f}  0.00 10.00           N  \\\n"
                     it += 1
             mif_int[i][res][1] = it - 1
     pdb_str += "TER \\\n\"\"\",\"{}_mif{}\")\n".format(tag, mif_id)
@@ -243,7 +244,7 @@ p2str = 'cmd.read_pdbstr("""'
 with open(p2Path, 'r') as f:
     for line in f:
         line = line.strip()  # Equivalent to chomp in Perl
-        p2str += line + "\\\n"
+        p2str += line + "  \\\n"
 p2str += 'TER \\\n""","' + mif2 + '")\n'
 
 def print_mif_pml(mif_v, mif_v_int, probe_num, tag, sphere_scale, full_tag):
