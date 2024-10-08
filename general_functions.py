@@ -15,7 +15,7 @@ def output_message(output_box, text, message_type):
         out_color = red
     elif message_type == 'warning':
         out_color = yellow
-    elif message_type == ' valid':
+    elif message_type == 'valid':
         out_color = green
     output_box.append(out_color.format(text))
 

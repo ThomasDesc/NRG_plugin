@@ -60,7 +60,7 @@ def mif_plot(form, outputbox, binary_folder_path, binary_suffix, operating_syste
             #shutil.copyfile(os.path.join(temp_path,'GetCleft','Clefts',clef_name+'.pdb'),cleft_name)
 
             #cleft_name=run_cleft_lig(target,target_file,clef_name,get_cleft_bineary_path,ISOMIF_res)
-            lig_str=''
+            lig_str='None'
             if lig_name!="None":
                 lig_str=get_residue_string(lig_name)
             run_mif(target, form, temp_path, cleft_name, mif_binary_path, mifView_binary_path, ISOMIF_res,py_vers,lig_str,deps)
