@@ -2,6 +2,7 @@ from src.surfaces.run_Surfaces import flex_res, process_result_flexaid
 from pymol import cmd
 import os
 import sys
+from general_functions import output_message
 import shutil
 
 
@@ -35,6 +36,9 @@ def mif_plot(form, outputbox, binary_folder_path, binary_suffix, operating_syste
     isomif_binary_path = os.path.join(binary_folder_path, f'isomif{binary_suffix}')
     mifView_binary_path = os.path.join(install_dir,'src','isomif', f'mifView.py')
     isoMifView_binary_path = os.path.join(install_dir,'src','isomif', f'isoMifView.py')
+
+    deps=os.path.join(install_dir,'deps','isomif')
+
     get_cleft_bineary_path=os.path.join(binary_folder_path, f'GetCleft{binary_suffix}')
     temp_path = form.temp_line_edit.text()
     ISOMIF_res=os.path.join(temp_path,'ISOMIF')
@@ -59,7 +63,7 @@ def mif_plot(form, outputbox, binary_folder_path, binary_suffix, operating_syste
             lig_str=''
             if lig_name!="None":
                 lig_str=get_residue_string(lig_name)
-            run_mif(target, form, temp_path, cleft_name, mif_binary_path, mifView_binary_path, ISOMIF_res,py_vers,lig_str)
+            run_mif(target, form, temp_path, cleft_name, mif_binary_path, mifView_binary_path, ISOMIF_res,py_vers,lig_str,deps)
     if target_2!="None":
         if clef_name_2!="None":
             target_file_2 = os.path.join(temp_path, 'ISOMIF', f'{target}.pdb')
@@ -75,8 +79,14 @@ def mif_plot(form, outputbox, binary_folder_path, binary_suffix, operating_syste
             if lig_name_2!="None":
                 lig_str_2=get_residue_string(lig_name_2)
 
-            run_mif(target_2, form, temp_path, cleft_name_2, mif_binary_path, mifView_binary_path, ISOMIF_res,py_vers,lig_str_2)
+            run_mif(target_2, form, temp_path, cleft_name_2, mif_binary_path, mifView_binary_path, ISOMIF_res,py_vers,lig_str_2,deps)
             run_isomif(target,target_2,cleft_name, cleft_name_2,form,temp_path, isomif_binary_path, isoMifView_binary_path, ISOMIF_res,py_vers)
+            with open(os.path.join(ISOMIF_res,f'iso_{target}_h_match_{target_2}_h.isomif'),'r') as t1:
+                texto=t1.readlines()
+                for line in texto:
+                    if 'REMARK CLIQUE' in line:
+                        output_message(form.output_box,f'ISOMIF results: {line[15:]}','valid')
+
 
 def run_isomif(target,target_2,cleft_name, cleft_name_2,form,temp_path, isomif_binary_path, isoMifView_binary_path, ISOMIF_res, py_vers):
 
@@ -98,7 +108,7 @@ def run_isomif(target,target_2,cleft_name, cleft_name_2,form,temp_path, isomif_b
     cmd.group('isomif_results',f'isomif_{target}_{target_2}')
 
 
-def run_mif(target,form,temp_path,cleft_file,mif_binary_path,mifView_binary_path, ISOMIF_res,py_vers,lig_str):
+def run_mif(target,form,temp_path,cleft_file,mif_binary_path,mifView_binary_path, ISOMIF_res,py_vers,lig_str,deps):
 
 
     target_file=os.path.join(temp_path,'ISOMIF',f'{target}.pdb')
@@ -110,11 +120,11 @@ def run_mif(target,form,temp_path,cleft_file,mif_binary_path,mifView_binary_path
     cmd.save(target_file[:-4]+'_h.pdb',f'{target}_h')
     cmd.delete(f'{target}_h')
 
-    command_mif=f'{mif_binary_path} -p {target_file[:-4]+"_h.pdb"} -g {cleft_file} -o {ISOMIF_res} -s 1'
+    command_mif=f'{mif_binary_path} -p {target_file[:-4]+"_h.pdb"} -g {cleft_file} -o {ISOMIF_res} -s 1 -dp {deps}'
     if lig_str!='None':
-        command_mif = f'{mif_binary_path} -p {target_file[:-4] + "_h.pdb"} -g {cleft_file} -o {ISOMIF_res} -s 1 -l {lig_str}'
+        command_mif = f'{mif_binary_path} -p {target_file[:-4] + "_h.pdb"} -g {cleft_file} -o {ISOMIF_res} -s 1 -l {lig_str} -dp {deps}'
         if lig_str[-2:]=='9-':
-             command_mif = f'{mif_binary_path} -p {target_file[:-4] + "_h.pdb"} -g {cleft_file} -o {ISOMIF_res} -s 1 -l {lig_str}-'
+             command_mif = f'{mif_binary_path} -p {target_file[:-4] + "_h.pdb"} -g {cleft_file} -o {ISOMIF_res} -s 1 -l {lig_str}- -dp {deps}'
     print(command_mif)
 
     os.system(command_mif)
