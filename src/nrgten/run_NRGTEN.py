@@ -205,7 +205,11 @@ def dynamical_signature(target, lig, target_2, beta, main_folder_path, temp_path
 
             for b_factor in range(len(dyna_sig_no_lig)):
                 dyna_sig_no_lig[b_factor] = (b_fact_dict[b_factor] / dyna_sig_no_lig[b_factor]) - 1
+            if 'LIG.' in model_no_lig.get_mass_labels()[-1]:
+                dyna_sig_no_lig[-1]=0
             dyna_sig_no_lig = standardize_to_minus1_plus1(dyna_sig_no_lig)
+
+
             #plt.plot(dyna_sig_no_lig, label=diff)
 
             plots.append(go.Scatter(x=prep_labels(model_no_lig.get_mass_labels()), y=dyna_sig_no_lig, mode='lines', name=f'Diff {diff}'))
