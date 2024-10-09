@@ -118,5 +118,5 @@ def run_nrgdock(form, nrgdock_output_path, ligand_set_folder_path, install_dir):
     top_n_name_list, csv_output_path = merge_csv(os.path.join(nrgdock_result_folder, target_name))
     manage_poses(top_n_name_list, os.path.join(nrgdock_output_path, 'ligand_poses', target_name))
     get_nrgdock_result_model(csv_output_path, form)
-    form.NRGDock_settings.setTabEnabled(2, True)
+    form.NRGDock_tabs.setTabEnabled(2, True)
 

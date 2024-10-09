@@ -237,7 +237,7 @@ color:rgb(255, 255, 255);</string>
     </rect>
    </property>
    <property name="currentIndex">
-    <number>6</number>
+    <number>2</number>
    </property>
    <widget class="QWidget" name="getcleft_page">
     <widget class="QTabWidget" name="getcleft_tab_widget">
@@ -1179,7 +1179,7 @@ font-size:14px;
       <enum>QTabWidget::Rounded</enum>
      </property>
      <property name="currentIndex">
-      <number>2</number>
+      <number>1</number>
      </property>
      <property name="usesScrollButtons">
       <bool>false</bool>
@@ -1187,7 +1187,7 @@ font-size:14px;
      <property name="tabsClosable">
       <bool>false</bool>
      </property>
-     <widget class="QWidget" name="tab_7">
+     <widget class="QWidget" name="nrgdock_settings">
       <attribute name="title">
        <string>Settings</string>
       </attribute>
@@ -1417,7 +1417,7 @@ font-size:14px;
        </widget>
       </widget>
      </widget>
-     <widget class="QWidget" name="tab_8">
+     <widget class="QWidget" name="nrgdock_run">
       <attribute name="title">
        <string>Run</string>
       </attribute>
@@ -1634,7 +1634,7 @@ font-size:14px;
        </layout>
       </widget>
      </widget>
-     <widget class="QWidget" name="tab_2">
+     <widget class="QWidget" name="nrgdock_results">
       <attribute name="title">
        <string>Results</string>
       </attribute>
@@ -2468,7 +2468,7 @@ font-size:14px;
         <rect>
          <x>50</x>
          <y>10</y>
-         <width>425</width>
+         <width>427</width>
          <height>34</height>
         </rect>
        </property>
