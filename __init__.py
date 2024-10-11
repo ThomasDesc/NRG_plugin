@@ -50,6 +50,7 @@ def install_package(package, main_folder_path):
             if package == 'Bio':
                 package = 'biopython'
             print(f"Installing {package}...")
+            # TODO: use subprocess.call with creationflags set to CREATE_NO_WINDOW for windows because nrgten fails
             subprocess.check_call([sys.executable, "-m", "pip", "install", package])
             if package == 'nrgten':
                 distribution = importlib.metadata.distribution(package)
@@ -75,6 +76,7 @@ def make_dialog():
     import general_functions
     from src.surfaces import run_Surfaces
     from src.isomif import run_isomif
+    from thread_test import main as thread_test
     import platform
     dialog = QtWidgets.QDialog()
 
@@ -203,9 +205,8 @@ def make_dialog():
 
     # NRGTEN
     form.NRGten_target_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.NRGten_select_target, form.output_box))
-    form.NRGten_target_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.NRGten_select_ligand, form.output_box,lig=1,     add_none=1  ))
-    form.NRGten_target_refresh_2.clicked.connect(lambda: general_functions.refresh_dropdown(form.NRGten_select_target_2, form.output_box,     add_none=1  ))
-
+    form.NRGten_target_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.NRGten_select_ligand, form.output_box,lig=1, add_none=1  ))
+    form.NRGten_target_refresh_2.clicked.connect(lambda: general_functions.refresh_dropdown(form.NRGten_select_target_2, form.output_box, add_none=1  ))
     form.NRGten_dynasig_pushButton.clicked.connect(lambda: run_NRGTEN.dynamical_signature(form.NRGten_select_target.currentText(),
                                                                                           form.NRGten_select_ligand.currentText(),
                                                                                           form.NRGten_select_target_2.currentText(),
@@ -229,11 +230,13 @@ def make_dialog():
     form.ISOMIF_cleft_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.ISOMIF_select_cleft, form.output_box,filter_for='sph'))
     form.ISOMIF_cleft_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(form.ISOMIF_select_lig, form.output_box, lig=1, add_none=1))
     form.ISOMIF_cleft_refresh_1.clicked.connect(lambda: general_functions.refresh_dropdown(form.ISOMIF_select_cleft_1,
-                                                                                  form.output_box, filter_for='sph' ,add_none=1))
-    form.ISOMIF_cleft_refresh_1.clicked.connect(lambda: general_functions.refresh_dropdown(form.ISOMIF_select_lig_1,form.output_box,lig=1, add_none=1))
+                                                                                           form.output_box,
+                                                                                           filter_for='sph' ,
+                                                                                           add_none=1))
+    form.ISOMIF_cleft_refresh_1.clicked.connect(lambda: general_functions.refresh_dropdown(form.ISOMIF_select_lig_1,form.output_box, lig=1, add_none=1))
 
     form.ISOMIF_pushButton.clicked.connect(lambda: run_isomif.mif_plot(form, form.output_box,binary_folder_path, binary_suffix,operating_system,install_dir))
-
+    form.nrgdock_thread.clicked.connect(thread_test)
 
 
     return dialog
