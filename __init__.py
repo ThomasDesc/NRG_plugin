@@ -42,7 +42,7 @@ def test_binary(binary_folder_path, operating_system):
 
 def install_package(package, main_folder_path):
     try:
-        __import__(package)
+        __import__(package.split('=')[0])
     except ImportError as e:
         if package == 'modeller':
             print('Modeller install not detected. Please install via conda. The modeller tab will be unavailable')
