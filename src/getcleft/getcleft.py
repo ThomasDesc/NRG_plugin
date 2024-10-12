@@ -101,7 +101,7 @@ def run_getcleft(form, binary_folder_path, binary_suffix, temp_path, nrgsuite_ba
         object_save_path = os.path.join(getcleft_output_path, 'tmp.pdb')
         cmd.save(object_save_path, pymol_object)
     else:
-        print('No object selected')
+        general_functions.output_message(output_box, 'No object selected', 'warning')
         return
     getcleft_command = get_arg_str(form, getcleft_binary_path, object_save_path, cleft_save_path)
     print(getcleft_command)
