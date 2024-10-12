@@ -66,7 +66,7 @@ def make_dialog():
 
     install_dir = os.path.dirname(__file__)
     sys.path.append(install_dir)
-    packages = ['nrgten', 'Bio', 'pandas', 'matplotlib', 'colour', 'scipy', 'numpy', 'numba','plotly']
+    packages = ['nrgten', 'Bio', 'pandas', 'matplotlib', 'colour', 'scipy', 'numpy==2.0', 'numba','plotly']
     for package in packages:
         install_package(package, install_dir)
     from src.flexaid import flexaid
