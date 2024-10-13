@@ -6,6 +6,7 @@ import shutil
 import subprocess
 from src.flexaid import flexaid
 from src.getcleft import getcleft
+# from src.getcleft import getcleft
 from src.nrgdock import nrgdock
 from src.getcleft import spheres
 import general_functions
@@ -48,6 +49,7 @@ class Controller:
         self.binary_suffix = binary_suffix
         self.operating_system = operating_system
         self.ligand_set_folder_path = ligand_set_folder_path
+        self.getcleftrunner = getcleft.GetCleftRunner()
         self.setupConnections()
 
     def setupConnections(self):
@@ -68,9 +70,8 @@ class Controller:
         self.form.button_hide.clicked.connect(lambda: general_functions.pymol_hide_structures(self.form))
         self.form.cleft_button_refresh.clicked.connect(
             lambda: general_functions.refresh_dropdown(self.form.cleft_select_object, self.form.output_box))
-        self.form.button_start.clicked.connect(
-            lambda: getcleft.run_getcleft(self.form, self.binary_folder_path, self.binary_suffix, self.form.temp_line_edit.text(),
-                                          install_dir))
+        self.form.button_start.clicked.connect(lambda: self.getcleftrunner.run_task(self.form, self.binary_folder_path, self.binary_suffix, install_dir))
+
         # Partition Cleft
         self.form.cleft_partition_button_add.clicked.connect(
             lambda: spheres.display_sphere(self.form.cleft_partition_select_object.currentText(),
