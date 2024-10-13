@@ -6,7 +6,6 @@ import shutil
 import subprocess
 from src.flexaid import flexaid
 from src.getcleft import getcleft
-# from src.getcleft import getcleft
 from src.nrgdock import nrgdock
 from src.getcleft import spheres
 import general_functions
@@ -16,6 +15,7 @@ from thread_test import main as thread_test
 import platform
 from pymol.Qt import QtWidgets
 from pymol.Qt.utils import loadUi
+from functools import partial
 def dummy_run_NRGTEN():
     print("Running dummy NRGTEN...")
 try:
@@ -50,6 +50,7 @@ class Controller:
         self.operating_system = operating_system
         self.ligand_set_folder_path = ligand_set_folder_path
         self.getcleftrunner = getcleft.GetCleftRunner()
+        self.nrgdockrunner = nrgdock.NRGDockRunner()
         self.setupConnections()
 
     def setupConnections(self):
@@ -122,9 +123,11 @@ class Controller:
         self.form.nrgdock_button_ligandset_add.clicked.connect(lambda: nrgdock.process_ligands())
         self.form.nrgdock_ligand_set_refresh.clicked.connect(
             lambda: general_functions.refresh_folder(self.ligand_set_folder_path, self.form.nrgdock_select_ligand))
-        self.form.nrgdock_button_start.clicked.connect(
-            lambda: nrgdock.run_nrgdock(self.form, os.path.join(self.form.temp_line_edit.text(), 'NRGDock'),
-                                        self.ligand_set_folder_path, install_dir))
+
+        # self.form.nrgdock_button_start.clicked.connect(
+        #     lambda: nrgdock.run_nrgdock(self.form, os.path.join(self.form.temp_line_edit.text(), 'NRGDock'),
+        #                                 self.ligand_set_folder_path, install_dir))
+        self.form.nrgdock_button_start.clicked.connect(partial(self.nrgdockrunner.run_task, self.form, self.ligand_set_folder_path, install_dir))
         self.form.nrgdock_result_browse_button.clicked.connect(
             lambda: general_functions.folder_browser(self.form.nrgdock_result_path,
                                                      os.path.join(self.form.temp_line_edit.text(), 'NRGDock'),
