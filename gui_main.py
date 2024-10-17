@@ -16,8 +16,7 @@ import platform
 from pymol.Qt import QtWidgets
 from pymol.Qt.utils import loadUi
 from functools import partial
-def dummy_run_NRGTEN():
-    print("Running dummy NRGTEN...")
+
 try:
     import modeller
 except ImportError:
@@ -209,8 +208,6 @@ class Controller:
         self.form.ISOMIF_pushButton.clicked.connect(
             lambda: run_isomif.mif_plot(self.form, self.form.output_box, self.binary_folder_path, self.binary_suffix, self.operating_system,
                                         install_dir))
-        self.form.nrgdock_thread.clicked.connect(thread_test)
-
 
 
 class NRGSuitePlugin(QtWidgets.QWidget):
@@ -219,6 +216,7 @@ class NRGSuitePlugin(QtWidgets.QWidget):
         self.form = None
         self.binary_suffix = None
         self.operating_system = None
+        # QtWidgets.QApplication.setStyle("Fusion")
         self.get_os()
         self.binary_folder_path = os.path.join(install_dir, 'bin', self.operating_system)
         print('binary path: ', self.binary_folder_path)
@@ -284,18 +282,3 @@ class NRGSuitePlugin(QtWidgets.QWidget):
             self.form.button_modeller.setEnabled(False)
             self.form.button_nrgten.setStyleSheet("background-color: black; color: white;")
             self.form.button_modeller.setStyleSheet("background-color: black; color: white;")
-
-
-def __init_plugin__(app):
-    from pymol.plugins import addmenuitemqt
-    addmenuitemqt('NRGSuite_Qt', run_plugin_gui)
-
-
-def run_plugin_gui():
-    global dialog
-    if dialog is None:
-        dialog = NRGSuitePlugin()
-    dialog.show()
-    dialog.raise_()
-
-dialog = None

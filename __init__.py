@@ -44,7 +44,6 @@ def run_plugin_gui():
 
     import gui_main
     global dialog
-
     if dialog is None:
         check_packages(install_dir)
         dialog = gui_main.NRGSuitePlugin()
@@ -54,9 +53,10 @@ def run_plugin_gui():
 dialog = None
 
 if __name__ == '__main__':
-    from PyQt5.QtWidgets import QApplication
+    from PyQt6.QtWidgets import QApplication
     import gui_main
     app = QApplication(sys.argv)
+    app.setStyle("Fusion")
     window = gui_main.NRGSuitePlugin()
     window.show()
     sys.exit(app.exec_())

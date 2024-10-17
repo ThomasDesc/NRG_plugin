@@ -18,7 +18,13 @@
   </property>
   <property name="styleSheet">
    <string notr="true">QGroupBox{
-font-size:14px}</string>
+font-size:14px;
+}
+
+
+
+
+</string>
   </property>
   <widget class="QWidget" name="verticalWidget" native="true">
    <property name="geometry">
@@ -190,11 +196,14 @@ QPushButton:checked{
   <widget class="QGroupBox" name="groupBox">
    <property name="geometry">
     <rect>
-     <x>10</x>
+     <x>20</x>
      <y>450</y>
-     <width>821</width>
-     <height>211</height>
+     <width>791</width>
+     <height>201</height>
     </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true"/>
    </property>
    <property name="title">
     <string>Output</string>
@@ -202,10 +211,10 @@ QPushButton:checked{
    <widget class="QTextBrowser" name="output_box">
     <property name="geometry">
      <rect>
-      <x>10</x>
+      <x>20</x>
       <y>30</y>
-      <width>801</width>
-      <height>161</height>
+      <width>761</width>
+      <height>151</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -216,10 +225,10 @@ color:rgb(255, 255, 255);</string>
    <widget class="QLabel" name="temp_line_edit">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>190</y>
-      <width>801</width>
-      <height>16</height>
+      <x>20</x>
+      <y>180</y>
+      <width>761</width>
+      <height>20</height>
      </rect>
     </property>
     <property name="text">
@@ -236,8 +245,11 @@ color:rgb(255, 255, 255);</string>
      <height>441</height>
     </rect>
    </property>
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
    <property name="currentIndex">
-    <number>2</number>
+    <number>1</number>
    </property>
    <widget class="QWidget" name="getcleft_page">
     <widget class="QTabWidget" name="getcleft_tab_widget">
@@ -1154,6 +1166,9 @@ font-size:14px;
     </widget>
    </widget>
    <widget class="QWidget" name="nrgdock_page">
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
     <widget class="QTabWidget" name="NRGDock_tabs">
      <property name="enabled">
       <bool>true</bool>
@@ -1171,6 +1186,9 @@ font-size:14px;
      </property>
      <property name="layoutDirection">
       <enum>Qt::LeftToRight</enum>
+     </property>
+     <property name="styleSheet">
+      <string notr="true"/>
      </property>
      <property name="tabPosition">
       <enum>QTabWidget::North</enum>
@@ -1430,6 +1448,9 @@ font-size:14px;
          <height>141</height>
         </rect>
        </property>
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
        <property name="title">
         <string>Input Files</string>
        </property>
@@ -1600,7 +1621,7 @@ font-size:14px;
         <rect>
          <x>10</x>
          <y>260</y>
-         <width>591</width>
+         <width>601</width>
          <height>81</height>
         </rect>
        </property>
@@ -1632,19 +1653,6 @@ font-size:14px;
          </widget>
         </item>
        </layout>
-      </widget>
-      <widget class="QPushButton" name="nrgdock_thread">
-       <property name="geometry">
-        <rect>
-         <x>250</x>
-         <y>380</y>
-         <width>113</width>
-         <height>32</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>PushButton</string>
-       </property>
       </widget>
      </widget>
      <widget class="QWidget" name="nrgdock_results">
