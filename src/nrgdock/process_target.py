@@ -1,7 +1,13 @@
 import os
+from time import perf_counter
+
 import numpy as np
 from numba import njit
-from src.nrgdock.main_processed_target import get_params_dict, write_test
+import sys
+install_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+sys.path.append(install_dir)
+print(install_dir)
+from src.nrgdock.main_processed_target import get_params_dict
 import shutil
 # from process_ligands import preprocess_ligands_one_target as preprocess_ligand
 import timeit
@@ -10,7 +16,7 @@ import concurrent.futures
 import argparse
 from pathlib import Path
 import json
-
+import time
 
 def load_rad_dict(filepath):
     with open(filepath, 'r') as file:
@@ -437,6 +443,8 @@ def get_args():
                                    help='Specify if you want to run GetCleft')
     parser.add_argument("-l", '--ligand_name', type=str,
                         help='Ligand for GetCleft format (no spaces ex: RES999A): residue, number, chain')
+    parser.add_argument("-d", '--deps_path', type=str,
+                        help='path to deps')
     args = parser.parse_args()
     if args.ligand_name and args.run_getcleft is None:
         parser.error("-l (--ligand_name) requires -c (--run_getcleft).")
@@ -446,8 +454,12 @@ def get_args():
         target_list = next(os.walk(path_to_targets))[1]
     else:
         target_list = args.specific_target.split(',')
+    if args.deps_path is None:
+        deps_path=None
+    else:
+        deps_path = args.deps_path
     target_list = sorted(target_list)
-    main(path_to_targets, target_list, overwrite=args.overwrite, run_getcleft=args.run_getcleft, ligand_name=args.ligand_name)
+    main(path_to_targets, target_list, overwrite=args.overwrite, run_getcleft=args.run_getcleft, ligand_name=args.ligand_name, deps_path=deps_path)
 
 
 def main(path_to_targets, target_list, overwrite=False, run_getcleft=False, ligand_name=None, deps_path=os.path.join('.', 'deps')):
@@ -455,6 +467,7 @@ def main(path_to_targets, target_list, overwrite=False, run_getcleft=False, liga
     root_software_path = Path(__file__).resolve().parents[1]
     os.chdir(root_software_path)
     time_start = timeit.default_timer()
+    print(deps_path)
     config_file = os.path.join(deps_path, "config.txt")
     params_dict = get_params_dict(config_file)
     matrix_name = params_dict['PRECALC_MATRIX_NAME']
