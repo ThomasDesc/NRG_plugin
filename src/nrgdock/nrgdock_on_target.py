@@ -28,6 +28,31 @@ def run_subprocess(current_ligand_number, last_ligand, install_dir, nrgdock_targ
                     '-te', nrgdock_output_path],
                    check=True)
 
+
+def merge_csv(folder):
+    csv_output_path = os.path.join(folder, "nrgdock_result.csv")
+    csv_files = glob.glob(os.path.join(folder, "*.csv"))
+    merged_df = pd.concat((pd.read_csv(file) for file in csv_files), ignore_index=True)
+    filtered_df = merged_df[merged_df['CF'] != 100000000]
+    sorted_df = filtered_df.sort_values(by='CF')
+    sorted_df.to_csv(csv_output_path, index=False)
+    for file in csv_files:
+        os.remove(file)
+    top_10_names = sorted_df['Name'].head(20).tolist()
+    return top_10_names, csv_output_path
+
+
+def manage_poses(top_n_name_list, ligand_poses_folder):
+    ligand_files = glob.glob(os.path.join(ligand_poses_folder, "*.pdb"))
+    for file in ligand_files:
+        file_name = os.path.splitext(os.path.basename(file))[0]
+        if file_name not in top_n_name_list:
+            os.remove(file)
+        else:
+            cmd.load(file)
+            cmd.group('nrgdock_results', file_name)
+
+
 class WorkerThread(QThread):
     message_signal = pyqtSignal(str)
     screen_progress_signal = pyqtSignal(int)
@@ -148,27 +173,3 @@ class NRGDockManager(QObject):
         manage_poses(top_n_name_list, os.path.join(self.nrgdock_output_path, 'ligand_poses', 'target'))
         self.finished_signal.emit(f"NRGDock: Finished")
         self.update_table_signal.emit(csv_output_path)
-
-
-def merge_csv(folder):
-    csv_output_path = os.path.join(folder, "nrgdock_result.csv")
-    csv_files = glob.glob(os.path.join(folder, "*.csv"))
-    merged_df = pd.concat((pd.read_csv(file) for file in csv_files), ignore_index=True)
-    filtered_df = merged_df[merged_df['CF'] != 100000000]
-    sorted_df = filtered_df.sort_values(by='CF')
-    sorted_df.to_csv(csv_output_path, index=False)
-    for file in csv_files:
-        os.remove(file)
-    top_10_names = sorted_df['Name'].head(20).tolist()
-    return top_10_names, csv_output_path
-
-
-def manage_poses(top_n_name_list, ligand_poses_folder):
-    ligand_files = glob.glob(os.path.join(ligand_poses_folder, "*.pdb"))
-    for file in ligand_files:
-        file_name = os.path.splitext(os.path.basename(file))[0]
-        if file_name not in top_n_name_list:
-            os.remove(file)
-        else:
-            cmd.load(file)
-            cmd.group('nrgdock_results', file_name)
