@@ -132,6 +132,8 @@ class NRGDockManager(QObject):
             os.mkdir(binding_site_folder_path)
         binding_site_file_path = os.path.join(binding_site_folder_path, 'receptor_sph_1.pdb')
         cmd.save(binding_site_file_path, self.binding_site_name)
+        cmd.hide('everything', self.binding_site_name)
+        cmd.show('mesh', self.binding_site_name)
         nrgdock_result_folder = os.path.join(self.nrgdock_output_path, 'results')
         if not os.path.exists(nrgdock_result_folder):
             os.mkdir(nrgdock_result_folder)

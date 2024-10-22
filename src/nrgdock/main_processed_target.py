@@ -474,7 +474,6 @@ def get_args():
         temp_path = None
     else:
         temp_path = args.temp_path
-    print('in nrgdock: ', start)
     main(config_file, path_to_target, category, start, end, target, args.numpy_array_path, extra_inf, path_to_ligands, skip_info, temp_path)
 
 
