@@ -60,7 +60,7 @@ class WorkerThread(QThread):
     finished_signal = pyqtSignal(str)
 
     def __init__(self, ligand_set_folder_path, install_dir, nrgdock_output_path, nrgdock_top_n_poses,
-                 nrgdock_start_ligand, ligand_set_name, target_name, binding_site_name):
+                 nrgdock_start_ligand, ligand_set_name, target_name, binding_site_name, cpu_usage_target):
         super().__init__()
         self.ligand_set_folder_path = ligand_set_folder_path
         self.install_dir = install_dir
@@ -70,7 +70,12 @@ class WorkerThread(QThread):
         self.ligand_set_name = ligand_set_name
         self.target_name = target_name
         self.binding_site_name = binding_site_name
-        self.number_of_cores = multiprocessing.cpu_count()-2
+        self.cpu_usage_target = int(cpu_usage_target[:-1])
+        if self.cpu_usage_target == 100:
+            self.number_of_cores = multiprocessing.cpu_count() + 4
+        else:
+            self.number_of_cores = round(multiprocessing.cpu_count() * (self.cpu_usage_target/100))
+        print('Number of cores: {}/{}'.format(self.number_of_cores, multiprocessing.cpu_count()))
 
     def run(self):
         nrgdock_instance = NRGDockManager(self.ligand_set_folder_path, self.install_dir, self.nrgdock_output_path,

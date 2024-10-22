@@ -1,7 +1,4 @@
 from pymol.Qt import QtCore
-import time
-from pymol.Qt import QtGui
-from pymol.Qt import QtWidgets
 import general_functions
 from subprocess import run
 import os

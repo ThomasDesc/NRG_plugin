@@ -269,7 +269,7 @@ def run_flexaid(form, temp_path, binary_folder_path, operating_system, binary_su
     hex_color_list = load_color_list(color_list_path)
     if form.flexaid_button_start.text() == 'Start':
         max_results = 10
-        multithreaded = form.flexaid_multithread_button.isChecked()
+        multithreaded = True
         setting_dictionary = get_simulation_settings(form)
         max_generations = int(setting_dictionary['number_generations'])
         form.flexaid_progress.setMaximum(max_generations)
@@ -304,3 +304,4 @@ def run_flexaid(form, temp_path, binary_folder_path, operating_system, binary_su
             run_flexaid_worker(flexaid_command, form, flexaid_result_path, hex_color_list, max_generations,rmsd)
         else:
             run_flexaid_same_thread(flexaid_command, flexaid_result_path, form, hex_color_list, max_generations, operating_system)
+        form.flexaid_tab.setTabEnabled(2, True)

@@ -51,8 +51,8 @@ class Controller:
 
     def setupConnections(self):
         self.form.button_getcleft.clicked.connect(lambda: self.form.stackedWidget.setCurrentIndex(0))
-        self.form.button_flexaid.clicked.connect(lambda: self.form.stackedWidget.setCurrentIndex(1))
-        self.form.button_nrgdock.clicked.connect(lambda: self.form.stackedWidget.setCurrentIndex(2))
+        self.form.button_nrgdock.clicked.connect(lambda: self.form.stackedWidget.setCurrentIndex(1))
+        self.form.button_flexaid.clicked.connect(lambda: self.form.stackedWidget.setCurrentIndex(2))
         self.form.button_nrgten.clicked.connect(lambda: self.form.stackedWidget.setCurrentIndex(3))
         self.form.button_surfaces.clicked.connect(lambda: self.form.stackedWidget.setCurrentIndex(4))
         self.form.button_modeller.clicked.connect(lambda: self.form.stackedWidget.setCurrentIndex(5))
@@ -95,7 +95,6 @@ class Controller:
         self.form.flexaid_binding_site_refresh.clicked.connect(
             lambda: general_functions.refresh_dropdown(self.form.flexaid_select_binding_site, self.form.output_box,
                                                        filter_for='_sph'))
-        self.form.flexaid_button_start.clicked.connect(lambda: self.form.flexaid_tab.setTabEnabled(2, True))
         self.form.flexaid_retrieve_nrgdock_ligands.clicked.connect(
             lambda: flexaid.retrieve_nrgdock_ligands(os.path.join(self.form.temp_line_edit.text(), 'NRGDock')))
         self.form.flexaid_button_start.clicked.connect(
@@ -211,6 +210,7 @@ class Controller:
         starting_ligand = int(self.form.nrgdock_start_ligand.text())
         ligand_set_name = self.form.nrgdock_select_ligand.currentText().replace(' ', '_')
         target_name = self.form.nrgdock_select_target.currentText()
+        cpu_usage_target = self.form.nrgdock_cpu_usage_target.currentText()
         if target_name == '':
             general_functions.output_message(self.form.output_box, 'No target object selected', 'warning')
             return
@@ -222,7 +222,7 @@ class Controller:
 
         self.initialise_progress_bar()
         general_functions.disable_run_mutate_buttons(self.form, disable=True)
-        self.thread = WorkerThread(self.ligand_set_folder_path, install_dir, temp_path, n_poses_to_save, starting_ligand, ligand_set_name, target_name, binding_site_name)
+        self.thread = WorkerThread(self.ligand_set_folder_path, install_dir, temp_path, n_poses_to_save, starting_ligand, ligand_set_name, target_name, binding_site_name, cpu_usage_target)
 
         self.thread.message_signal.connect(self.handle_message_signal)
         self.thread.screen_progress_signal.connect(self.handle_screen_progress_signal)
@@ -285,12 +285,11 @@ class NRGSuitePlugin(QtWidgets.QWidget):
 
         self.form.stackedWidget.setCurrentIndex(0)
         self.form.flexaid_tab.setTabEnabled(2, False)
-        if self.operating_system == 'mac':
-            self.form.flexaid_multithread_button.setChecked(True)
         self.form.getcleft_tab_widget.setTabEnabled(2, False)
 
         general_functions.refresh_dropdown(self.form.cleft_select_object, self.form.output_box, no_warning=True)
         general_functions.refresh_folder(self.ligand_set_folder_path, self.form.nrgdock_select_ligand)
+        self.form.nrgdock_cpu_usage_target.setCurrentText("75%")
         self.controller = Controller(self.form, self.binary_folder_path, self.binary_suffix, self.operating_system, self.ligand_set_folder_path)
 
     def load_ui(self):
