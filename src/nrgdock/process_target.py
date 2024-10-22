@@ -6,7 +6,6 @@ from numba import njit
 import sys
 install_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 sys.path.append(install_dir)
-print(install_dir)
 from src.nrgdock.main_processed_target import get_params_dict
 import shutil
 # from process_ligands import preprocess_ligands_one_target as preprocess_ligand

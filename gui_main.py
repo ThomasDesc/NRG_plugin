@@ -206,7 +206,9 @@ class Controller:
                                         install_dir))
 
     def run_task(self):
-        self.worker = nrgdock.start_processing()
+        from src.nrgdock.nrgdock import WorkerThread
+        self.thread = WorkerThread(self.form, self.ligand_set_folder_path, install_dir)
+        self.thread.start()
 
 
 

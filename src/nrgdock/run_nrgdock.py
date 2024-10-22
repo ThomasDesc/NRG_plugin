@@ -1,8 +1,9 @@
 import os
 from pymol import cmd
-from PyQt5.QtWidgets import QApplication
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
-from src.nrgdock.process_target import main as process_target
+import subprocess
+import sys
+# from src.nrgdock.process_target import main as process_target
 from src.nrgdock.main_processed_target import main as nrgdock_main
 import pandas as pd
 import glob
@@ -55,6 +56,28 @@ def get_nrgdock_result_model(csv_result, form):
     form.NRGDock_tabs.setCurrentIndex(2)
 
 
+
+step = 100
+
+def run_subprocess(current_ligand_number, last_ligand, install_dir, nrgdock_target_folder, ligand_path, config_path, nrgdock_output_path, ligand_number):
+    """Function to run subprocess command."""
+    if last_ligand > ligand_number:
+        last_ligand = ligand_number
+
+    # Run the subprocess
+    subprocess.run([sys.executable,
+                    os.path.join(install_dir, 'src', 'nrgdock', 'main_processed_target.py'),
+                    '-p', nrgdock_target_folder,
+                    '-t', 'ligand',
+                    '-s', str(current_ligand_number),
+                    '-e', str(last_ligand),
+                    '-l', ligand_path,
+                    '-si', '2',
+                    '-c', config_path,
+                    '-te', nrgdock_output_path],
+                   check=True)
+
+
 def run_nrgdock(form, nrgdock_output_path, ligand_set_folder_path, install_dir):
     deps_path = os.path.join(install_dir, 'deps', 'nrgdock')
     config_path = os.path.join(deps_path, 'config.txt')
@@ -90,7 +113,9 @@ def run_nrgdock(form, nrgdock_output_path, ligand_set_folder_path, install_dir):
     # form.output_box.append("Processing target...")
     # form.output_box.repaint()
     # QApplication.processEvents()
-    process_target(nrgdock_output_path, ['target'], overwrite=True, run_getcleft=False, deps_path=deps_path)
+    subprocess.run([sys.executable, os.path.join(install_dir, 'src', 'nrgdock', 'process_target.py'),
+                      '-p', nrgdock_output_path, '-t', 'target', '-o', '-d', os.path.join(install_dir, 'deps', 'nrgdock')], check=True)
+    # process_target(nrgdock_output_path, ['target'], overwrite=True, run_getcleft=False, deps_path=deps_path)
     # form.output_box.append("Running NRGDock...")
     # form.output_box.repaint()
 
@@ -104,12 +129,32 @@ def run_nrgdock(form, nrgdock_output_path, ligand_set_folder_path, install_dir):
     # form.nrgdock_progress_bar.repaint()
     # QApplication.processEvents()
     step = 100
-    for current_ligand_number in range(starting_ligand, ligand_number, step):
-        last_ligand = current_ligand_number+step
-        print(last_ligand)
-        if last_ligand > ligand_number:
-            last_ligand = ligand_number
-        nrgdock_main(config_path, nrgdock_target_folder, 'ligand', current_ligand_number, last_ligand, target_name, None, None, ligand_path, 2, temp_path=nrgdock_output_path)
+    import time
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+    start_time = time.time()
+    with ThreadPoolExecutor() as executor:
+        futures = []
+        for current_ligand_number in range(starting_ligand, ligand_number, step):
+            last_ligand = current_ligand_number + step
+            # Submit the subprocess task to the executor for parallel execution
+            futures.append(executor.submit(
+                run_subprocess,
+                current_ligand_number,
+                last_ligand,
+                install_dir,
+                nrgdock_target_folder,
+                ligand_path,
+                config_path,
+                nrgdock_output_path,
+                ligand_number
+            ))
+
+        # Optionally: Wait for all tasks to complete and handle any results or exceptions
+        for future in as_completed(futures):
+            try:
+                future.result()  # This will raise any exception from the subprocess
+            except Exception as e:
+                print(f"Error occurred: {e}")
 
         # form.nrgdock_progress_label.setText(f'Ligand: {last_ligand}/{ligand_number}')
         # form.nrgdock_progress_bar.setValue(last_ligand)
@@ -122,7 +167,11 @@ def run_nrgdock(form, nrgdock_output_path, ligand_set_folder_path, install_dir):
 
     # form.output_box.repaint()
     # QApplication.processEvents()
-    top_n_name_list, csv_output_path = merge_csv(os.path.join(nrgdock_result_folder, target_name))
+
+    end_time = time.time()
+    execution_time = end_time - start_time  # Calculate time difference
+    print(f"Execution time: {execution_time} seconds")
+    top_n_name_list, csv_output_path = merge_csv(os.path.join(nrgdock_result_folder, 'target'))
     manage_poses(top_n_name_list, os.path.join(nrgdock_output_path, 'ligand_poses', target_name))
 
     # get_nrgdock_result_model(csv_output_path, form)

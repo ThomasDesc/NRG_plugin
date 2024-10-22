@@ -132,7 +132,7 @@ def refresh_dropdown(dropdown_to_refresh, output_box, filter_for='', no_warning=
 
 def refresh_folder(folder_path, dropdown_to_refresh):
     folders = next(os.walk(folder_path))[1]
-    folders = [item.replace('_', ' ') for item in folders]
+    folders = sorted([item.replace('_', ' ') for item in folders])
     dropdown_to_refresh.clear()
     dropdown_to_refresh.addItems(folders)
 

@@ -451,6 +451,9 @@ def get_args():
     parser.add_argument('-l', '--ligand_path', default=None, type=str, help='Custom ligand path')
     parser.add_argument('-si', '--skip_info', default=0, type=int, help='write info to separate file for htpvs, 0 is do nothing, 1 is write to seprarte file, 2 is dont write anything')
 
+    parser.add_argument('-c', '--config_path', default=None, type=str, help='Custom config path')
+    parser.add_argument('-te', '--temp_path', default=None, type=str, help='Custom temp path')
+
     args = parser.parse_args()
 
     path_to_target = args.path_to_target
@@ -463,9 +466,16 @@ def get_args():
     skip_info = args.skip_info
     # num_cpu = multiprocessing.cpu_count()
     # print("CPU(s) detected: ", num_cpu)
-    config_file = os.path.abspath("./deps/config.txt")
-
-    main(config_file, path_to_target, category, start, end, target, args.numpy_array_path, extra_inf, path_to_ligands, skip_info)
+    if not args.config_path:
+        config_file = os.path.abspath("./deps/config.txt")
+    else:
+        config_file = args.config_path
+    if not args.temp_path:
+        temp_path = None
+    else:
+        temp_path = args.temp_path
+    print('in nrgdock: ', start)
+    main(config_file, path_to_target, category, start, end, target, args.numpy_array_path, extra_inf, path_to_ligands, skip_info, temp_path)
 
 
 if __name__ == "__main__":

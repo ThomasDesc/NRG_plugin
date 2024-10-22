@@ -1,5 +1,6 @@
 import os
 import sys
+print(sys.executable)
 import subprocess
 import shutil
 import importlib.metadata
@@ -15,7 +16,7 @@ def install_package(package, main_folder_path):
         __import__(package.split('=')[0])
     except ImportError as e:
         if package == 'modeller':
-            print('Modeller install not detected. Please install via conda. The modeller tab will be unavailable')
+            print('Modeller install not detected. Please install via conda. The Modeller and NRGTen tabs will be unavailable')
         else:
             if package == 'Bio':
                 package = 'biopython'
@@ -42,10 +43,11 @@ def run_plugin_gui():
 
     print('Checking python modules')
 
-    import gui_main
+
     global dialog
     if dialog is None:
         check_packages(install_dir)
+        import gui_main
         dialog = gui_main.NRGSuitePlugin()
     dialog.show()
     dialog.raise_()
