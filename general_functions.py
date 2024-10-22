@@ -1,7 +1,7 @@
 from pymol import cmd
 import numpy as np
 import os
-from PyQt5.QtWidgets import QFileDialog,QMessageBox
+from PyQt5.QtWidgets import QFileDialog, QMessageBox, QPushButton
 import shutil
 
 
@@ -19,7 +19,19 @@ def output_message(output_box, text, message_type):
         out_color = green
     output_box.append(out_color.format(text))
 
-def show_popup(self,dir_path,temp_path,save_file):
+
+def disable_run_mutate_buttons(form, disable=False, enable=False):
+    if not disable and not enable:
+        print('missing enable or disable args')
+        return
+    for widget in form.findChildren(QPushButton):
+        if "run" in widget.text().lower() or "mutate" in widget.text().lower():
+            if disable:
+                widget.setDisabled(disable)
+            if enable:
+                widget.setEnabled(enable)
+
+def show_popup(form, dir_path,temp_path,save_file):
 
         msg = QMessageBox()
         msg.setIcon(QMessageBox.Information)
@@ -36,7 +48,7 @@ def show_popup(self,dir_path,temp_path,save_file):
         response = msg.exec_()
         if response == QMessageBox.Ok:
             if not save_file:
-                self.temp_line_edit.setText(dir_path)
+                form.temp_line_edit.setText(dir_path)
             if save_file:
                 sufix = 2
                 base_dir=os.path.join(dir_path, 'NRGSuite_QT_results')
@@ -53,10 +65,10 @@ def show_popup(self,dir_path,temp_path,save_file):
                             shutil.copytree(source_file, target_file)
                         else:
                             shutil.copy2(source_file, target_file)
-                self.temp_line_edit.setText(os.path.join(new_dir))
+                form.temp_line_edit.setText(os.path.join(new_dir))
                 cmd.save(os.path.join(new_dir,'load_project.pse'))
         else:
-            show_save_dialog(self, temp_path, save=save_file)
+            show_save_dialog(form, temp_path, save=save_file)
 
 def show_save_dialog(self,temp_path,save=1):
 

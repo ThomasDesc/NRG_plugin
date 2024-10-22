@@ -13,8 +13,8 @@ from src.isomif import run_isomif
 import platform
 from pymol.Qt import QtWidgets
 from pymol.Qt.utils import loadUi
-from functools import partial
-
+import pandas as pd
+from PyQt5.QtGui import QStandardItemModel, QStandardItem
 try:
     import modeller
 except ImportError:
@@ -220,22 +220,52 @@ class Controller:
             general_functions.output_message(self.form.output_box, 'No binding site object selected', 'warning')
             return
 
+        self.initialise_progress_bar()
+        general_functions.disable_run_mutate_buttons(self.form, disable=True)
         self.thread = WorkerThread(self.ligand_set_folder_path, install_dir, temp_path, n_poses_to_save, starting_ligand, ligand_set_name, target_name, binding_site_name)
 
-        self.thread.progress_signal.connect(self.handle_progress_update)
+        self.thread.message_signal.connect(self.handle_message_signal)
+        self.thread.screen_progress_signal.connect(self.handle_screen_progress_signal)
+        self.thread.update_table_signal.connect(self.update_nrgdock_result_table)
+        self.thread.finished_signal.connect(self.handle_thread_finished)
         # self.thread.finished_signal.connect(self.handle_thread_finished)
 
         self.thread.start()
 
-    # Slot to handle progress updates
-    def handle_progress_update(self, message):
+    def initialise_progress_bar(self):
+        self.form.nrgdock_progress.setEnabled(True)
+        self.form.nrgdock_progress_label.setText('Screening progress: 0%')
+        self.form.nrgdock_progress_bar.setValue(0)
+        self.form.nrgdock_progress_bar.setMaximum(100)
+
+    def handle_message_signal(self, message):
         general_functions.output_message(self.form.output_box, message, 'valid')
 
-    # Slot to handle thread completion
+    def handle_screen_progress_signal(self, value):
+        current_value = self.form.nrgdock_progress_bar.value()
+        if value > current_value:
+            self.form.nrgdock_progress_bar.setValue(value)
+            self.form.nrgdock_progress_label.setText(f'Screening progress: {value}%')
+
+    def update_nrgdock_result_table(self, csv_result):
+        print('Signal received')
+        df = pd.read_csv(csv_result)
+        df = df[['Name', 'CF']]
+        model = QStandardItemModel()
+        model.setHorizontalHeaderLabels(df.columns.tolist())
+        for index, row in df.iterrows():
+            item_list = []
+            for data in row:
+                item = QStandardItem(str(data))
+                item_list.append(item)
+            model.appendRow(item_list)
+        self.form.nrgdock_result_table.setModel(model)
+        self.form.nrgdock_result_table.resizeColumnsToContents()
+        self.form.NRGDock_tabs.setTabEnabled(2, True)
+        self.form.NRGDock_tabs.setCurrentIndex(2)
+
     def handle_thread_finished(self, message):
-        # This method will get called with 'message' from the finished signal
-        general_functions.output_message(self.form.output_box, message, 'valid')
-        print(message)
+        general_functions.disable_run_mutate_buttons(self.form, enable=True)
 
 
 

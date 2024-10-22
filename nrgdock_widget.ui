@@ -293,7 +293,7 @@ color:rgb(255, 255, 255);</string>
            <string notr="true"/>
           </property>
           <property name="text">
-           <string>Start</string>
+           <string>Run GetCleft</string>
           </property>
           <property name="default">
            <bool>true</bool>
@@ -989,7 +989,7 @@ font-size:14px;
            </sizepolicy>
           </property>
           <property name="text">
-           <string>Start</string>
+           <string>Run FlexAID</string>
           </property>
           <property name="default">
            <bool>true</bool>
@@ -1000,17 +1000,6 @@ font-size:14px;
          </widget>
         </item>
        </layout>
-      </widget>
-      <widget class="QWidget" name="horizontalLayoutWidget_3">
-       <property name="geometry">
-        <rect>
-         <x>9</x>
-         <y>339</y>
-         <width>601</width>
-         <height>51</height>
-        </rect>
-       </property>
-       <layout class="QHBoxLayout" name="horizontalLayout_2"/>
       </widget>
       <widget class="QLineEdit" name="simulate_folder_path">
        <property name="geometry">
@@ -1443,7 +1432,7 @@ font-size:14px;
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>10</y>
+         <y>0</y>
          <width>601</width>
          <height>141</height>
         </rect>
@@ -1531,7 +1520,7 @@ font-size:14px;
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>160</y>
+         <y>150</y>
          <width>601</width>
          <height>91</height>
         </rect>
@@ -1601,7 +1590,7 @@ font-size:14px;
            </sizepolicy>
           </property>
           <property name="text">
-           <string>Start</string>
+           <string>Run</string>
           </property>
           <property name="default">
            <bool>true</bool>
@@ -1620,9 +1609,9 @@ font-size:14px;
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>260</y>
+         <y>250</y>
          <width>601</width>
-         <height>81</height>
+         <height>91</height>
         </rect>
        </property>
        <property name="title">
@@ -2105,7 +2094,7 @@ font-size:14px;
       </rect>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tab_14">
       <attribute name="title">
@@ -2557,8 +2546,8 @@ font-size:14px;
     <widget class="QGroupBox" name="groupBox_26">
      <property name="geometry">
       <rect>
-       <x>190</x>
-       <y>130</y>
+       <x>220</x>
+       <y>120</y>
        <width>161</width>
        <height>291</height>
       </rect>
@@ -2849,40 +2838,57 @@ font-size:14px;
        </rect>
       </property>
       <property name="text">
-       <string>MUTATE</string>
+       <string>Mutate</string>
       </property>
      </widget>
     </widget>
     <widget class="QGroupBox" name="groupBox_25">
      <property name="geometry">
       <rect>
-       <x>0</x>
+       <x>10</x>
        <y>10</y>
-       <width>611</width>
+       <width>601</width>
        <height>101</height>
       </rect>
      </property>
      <property name="title">
       <string>Load</string>
      </property>
-     <widget class="QWidget" name="layoutWidget_10">
+     <widget class="QWidget" name="gridLayoutWidget_9">
       <property name="geometry">
        <rect>
-        <x>60</x>
-        <y>20</y>
-        <width>461</width>
-        <height>38</height>
+        <x>10</x>
+        <y>30</y>
+        <width>581</width>
+        <height>61</height>
        </rect>
       </property>
-      <layout class="QHBoxLayout" name="horizontalLayout_14">
-       <item>
+      <layout class="QGridLayout" name="gridLayout_16">
+       <item row="1" column="1">
+        <widget class="QComboBox" name="Modeller_select_target">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_61">
+         <property name="text">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Selected residue(s):&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
         <widget class="QLabel" name="label_54">
          <property name="text">
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Object to mutate&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
         </widget>
        </item>
-       <item>
+       <item row="0" column="1">
         <widget class="QComboBox" name="Modeller_select_target_1">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -2892,7 +2898,20 @@ font-size:14px;
          </property>
         </widget>
        </item>
-       <item>
+       <item row="1" column="2">
+        <widget class="QPushButton" name="Modeller_target_refresh">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Refresh</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
         <widget class="QPushButton" name="Modeller_target_refresh_1">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
@@ -2906,54 +2925,6 @@ font-size:14px;
         </widget>
        </item>
       </layout>
-     </widget>
-     <widget class="QLabel" name="label_61">
-      <property name="geometry">
-       <rect>
-        <x>100</x>
-        <y>60</y>
-        <width>120</width>
-        <height>26</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Selected residue(s):&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-      </property>
-     </widget>
-     <widget class="QComboBox" name="Modeller_select_target">
-      <property name="geometry">
-       <rect>
-        <x>230</x>
-        <y>60</y>
-        <width>163</width>
-        <height>32</height>
-       </rect>
-      </property>
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="Modeller_target_refresh">
-      <property name="geometry">
-       <rect>
-        <x>400</x>
-        <y>60</y>
-        <width>77</width>
-        <height>32</height>
-       </rect>
-      </property>
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="text">
-       <string>Refresh</string>
-      </property>
      </widget>
     </widget>
    </widget>

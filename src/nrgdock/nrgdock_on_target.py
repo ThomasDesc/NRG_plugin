@@ -1,7 +1,6 @@
 from PyQt5.QtCore import pyqtSignal, QThread, QObject
 import os
 from pymol import cmd
-from PyQt5.QtGui import QStandardItemModel, QStandardItem
 import subprocess
 import sys
 import pandas as pd
@@ -30,7 +29,10 @@ def run_subprocess(current_ligand_number, last_ligand, install_dir, nrgdock_targ
                    check=True)
 
 class WorkerThread(QThread):
-    progress_signal = pyqtSignal(str)
+    message_signal = pyqtSignal(str)
+    screen_progress_signal = pyqtSignal(int)
+    update_table_signal = pyqtSignal(str)
+    finished_signal = pyqtSignal(str)
 
     def __init__(self, ligand_set_folder_path, install_dir, nrgdock_output_path, nrgdock_top_n_poses,
                  nrgdock_start_ligand, ligand_set_name, target_name, binding_site_name):
@@ -49,15 +51,31 @@ class WorkerThread(QThread):
         nrgdock_instance = NRGDockManager(self.ligand_set_folder_path, self.install_dir, self.nrgdock_output_path,
                                           self.nrgdock_top_n_poses, self.nrgdock_start_ligand, self.ligand_set_name,
                                           self.target_name, self.binding_site_name, self.number_of_cores)
-        nrgdock_instance.progress_signal.connect(self.forward_progress_signal)
+        nrgdock_instance.message_signal.connect(self.forward_message_signal)
+        nrgdock_instance.screen_progress_signal.connect(self.forward_progress_signal)
+        nrgdock_instance.update_table_signal.connect(self.forward_update_table_signal)
+        nrgdock_instance.finished_signal.connect(self.forward_finished_signal)
         nrgdock_instance.run_nrgdock()
 
-    def forward_progress_signal(self, message):
-        self.progress_signal.emit(message)
+    def forward_message_signal(self, message):
+        self.message_signal.emit(message)
+
+    def forward_progress_signal(self, progress):
+        self.screen_progress_signal.emit(progress)
+
+    def forward_update_table_signal(self, csv_path):
+        self.update_table_signal.emit(csv_path)
+
+    def forward_finished_signal(self, message):
+        self.finished_signal.emit(message)
+
 
 
 class NRGDockManager(QObject):
-    progress_signal = pyqtSignal(str)
+    message_signal = pyqtSignal(str)
+    screen_progress_signal = pyqtSignal(int)
+    update_table_signal = pyqtSignal(str)
+    finished_signal = pyqtSignal(str)
 
     def __init__(self, ligand_set_folder_path, install_dir, nrgdock_output_path, nrgdock_top_n_poses,
                  nrgdock_start_ligand, ligand_set_name, target_name, binding_site_name, number_of_cores):
@@ -92,16 +110,19 @@ class NRGDockManager(QObject):
         nrgdock_result_folder = os.path.join(self.nrgdock_output_path, 'results')
         if not os.path.exists(nrgdock_result_folder):
             os.mkdir(nrgdock_result_folder)
-        self.progress_signal.emit(f"NRGDock: Processing Target")
+        self.message_signal.emit(f"NRGDock: Processing Target")
         subprocess.run([sys.executable, os.path.join(self.install_dir, 'src', 'nrgdock', 'process_target.py'),
                         '-p', self.nrgdock_output_path, '-t', 'target', '-o', '-d',
                         os.path.join(self.install_dir, 'deps', 'nrgdock')], check=True)
-        self.progress_signal.emit(f"NRGDock: Screening has started")
+        self.message_signal.emit(f"NRGDock: Screening has started")
+
+        completed_tasks = 0
+        total_tasks = int(((total_number_ligands - self.starting_ligand) / self.step)) + 1
+
         with ThreadPoolExecutor(self.number_of_cores) as executor:
             futures = []
             for current_ligand_number in range(self.starting_ligand, total_number_ligands, self.step):
-                last_ligand = current_ligand_number + self.step
-                # Submit the subprocess task to the executor for parallel execution
+                last_ligand = min(current_ligand_number + self.step, total_number_ligands)
                 futures.append(executor.submit(
                     run_subprocess,
                     current_ligand_number,
@@ -116,13 +137,18 @@ class NRGDockManager(QObject):
             for future in as_completed(futures):
                 try:
                     future.result()
+                    completed_tasks += 1
+                    progress_percentage = int((completed_tasks / total_tasks) * 100)
+                    progress_string = f"{completed_tasks}/{total_tasks} tasks completed"
+                    self.screen_progress_signal.emit(progress_percentage)
+                    print(f"Progress: {progress_percentage}% - {progress_string}")
                 except Exception as e:
                     print(f"Error occurred: {e}")
-
+        self.message_signal.emit('NRGDock: Screening has finished')
         top_n_name_list, csv_output_path = merge_csv(os.path.join(nrgdock_result_folder, 'target'))
-        manage_poses(top_n_name_list, os.path.join(self.nrgdock_output_path, 'ligand_poses', self.target_name))
-        # update_nrgdock_result_table(csv_output_path, self.form)
-        # self.form.NRGDock_tabs.setTabEnabled(2, True)
+        manage_poses(top_n_name_list, os.path.join(self.nrgdock_output_path, 'ligand_poses', 'target'))
+        self.finished_signal.emit(f"NRGDock: Finished")
+        self.update_table_signal.emit(csv_output_path)
 
 
 def merge_csv(folder):
@@ -146,21 +172,4 @@ def manage_poses(top_n_name_list, ligand_poses_folder):
             os.remove(file)
         else:
             cmd.load(file)
-
-
-def update_nrgdock_result_table(csv_result, form):
-    df = pd.read_csv(csv_result)
-    df = df[['Name', 'CF']]
-    model = QStandardItemModel()
-    model.setHorizontalHeaderLabels(df.columns.tolist())
-    for index, row in df.iterrows():
-        item_list = []
-        for data in row:
-            item = QStandardItem(str(data))
-            item_list.append(item)
-        model.appendRow(item_list)
-    form.nrgdock_result_table.setModel(model)
-    form.nrgdock_result_table.resizeColumnsToContents()
-    form.NRGDock_tabs.setCurrentIndex(2)
-
-
+            cmd.group('nrgdock_results', file_name)
