@@ -144,7 +144,7 @@ def stop_simulation(form):
 def resume_simulation(form):
     simulation_path = form.simulate_folder_path.text()
     os.remove(os.path.join(simulation_path, '.pause'))
-    form.flexaid_button_pause.setText('Pause')
+    form.flexaid_button_pause.setText('Pause FlexAID')
 
 
 def load_show_flexaid_result(result_path):
@@ -267,7 +267,7 @@ def run_flexaid(form, temp_path, binary_folder_path, operating_system, binary_su
         os.mkdir(simulation_folder_path)
     color_list_path = os.path.join(flexaid_deps_path, 'hex_colors.txt')
     hex_color_list = load_color_list(color_list_path)
-    if form.flexaid_button_start.text() == 'Start':
+    if form.flexaid_button_start.text() == 'Run FlexAID':
         max_results = 10
         multithreaded = True
         setting_dictionary = get_simulation_settings(form)
