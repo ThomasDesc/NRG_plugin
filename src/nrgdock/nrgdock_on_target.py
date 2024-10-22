@@ -141,7 +141,6 @@ class NRGDockManager(QObject):
                     progress_percentage = int((completed_tasks / total_tasks) * 100)
                     progress_string = f"{completed_tasks}/{total_tasks} tasks completed"
                     self.screen_progress_signal.emit(progress_percentage)
-                    print(f"Progress: {progress_percentage}% - {progress_string}")
                 except Exception as e:
                     print(f"Error occurred: {e}")
         self.message_signal.emit('NRGDock: Screening has finished')

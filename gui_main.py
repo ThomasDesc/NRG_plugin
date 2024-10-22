@@ -248,7 +248,6 @@ class Controller:
             self.form.nrgdock_progress_label.setText(f'Screening progress: {value}%')
 
     def update_nrgdock_result_table(self, csv_result):
-        print('Signal received')
         df = pd.read_csv(csv_result)
         df = df[['Name', 'CF']]
         model = QStandardItemModel()
