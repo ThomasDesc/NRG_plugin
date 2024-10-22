@@ -268,7 +268,6 @@ class Controller:
         general_functions.disable_run_mutate_buttons(self.form, enable=True)
 
 
-
 class NRGSuitePlugin(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
