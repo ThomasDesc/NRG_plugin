@@ -6,7 +6,6 @@ import shutil
 import subprocess
 from src.flexaid import flexaid
 from src.getcleft import getcleft
-from src.nrgdock import nrgdock
 from src.getcleft import spheres
 import general_functions
 from src.surfaces import run_Surfaces
@@ -117,18 +116,18 @@ class Controller:
         self.form.nrgdock_add_ligandset_button.clicked.connect(
             lambda: general_functions.folder_browser(self.form.nrgdock_add_ligand_file_path, self.ligand_set_folder_path,
                                                      "Smiles Files (*.smi)"))
-        self.form.nrgdock_button_ligandset_add.clicked.connect(lambda: nrgdock.process_ligands())
+        # self.form.nrgdock_button_ligandset_add.clicked.connect(lambda: nrgdock.process_ligands())
         self.form.nrgdock_ligand_set_refresh.clicked.connect(
             lambda: general_functions.refresh_folder(self.ligand_set_folder_path, self.form.nrgdock_select_ligand))
 
-        self.form.nrgdock_button_start.clicked.connect(self.run_task)
+        self.form.nrgdock_button_start.clicked.connect(self.run_nrgdock)
 
         self.form.nrgdock_result_browse_button.clicked.connect(
             lambda: general_functions.folder_browser(self.form.nrgdock_result_path,
                                                      os.path.join(self.form.temp_line_edit.text(), 'NRGDock'),
                                                      "CSV file (*.csv)"))
-        self.form.nrgdock_load_csv_button.clicked.connect(
-            lambda: nrgdock.get_nrgdock_result_model(self.form.nrgdock_result_path.text(), self.form))
+        # self.form.nrgdock_load_csv_button.clicked.connect(
+        #     lambda: nrgdock.get_nrgdock_result_model(self.form.nrgdock_result_path.text(), self.form))
 
         # Surfaces
         self.form.surfaces_refresh_button.clicked.connect(
@@ -168,7 +167,7 @@ class Controller:
                                                    self.form.NRGten_dynasig_lineEdit.text(), install_dir,
                                                    self.form.temp_line_edit.text()))
         self.form.NRGten_conf_ensem_pushButton.clicked.connect(
-            lambda: run_NRGTEN.conself.formational_ensemble(self.form.NRGten_select_target.currentText(),
+            lambda: run_NRGTEN.conformational_ensemble(self.form.NRGten_select_target.currentText(),
                                                        self.form.NRGten_modes_lineEdit.text(),
                                                        self.form.NRGten_step_lineEdit.text(),
                                                        self.form.NRGten_max_conf_lineEdit.text(),
@@ -205,10 +204,38 @@ class Controller:
             lambda: run_isomif.mif_plot(self.form, self.form.output_box, self.binary_folder_path, self.binary_suffix, self.operating_system,
                                         install_dir))
 
-    def run_task(self):
-        from src.nrgdock.nrgdock import WorkerThread
-        self.thread = WorkerThread(self.form, self.ligand_set_folder_path, install_dir)
+    def run_nrgdock(self):
+        from src.nrgdock.nrgdock_on_target import WorkerThread
+        temp_path = os.path.join(self.form.temp_line_edit.text(), 'NRGDock')
+        n_poses_to_save = self.form.nrgdock_top_n_poses.text()
+        starting_ligand = int(self.form.nrgdock_start_ligand.text())
+        ligand_set_name = self.form.nrgdock_select_ligand.currentText().replace(' ', '_')
+        target_name = self.form.nrgdock_select_target.currentText()
+        if target_name == '':
+            general_functions.output_message(self.form.output_box, 'No target object selected', 'warning')
+            return
+
+        binding_site_name = self.form.nrgdock_select_binding_site.currentText()
+        if binding_site_name == '':
+            general_functions.output_message(self.form.output_box, 'No binding site object selected', 'warning')
+            return
+
+        self.thread = WorkerThread(self.ligand_set_folder_path, install_dir, temp_path, n_poses_to_save, starting_ligand, ligand_set_name, target_name, binding_site_name)
+
+        self.thread.progress_signal.connect(self.handle_progress_update)
+        # self.thread.finished_signal.connect(self.handle_thread_finished)
+
         self.thread.start()
+
+    # Slot to handle progress updates
+    def handle_progress_update(self, message):
+        general_functions.output_message(self.form.output_box, message, 'valid')
+
+    # Slot to handle thread completion
+    def handle_thread_finished(self, message):
+        # This method will get called with 'message' from the finished signal
+        general_functions.output_message(self.form.output_box, message, 'valid')
+        print(message)
 
 
 

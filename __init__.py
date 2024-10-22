@@ -1,6 +1,5 @@
 import os
 import sys
-print(sys.executable)
 import subprocess
 import shutil
 import importlib.metadata
