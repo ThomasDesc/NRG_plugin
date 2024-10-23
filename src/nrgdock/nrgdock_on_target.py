@@ -217,6 +217,6 @@ class NRGDockManager(QThread):
         self.message_signal.emit('NRGDock: Screening has finished')
         top_n_name_list, csv_output_path = self.merge_csv(docking_result_folder)
         self.manage_poses(top_n_name_list, os.path.join(self.nrgdock_output_path, 'ligand_poses',  self.binding_site_name), self.binding_site_name)
-        self.finished_signal.emit(f"NRGDock: Finished")
+        self.finished_signal.emit()
         self.message_signal.emit(f"=========== END NRGDock ===========")
         self.update_table_signal.emit(csv_output_path)
