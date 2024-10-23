@@ -44,13 +44,16 @@ def merge_csv(folder):
 
 def manage_poses(top_n_name_list, ligand_poses_folder, binding_site_name):
     ligand_files = glob.glob(os.path.join(ligand_poses_folder, "*.pdb"))
+    top_n_name_set = set(top_n_name_list)
     for file in ligand_files:
         file_name = os.path.splitext(os.path.basename(file))[0]
-        if file_name not in top_n_name_list:
+        if file_name not in top_n_name_set:
             os.remove(file)
-        else:
-            cmd.load(file)
-            cmd.group(f'NRGDock_{binding_site_name}', file_name)
+    for name in top_n_name_list:
+        file_path = os.path.join(ligand_poses_folder, f"{name}.pdb")
+        if os.path.exists(file_path):
+            cmd.load(file_path)
+            cmd.group(f'NRGDock_{binding_site_name}', name)
 
 
 class WorkerThread(QThread):
@@ -75,7 +78,7 @@ class WorkerThread(QThread):
             self.number_of_cores = multiprocessing.cpu_count() + 4
         else:
             self.number_of_cores = round(multiprocessing.cpu_count() * (self.cpu_usage_target/100))
-        print('Number of cores: {}/{}'.format(self.number_of_cores, multiprocessing.cpu_count()))
+        # print('Number of cores: {}/{}'.format(self.number_of_cores, multiprocessing.cpu_count()))
 
     def run(self):
         nrgdock_instance = NRGDockManager(self.ligand_set_folder_path, self.install_dir, self.nrgdock_output_path,
@@ -142,6 +145,7 @@ class NRGDockManager(QObject):
         nrgdock_result_folder = os.path.join(self.nrgdock_output_path, 'results')
         if not os.path.exists(nrgdock_result_folder):
             os.mkdir(nrgdock_result_folder)
+        self.message_signal.emit(f"=========== NRGDock ===========")
         self.message_signal.emit(f"NRGDock: Processing Target")
         subprocess.run([sys.executable, os.path.join(self.install_dir, 'src', 'nrgdock', 'process_target.py'),
                         '-p', self.nrgdock_output_path, '-t', self.binding_site_name, '-o', '-d',
@@ -176,6 +180,7 @@ class NRGDockManager(QObject):
                     print(f"Error occurred: {e}")
         self.message_signal.emit('NRGDock: Screening has finished')
         top_n_name_list, csv_output_path = merge_csv(os.path.join(nrgdock_result_folder, self.binding_site_name))
-        manage_poses(top_n_name_list, os.path.join(self.nrgdock_output_path, 'ligand_poses',  self.binding_site_name))
+        manage_poses(top_n_name_list, os.path.join(self.nrgdock_output_path, 'ligand_poses',  self.binding_site_name), self.binding_site_name)
         self.finished_signal.emit(f"NRGDock: Finished")
+        self.message_signal.emit(f"=========== END NRGDock ===========")
         self.update_table_signal.emit(csv_output_path)

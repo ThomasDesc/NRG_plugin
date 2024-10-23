@@ -1184,31 +1184,54 @@ font-size:14px;
        <property name="title">
         <string>Progress</string>
        </property>
-       <layout class="QGridLayout" name="gridLayout_11">
-        <item row="0" column="0">
-         <widget class="QLabel" name="nrgdock_progress_label">
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QProgressBar" name="nrgdock_progress_bar">
-          <property name="autoFillBackground">
-           <bool>false</bool>
-          </property>
-          <property name="maximum">
-           <number>500</number>
-          </property>
-          <property name="value">
-           <number>0</number>
-          </property>
-          <property name="textVisible">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-       </layout>
+       <widget class="QLabel" name="nrgdock_progress_label">
+        <property name="geometry">
+         <rect>
+          <x>15</x>
+          <y>33</y>
+          <width>341</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Progress displayed here</string>
+        </property>
+       </widget>
+       <widget class="QProgressBar" name="nrgdock_progress_bar">
+        <property name="geometry">
+         <rect>
+          <x>15</x>
+          <y>58</y>
+          <width>571</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="autoFillBackground">
+         <bool>false</bool>
+        </property>
+        <property name="maximum">
+         <number>500</number>
+        </property>
+        <property name="value">
+         <number>0</number>
+        </property>
+        <property name="textVisible">
+         <bool>true</bool>
+        </property>
+       </widget>
+       <widget class="QLabel" name="nrgdock_loading_gif">
+        <property name="geometry">
+         <rect>
+          <x>560</x>
+          <y>30</y>
+          <width>21</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Loading GIF</string>
+        </property>
+       </widget>
       </widget>
      </widget>
      <widget class="QWidget" name="nrgdock_results">

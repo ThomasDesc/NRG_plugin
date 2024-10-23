@@ -1,5 +1,7 @@
 import os
 import sys
+from gettext import install
+
 install_dir = os.path.dirname(__file__)
 sys.path.append(install_dir)
 import shutil
@@ -14,7 +16,7 @@ import platform
 from pymol.Qt import QtWidgets
 from pymol.Qt.utils import loadUi
 import pandas as pd
-from PyQt5.QtGui import QStandardItemModel, QStandardItem
+from PyQt5.QtGui import QStandardItemModel, QStandardItem, QMovie
 try:
     import modeller
 except ImportError:
@@ -68,6 +70,7 @@ class Controller:
         self.form.cleft_button_refresh.clicked.connect(
             lambda: general_functions.refresh_dropdown(self.form.cleft_select_object, self.form.output_box))
         self.form.button_start.clicked.connect(lambda: self.getcleftrunner.run_task(self.binary_folder_path, self.binary_suffix, install_dir))
+        # self.form.button_start.clicked.connect(self.run_get_cleft)
 
         # Partition Cleft
         self.form.cleft_partition_button_add.clicked.connect(
@@ -203,6 +206,7 @@ class Controller:
             lambda: run_isomif.mif_plot(self.form, self.form.output_box, self.binary_folder_path, self.binary_suffix, self.operating_system,
                                         install_dir))
 
+
     def run_nrgdock(self):
         from src.nrgdock.nrgdock_on_target import WorkerThread
         temp_path = os.path.join(self.form.temp_line_edit.text(), 'NRGDock')
@@ -221,6 +225,7 @@ class Controller:
             return
 
         self.initialise_progress_bar()
+        self.start_loading_gif()
         general_functions.disable_run_mutate_buttons(self.form, disable=True)
         self.thread = WorkerThread(self.ligand_set_folder_path, install_dir, temp_path, n_poses_to_save, starting_ligand, ligand_set_name, target_name, binding_site_name, cpu_usage_target)
 
@@ -237,6 +242,13 @@ class Controller:
         self.form.nrgdock_progress_label.setText('Screening progress: 0%')
         self.form.nrgdock_progress_bar.setValue(0)
         self.form.nrgdock_progress_bar.setMaximum(100)
+
+    def start_loading_gif(self):
+        self.label_size = self.form.nrgdock_loading_gif.size()
+        self.movie = QMovie(os.path.join(install_dir, 'assets', 'loading.gif'))
+        self.form.nrgdock_loading_gif.setMovie(self.movie)
+        self.movie.setScaledSize(self.label_size)
+        self.movie.start()
 
     def handle_message_signal(self, message):
         general_functions.output_message(self.form.output_box, message, 'valid')
@@ -265,6 +277,9 @@ class Controller:
 
     def handle_thread_finished(self, message):
         general_functions.disable_run_mutate_buttons(self.form, enable=True)
+        self.movie.stop()
+        self.form.nrgdock_loading_gif.hide()
+
 
 
 class NRGSuitePlugin(QtWidgets.QWidget):
@@ -286,11 +301,14 @@ class NRGSuitePlugin(QtWidgets.QWidget):
         self.form.stackedWidget.setCurrentIndex(0)
         self.form.flexaid_tab.setTabEnabled(2, False)
         self.form.getcleft_tab_widget.setTabEnabled(2, False)
+        self.form.NRGDock_tabs.setTabEnabled(2, False)
 
         general_functions.refresh_dropdown(self.form.cleft_select_object, self.form.output_box, no_warning=True)
         general_functions.refresh_folder(self.ligand_set_folder_path, self.form.nrgdock_select_ligand)
         self.form.nrgdock_cpu_usage_target.setCurrentText("75%")
         self.controller = Controller(self.form, self.binary_folder_path, self.binary_suffix, self.operating_system, self.ligand_set_folder_path)
+        self.form.nrgdock_progress_label.setText('')
+        self.form.nrgdock_loading_gif.setText('')
 
     def load_ui(self):
         self.form = loadUi(os.path.join(install_dir, 'nrgdock_widget.ui'), self)
