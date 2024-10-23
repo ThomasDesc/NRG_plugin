@@ -250,7 +250,7 @@ font-size: 14;</string>
     <string notr="true"/>
    </property>
    <property name="currentIndex">
-    <number>1</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="getcleft_page">
     <widget class="QTabWidget" name="getcleft_tab_widget">
@@ -266,7 +266,7 @@ font-size: 14;</string>
       </rect>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tab_9">
       <attribute name="title">
@@ -542,17 +542,24 @@ font-size:14px;
         <string>STEP 2: Add one or more spheres to partition</string>
        </property>
        <layout class="QGridLayout" name="gridLayout_14">
-        <item row="0" column="5">
-         <widget class="QPushButton" name="cleft_partition_button_delete">
+        <item row="0" column="4">
+         <widget class="QPushButton" name="cleft_partition_button_add">
           <property name="text">
-           <string>Delete</string>
+           <string>Add</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_11">
+          <property name="text">
+           <string>Radius:</string>
           </property>
          </widget>
         </item>
         <item row="0" column="6">
-         <widget class="QPushButton" name="cleft_partition_button_move">
+         <widget class="QPushButton" name="cleft_partition_button_delete">
           <property name="text">
-           <string>Move</string>
+           <string>Delete</string>
           </property>
          </widget>
         </item>
@@ -579,27 +586,6 @@ font-size:14px;
           </property>
          </widget>
         </item>
-        <item row="0" column="4">
-         <widget class="QPushButton" name="cleft_partition_button_add">
-          <property name="text">
-           <string>Add</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="0">
-         <widget class="QLabel" name="label_10">
-          <property name="text">
-           <string>Sphere objects:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="label_11">
-          <property name="text">
-           <string>Radius:</string>
-          </property>
-         </widget>
-        </item>
         <item row="1" column="2">
          <widget class="QSlider" name="cleft_partition_radius_slider">
           <property name="enabled">
@@ -616,6 +602,20 @@ font-size:14px;
           </property>
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_10">
+          <property name="text">
+           <string>Sphere objects:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="5">
+         <widget class="QPushButton" name="cleft_partition_button_move">
+          <property name="text">
+           <string>Move</string>
           </property>
          </widget>
         </item>
