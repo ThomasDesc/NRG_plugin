@@ -27,7 +27,6 @@ class GetCleftRunner:
         return parameter_dictionary
 
     def run_task(self, binary_folder_path, binary_suffix, install_dir):
-        print('Starting the task...')
         temp_path = self.form.temp_line_edit.text()
         pymol_object = self.form.cleft_select_object.currentText()
         if pymol_object == '':
