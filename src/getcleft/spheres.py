@@ -46,7 +46,7 @@ def display_sphere(cleft_object_name, form, slider, partition_sphere_select, tem
         cmd.hide('everything', sphere_name)
         cmd.show('spheres', sphere_name)
         cmd.refresh()
-        slider_max = max_vdw*100
+        slider_max = int(max_vdw*100)
         slider.setEnabled(True)
         slider.setMaximum(slider_max)
         slider.setValue(slider_max)
