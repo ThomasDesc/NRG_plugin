@@ -187,7 +187,6 @@ def retrieve_nrgdock_ligands(nrgdock_output_path):
 
 def run_flexaid_worker(command, form, simulation_folder, hex_colour_list, max_generations,rmsd):
     worker = flexaid_thread.WorkerThread(command, simulation_folder, form.flexaid_result_table, hex_colour_list, max_generations)
-    time.sleep(1)
     worker.start()
     worker.table_signal_received.connect(receive_list)
     worker.current_generation_signal_received.connect(form.flexaid_progress.setValue)
@@ -234,18 +233,6 @@ def update_table(simulation_folder, table_widget, hex_colour_list, num_results=5
                 cmd.color('0x' + ligand_color[1:], f"RESULT_{top_number-1} and elem C")
             if line_counter == 4:
                 return
-
-
-def run_flexaid_same_thread(command, update_file_path, form, hex_colour_list, max_generations, operating_system):
-    form.flexaid_progress.setValue(max_generations)
-    if operating_system == 'win':
-        command = 'powershell.exe -Command "&' + command + '"'
-        print(command)
-    os.system(command)
-    form.flexaid_progress.setValue(max_generations)
-    form.generation_label.setText(f'Generation: {max_generations}/{max_generations}')
-    load_show_flexaid_result(update_file_path)
-    update_table(update_file_path, form.flexaid_result_table, hex_colour_list, num_results=5)
 
 
 def load_color_list(color_list_path):
@@ -300,8 +287,5 @@ def run_flexaid(form, temp_path, binary_folder_path, operating_system, binary_su
         flexaid_command = f'"{flexaid_binary_path}" "{config_file_path}" "{ga_path}" "{flexaid_result_name_path}"'
         form.output_box.append(f'Please wait...Running Flexaid with command: \n{flexaid_command}')
         form.flexaid_tab.setCurrentIndex(2)
-        if multithreaded:
-            run_flexaid_worker(flexaid_command, form, flexaid_result_path, hex_color_list, max_generations,rmsd)
-        else:
-            run_flexaid_same_thread(flexaid_command, flexaid_result_path, form, hex_color_list, max_generations, operating_system)
+        run_flexaid_worker(flexaid_command, form, flexaid_result_path, hex_color_list, max_generations,rmsd)
         form.flexaid_tab.setTabEnabled(2, True)

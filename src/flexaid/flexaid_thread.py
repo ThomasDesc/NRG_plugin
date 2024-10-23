@@ -1,6 +1,6 @@
 from pymol.Qt import QtCore
 import general_functions
-from subprocess import run
+import subprocess
 import os
 
 
@@ -52,6 +52,7 @@ class WorkerThread(QtCore.QThread):
     current_generation_signal_received = QtCore.pyqtSignal(int)
     generation_str_signal_received = QtCore.pyqtSignal(str)
     table_signal_received = QtCore.pyqtSignal(list)
+    finished = QtCore.pyqtSignal()
 
     def __init__(self, command, folder_path, table_widget, hex_colour_list, max_generations):
         super(WorkerThread, self).__init__()
@@ -63,11 +64,11 @@ class WorkerThread(QtCore.QThread):
         self.file_updater_thread.generation_str_signal.connect(self.generation_str_signal_received)
         self.file_updater_thread.table_signal.connect(self.table_signal_received)
 
-    finished = QtCore.pyqtSignal()
 
     def run(self):
         self.file_updater_thread.start()
-        run(self.command, shell=True)
+        print('pre run')
+        subprocess.run(self.command, check=True)
         self.file_updater_thread.stop()
         self.file_updater_thread.wait()
         self.finished.emit()

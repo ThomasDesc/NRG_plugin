@@ -1,4 +1,3 @@
-from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout, QApplication
 from PyQt5.QtCore import pyqtSignal, QThread, QObject
 import general_functions
 import os
@@ -107,7 +106,7 @@ class GetCleftWorker(QThread):
     def run(self):
         getcleft_binary_path = os.path.join(self.binary_folder_path, f'GetCleft{self.binary_suffix}')
         getcleft_output_path = os.path.join(self.temp_path, 'GetCleft')
-        cleft_save_path = os.path.join(getcleft_output_path, 'Clefts')
+        cleft_save_path = os.path.join(getcleft_output_path, 'Clefts', self.pymol_object)
         color_list_path = os.path.join(self.install_dir, 'deps', 'getcleft', 'color_list.txt')
         color_list = self.load_color_list(color_list_path)
         os.makedirs(getcleft_output_path, exist_ok=True)
@@ -116,7 +115,6 @@ class GetCleftWorker(QThread):
         cmd.save(object_save_path, self.pymol_object)
         getcleft_command = self.get_arg_str(getcleft_binary_path, object_save_path, cleft_save_path, self.parameter_dictionary)
         self.message_signal.emit('Running GetCleft...', 'valid')
-        print(' '.join(getcleft_command))
         subprocess.run(getcleft_command, check=True)
         self.load_show_cleft(cleft_save_path, color_list, self.pymol_object)
         self.message_signal.emit('Done GetClef' , 'valid')

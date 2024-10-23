@@ -6,6 +6,7 @@ import shutil
 import subprocess
 from src.flexaid import flexaid
 from src.getcleft import getcleft
+from src.nrgdock import nrgdock_on_target
 from src.getcleft import spheres
 import general_functions
 from src.surfaces import run_Surfaces
@@ -13,8 +14,7 @@ from src.isomif import run_isomif
 import platform
 from pymol.Qt import QtWidgets
 from pymol.Qt.utils import loadUi
-import pandas as pd
-from PyQt5.QtGui import QStandardItemModel, QStandardItem, QMovie
+
 try:
     import modeller
 except ImportError:
@@ -47,6 +47,7 @@ class Controller:
         self.operating_system = operating_system
         self.ligand_set_folder_path = ligand_set_folder_path
         self.getcleftrunner = getcleft.GetCleftRunner(form)
+        self.nrgdockrunner = nrgdock_on_target.NRGDockRunner(form, install_dir, ligand_set_folder_path)
         self.setupConnections()
 
     def setupConnections(self):
@@ -119,7 +120,7 @@ class Controller:
         self.form.nrgdock_ligand_set_refresh.clicked.connect(
             lambda: general_functions.refresh_folder(self.ligand_set_folder_path, self.form.nrgdock_select_ligand))
 
-        self.form.nrgdock_button_start.clicked.connect(self.run_nrgdock)
+        self.form.nrgdock_button_start.clicked.connect(self.nrgdockrunner.run_nrgdock)
 
         self.form.nrgdock_result_browse_button.clicked.connect(
             lambda: general_functions.folder_browser(self.form.nrgdock_result_path,
@@ -202,81 +203,6 @@ class Controller:
         self.form.ISOMIF_pushButton.clicked.connect(
             lambda: run_isomif.mif_plot(self.form, self.form.output_box, self.binary_folder_path, self.binary_suffix, self.operating_system,
                                         install_dir))
-
-
-    def run_nrgdock(self):
-        from src.nrgdock.nrgdock_on_target import WorkerThread
-        temp_path = os.path.join(self.form.temp_line_edit.text(), 'NRGDock')
-        n_poses_to_save = self.form.nrgdock_top_n_poses.text()
-        starting_ligand = int(self.form.nrgdock_start_ligand.text())
-        ligand_set_name = self.form.nrgdock_select_ligand.currentText().replace(' ', '_')
-        target_name = self.form.nrgdock_select_target.currentText()
-        cpu_usage_target = self.form.nrgdock_cpu_usage_target.currentText()
-        if target_name == '':
-            general_functions.output_message(self.form.output_box, 'No target object selected', 'warning')
-            return
-
-        binding_site_name = self.form.nrgdock_select_binding_site.currentText()
-        if binding_site_name == '':
-            general_functions.output_message(self.form.output_box, 'No binding site object selected', 'warning')
-            return
-
-        self.initialise_progress_bar()
-        self.start_loading_gif()
-        general_functions.disable_run_mutate_buttons(self.form, disable=True)
-        self.thread = WorkerThread(self.ligand_set_folder_path, install_dir, temp_path, n_poses_to_save, starting_ligand, ligand_set_name, target_name, binding_site_name, cpu_usage_target)
-
-        self.thread.message_signal.connect(self.handle_message_signal)
-        self.thread.screen_progress_signal.connect(self.handle_screen_progress_signal)
-        self.thread.update_table_signal.connect(self.update_nrgdock_result_table)
-        self.thread.finished_signal.connect(self.handle_thread_finished)
-        # self.thread.finished_signal.connect(self.handle_thread_finished)
-
-        self.thread.start()
-
-    def initialise_progress_bar(self):
-        self.form.nrgdock_progress.setEnabled(True)
-        self.form.nrgdock_progress_label.setText('Screening progress: 0%')
-        self.form.nrgdock_progress_bar.setValue(0)
-        self.form.nrgdock_progress_bar.setMaximum(100)
-
-    def start_loading_gif(self):
-        self.label_size = self.form.nrgdock_loading_gif.size()
-        self.movie = QMovie(os.path.join(install_dir, 'assets', 'loading.gif'))
-        self.form.nrgdock_loading_gif.setMovie(self.movie)
-        self.movie.setScaledSize(self.label_size)
-        self.movie.start()
-
-    def handle_message_signal(self, message):
-        general_functions.output_message(self.form.output_box, message, 'valid')
-
-    def handle_screen_progress_signal(self, value):
-        current_value = self.form.nrgdock_progress_bar.value()
-        if value > current_value:
-            self.form.nrgdock_progress_bar.setValue(value)
-            self.form.nrgdock_progress_label.setText(f'Screening progress: {value}%')
-
-    def update_nrgdock_result_table(self, csv_result):
-        df = pd.read_csv(csv_result)
-        df = df[['Name', 'CF']]
-        model = QStandardItemModel()
-        model.setHorizontalHeaderLabels(df.columns.tolist())
-        for index, row in df.iterrows():
-            item_list = []
-            for data in row:
-                item = QStandardItem(str(data))
-                item_list.append(item)
-            model.appendRow(item_list)
-        self.form.nrgdock_result_table.setModel(model)
-        self.form.nrgdock_result_table.resizeColumnsToContents()
-        self.form.NRGDock_tabs.setTabEnabled(2, True)
-        self.form.NRGDock_tabs.setCurrentIndex(2)
-
-    def handle_thread_finished(self, message):
-        general_functions.disable_run_mutate_buttons(self.form, enable=True)
-        self.movie.stop()
-        self.form.nrgdock_loading_gif.hide()
-
 
 
 class NRGSuitePlugin(QtWidgets.QWidget):

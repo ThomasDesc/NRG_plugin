@@ -249,7 +249,7 @@ def get_cf_main_clash(binding_site_grid, ligand_orientations, cf_size_list, n_cf
     return cfs_list, cf_no_clash, cf_no_clash_diff_zero
 
 
-def main(config_file, path_to_target, category, start, end, target, numpy_array_path, extra_information, path_to_ligands, skip_info, temp_path=None):
+def main(config_file, path_to_target, category, start, end, target, numpy_array_path, extra_information, path_to_ligands, skip_info, temp_path=None, make_path=True):
     root_software_path = Path(__file__).resolve().parents[1]
     os.chdir(root_software_path)
     time_start = timeit.default_timer()
@@ -267,10 +267,10 @@ def main(config_file, path_to_target, category, start, end, target, numpy_array_
     if not temp_path:
         temp_path = os.path.join(root_software_path, 'temp')
     pose_save_path = os.path.join(temp_path, 'ligand_poses', target)
-    if not os.path.exists(pose_save_path):
+    if not os.path.exists(pose_save_path) and make_path:
         os.makedirs(pose_save_path)
     result_save_folder = str(os.path.join(temp_path, 'results', target))
-    if not os.path.isdir(result_save_folder):
+    if not os.path.isdir(result_save_folder) and make_path:
         try:
             os.mkdir(result_save_folder)
         except:
@@ -453,6 +453,7 @@ def get_args():
 
     parser.add_argument('-c', '--config_path', default=None, type=str, help='Custom config path')
     parser.add_argument('-te', '--temp_path', default=None, type=str, help='Custom temp path')
+    parser.add_argument('-mp', '--make_path', action='store_false', help='Disables creation of necessary folders')
 
     args = parser.parse_args()
 
@@ -474,7 +475,8 @@ def get_args():
         temp_path = None
     else:
         temp_path = args.temp_path
-    main(config_file, path_to_target, category, start, end, target, args.numpy_array_path, extra_inf, path_to_ligands, skip_info, temp_path)
+    make_path = args.make_path
+    main(config_file, path_to_target, category, start, end, target, args.numpy_array_path, extra_inf, path_to_ligands, skip_info, temp_path, make_path)
 
 
 if __name__ == "__main__":
