@@ -42,7 +42,7 @@ def merge_csv(folder):
     return top_10_names, csv_output_path
 
 
-def manage_poses(top_n_name_list, ligand_poses_folder):
+def manage_poses(top_n_name_list, ligand_poses_folder, binding_site_name):
     ligand_files = glob.glob(os.path.join(ligand_poses_folder, "*.pdb"))
     for file in ligand_files:
         file_name = os.path.splitext(os.path.basename(file))[0]
@@ -50,7 +50,7 @@ def manage_poses(top_n_name_list, ligand_poses_folder):
             os.remove(file)
         else:
             cmd.load(file)
-            cmd.group('nrgdock_results', file_name)
+            cmd.group(f'NRGDock_{binding_site_name}', file_name)
 
 
 class WorkerThread(QThread):
@@ -125,7 +125,7 @@ class NRGDockManager(QObject):
     def run_nrgdock(self):
         deps_path = os.path.join(self.install_dir, 'deps', 'nrgdock')
         config_path = os.path.join(deps_path, 'config.txt')
-        nrgdock_target_folder = os.path.join(self.nrgdock_output_path, 'target')
+        nrgdock_target_folder = os.path.join(self.nrgdock_output_path, self.binding_site_name)
         if not os.path.exists(nrgdock_target_folder):
             os.mkdir(nrgdock_target_folder)
         ligand_path = os.path.join(self.ligand_set_folder_path, self.ligand_set_name, 'preprocessed_ligands_1_conf')
@@ -144,7 +144,7 @@ class NRGDockManager(QObject):
             os.mkdir(nrgdock_result_folder)
         self.message_signal.emit(f"NRGDock: Processing Target")
         subprocess.run([sys.executable, os.path.join(self.install_dir, 'src', 'nrgdock', 'process_target.py'),
-                        '-p', self.nrgdock_output_path, '-t', 'target', '-o', '-d',
+                        '-p', self.nrgdock_output_path, '-t', self.binding_site_name, '-o', '-d',
                         os.path.join(self.install_dir, 'deps', 'nrgdock')], check=True)
         self.message_signal.emit(f"NRGDock: Screening has started")
 
@@ -171,12 +171,11 @@ class NRGDockManager(QObject):
                     future.result()
                     completed_tasks += 1
                     progress_percentage = int((completed_tasks / total_tasks) * 100)
-                    progress_string = f"{completed_tasks}/{total_tasks} tasks completed"
                     self.screen_progress_signal.emit(progress_percentage)
                 except Exception as e:
                     print(f"Error occurred: {e}")
         self.message_signal.emit('NRGDock: Screening has finished')
-        top_n_name_list, csv_output_path = merge_csv(os.path.join(nrgdock_result_folder, 'target'))
-        manage_poses(top_n_name_list, os.path.join(self.nrgdock_output_path, 'ligand_poses', 'target'))
+        top_n_name_list, csv_output_path = merge_csv(os.path.join(nrgdock_result_folder, self.binding_site_name))
+        manage_poses(top_n_name_list, os.path.join(self.nrgdock_output_path, 'ligand_poses',  self.binding_site_name))
         self.finished_signal.emit(f"NRGDock: Finished")
         self.update_table_signal.emit(csv_output_path)

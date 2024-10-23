@@ -23,14 +23,14 @@ def read_residues(pdb_file, chains, ligands):
     for line in Lines:
         if line[:4] == 'ATOM' or line[:4] == 'HETA':
             if line[21] in chains:
-                res_num = re.findall('[+-]?\d+', line[22:27])
+                res_num = re.findall(r'[+-]?\d+', line[22:27])
                 res_name = line[17:20]
                 string = res_name + str(res_num[0]) + line[21]
                 if string not in list_chains and res_name not in ligands:
                     list_chains.append(string)
             if line[17:20] in ligands:
                 atom_name = line[12:16].strip()
-                atom_number = re.findall('[+-]?\d+', line[6:12])
+                atom_number = re.findall(r'[+-]?\d+', line[6:12])
                 string = str(atom_number[0]) + atom_name
                 if string not in list_atoms:
                     list_atoms.append(string)
