@@ -1,7 +1,5 @@
 import os
 import sys
-from gettext import install
-
 install_dir = os.path.dirname(__file__)
 sys.path.append(install_dir)
 import shutil
@@ -74,14 +72,13 @@ class Controller:
 
         # Partition Cleft
         self.form.cleft_partition_button_add.clicked.connect(
-            lambda: spheres.display_sphere(self.form.cleft_partition_select_object.currentText(),
+            lambda: spheres.display_sphere(self.form.cleft_partition_select_object.currentText(), self.form,
                                            self.form.cleft_partition_radius_slider, self.form.partition_sphere_select,
                                            self.form.temp_line_edit.text()))
         self.form.cleft_partition_button_refresh.clicked.connect(
             lambda: general_functions.refresh_dropdown(self.form.cleft_partition_select_object, self.form.output_box,
                                                        filter_for='_sph'))
-        self.form.cleft_partition_button_move.clicked.connect(
-            lambda: spheres.move_sphere(self.form.partition_sphere_select.currentText()))
+        self.form.cleft_partition_button_move.clicked.connect(spheres.move_sphere)
         self.form.cleft_partition_radius_slider.valueChanged.connect(
             lambda: spheres.resize_sphere(self.form.partition_sphere_select.currentText(),
                                           self.form.cleft_partition_radius_slider.value()))
@@ -300,7 +297,6 @@ class NRGSuitePlugin(QtWidgets.QWidget):
 
         self.form.stackedWidget.setCurrentIndex(0)
         self.form.flexaid_tab.setTabEnabled(2, False)
-        self.form.getcleft_tab_widget.setTabEnabled(2, False)
         self.form.NRGDock_tabs.setTabEnabled(2, False)
 
         general_functions.refresh_dropdown(self.form.cleft_select_object, self.form.output_box, no_warning=True)
@@ -352,6 +348,7 @@ class NRGSuitePlugin(QtWidgets.QWidget):
             general_functions.output_message(self.form.output_box, 'Modeller install not detected. '
                                                               'The modeller tab will be unavailable. '
                                                               'Please install via conda.', 'warning')
+            general_functions.output_message(self.form.output_box, '=====================', 'warning')
             self.form.button_nrgten.setEnabled(False)
             self.form.button_modeller.setEnabled(False)
             self.form.button_nrgten.setStyleSheet("background-color: black; color: white;")

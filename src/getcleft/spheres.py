@@ -1,7 +1,7 @@
 from pymol import cmd
 import numpy as np
 from src.getcleft import wizard
-from general_functions import read_coords_cleft
+from general_functions import read_coords_cleft, output_message
 import os
 
 
@@ -20,10 +20,12 @@ def get_max_coords(cleft_coordinates, center):
     return radius
 
 
-def display_sphere(cleft_object_name, slider, partition_sphere_select, temp_path):
+def display_sphere(cleft_object_name, form, slider, partition_sphere_select, temp_path):
+    sphere_name = 'SPHERE_1'
     if cleft_object_name == '':
-        print('No cleft object selected in step 1')
-        return
+        output_message(form.output_box, 'No cleft object selected in step 1', 'warning')
+    elif sphere_name in cmd.get_object_list():
+        output_message(form.output_box, 'Sphere already exists', 'warning')
     else:
         cmd.hide("everything", cleft_object_name)
         cmd.show("surface", cleft_object_name)
@@ -33,7 +35,6 @@ def display_sphere(cleft_object_name, slider, partition_sphere_select, temp_path
             os.makedirs(cleft_save_folder_path)
         cleft_save_path = os.path.join(cleft_save_folder_path, cleft_object_name + '.pdb')
         cmd.save(cleft_save_path, cleft_object_name)
-        sphere_name = 'SPHERE_1'
         cleft_coordinates = np.array(cmd.get_model(cleft_object_name, 1).get_coord_list())
         center_coordinate = get_center(cleft_coordinates)
         max_vdw = get_max_coords(cleft_coordinates, center_coordinate)
@@ -41,19 +42,17 @@ def display_sphere(cleft_object_name, slider, partition_sphere_select, temp_path
                        pos=center_coordinate,
                        vdw=max_vdw,
                        state=1)
-        cmd.refresh()
-
         cmd.color('oxygen', sphere_name)
         cmd.hide('everything', sphere_name)
         cmd.show('spheres', sphere_name)
         cmd.refresh()
-    slider_max = max_vdw*100
-    slider.setEnabled(True)
-    slider.setMaximum(slider_max)
-    slider.setValue(slider_max)
-    slider.setSingleStep(10)
-    partition_sphere_select.addItem(sphere_name)
-    partition_sphere_select.setCurrentText(sphere_name)
+        slider_max = max_vdw*100
+        slider.setEnabled(True)
+        slider.setMaximum(slider_max)
+        slider.setValue(slider_max)
+        slider.setSingleStep(10)
+        partition_sphere_select.addItem(sphere_name)
+        partition_sphere_select.setCurrentText(sphere_name)
 
 
 def resize_sphere(sphere_name, slider_value):
@@ -62,7 +61,7 @@ def resize_sphere(sphere_name, slider_value):
     cmd.refresh()
 
 
-def move_sphere(cleft_name):
+def move_sphere():
     cmd.window('hide')
     cmd.window('show')
     wiz = wizard.Sphere()

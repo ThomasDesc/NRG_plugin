@@ -12,7 +12,6 @@ import multiprocessing
 # TODO: load own ligands (generate library from smiles)
 
 def run_subprocess(current_ligand_number, last_ligand, install_dir, nrgdock_target_folder, ligand_path, config_path, nrgdock_output_path, ligand_number):
-    """Function to run subprocess command."""
     if last_ligand > ligand_number:
         last_ligand = ligand_number
     # Run the subprocess
