@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import QTableWidgetItem
 from PyQt5.QtGui import QColor
 from pymol import cmd
 import datetime
+import time
 
 def load_color_list(color_list_path):
     with open(color_list_path, 'r') as file:
@@ -18,15 +19,20 @@ class FlexAIDManager:
         self.form = form
         self.flexaid_temp_path = os.path.join(self.form.temp_line_edit.text(), 'FlexAID')
         self.flexaid_simulation_folder = os.path.join(self.flexaid_temp_path, 'Simulation')
+        os.makedirs(self.flexaid_temp_path, exist_ok=True)
+        os.makedirs(self.flexaid_simulation_folder, exist_ok=True)
         self.binary_folder_path = binary_folder_path
         self.binary_suffix = binary_suffix
         self.install_dir = install_dir
         self.rmsd = form.flexaid_ligref_checkBox.isChecked()
         self.run_specific_simulate_folder_path = os.path.join(self.flexaid_simulation_folder, datetime.datetime.now().strftime("%d-%m-%y-%I-%M-%S"))
         self.update_file_path = os.path.join(self.run_specific_simulate_folder_path, ".update")
-        simulation_settings = self.get_simulation_settings()
-        self.max_generations = int(simulation_settings['number_generations'])
+        self.simulation_settings = self.get_simulation_settings()
+        self.max_generations = int(self.simulation_settings['number_generations'])
+        self.form.flexaid_progress.setValue(0)
         self.form.flexaid_progress.setMaximum(self.max_generations)
+        self.form.generation_label.setText(f'Generation: 0/{self.max_generations}')
+
         self.flexaid_deps_path = os.path.join(install_dir, 'deps', 'flexaid')
         self.hex_color_list = load_color_list(os.path.join(self.flexaid_deps_path, 'hex_colors.txt'))
 
@@ -35,16 +41,16 @@ class FlexAIDManager:
         self.start_flexaid_thread()
 
     def start_file_updater(self):
-        self.file_updater_thread = FileUpdaterThread()
-        self.file_updater_thread.update_signal.connect(self.perform_updatesperform_updates)
+        self.file_updater_thread = FileUpdaterThread(self.update_file_path, self.hex_color_list)
+        self.file_updater_thread.update_signal.connect(self.perform_updates)
         self.file_updater_thread.start()
 
-    def perform_updatesperform_updates(self, current_generation, data):
+    def perform_updates(self, current_generation, data):
         self.form.flexaid_progress.setValue(current_generation)
         self.form.generation_label.setText(f'Generation: {current_generation}/{self.max_generations}')
+        self.colour_specific_cell(data)
 
     def start_flexaid_thread(self):
-
         target_name = self.form.flexaid_select_target.currentText()
         target_save_path = os.path.join(self.flexaid_temp_path, 'flexaid_target.pdb')
         cmd.save(target_save_path, target_name)
@@ -55,13 +61,15 @@ class FlexAIDManager:
         binding_site_path = os.path.join(self.flexaid_temp_path, 'binding_site_sph_.pdb')
         cmd.save(binding_site_path, binding_site_name)
         self.toggle_buttons(True)
-        general_functions.output_message(self.form.output_box, 'Please wait...Running FlexAID', 'valid')
+        general_functions.output_message(self.form.output_box, f"=========== FlexAID ===========", 'valid')
+        general_functions.output_message(self.form.output_box, 'Running FlexAID...', 'valid')
         self.form.flexaid_tab.setCurrentIndex(2)
         self.form.flexaid_tab.setTabEnabled(2, True)
-        self.worker = FlexAIDWorkerThread(self.binary_folder_path, self.binary_suffix, self.install_dir, self.flexaid_result_path,
-                                          target_save_path, ligand_save_path, binding_site_path, self.setting_dictionary)
-        self.worker.start()
+        self.worker = FlexAIDWorkerThread(self.binary_folder_path, self.binary_suffix, self.install_dir,
+                                          self.run_specific_simulate_folder_path, self.flexaid_temp_path,
+                                          target_save_path, ligand_save_path, binding_site_path, self.simulation_settings)
         self.worker.finished.connect(self.flexaid_end_processes)
+        self.worker.start()
 
     def get_simulation_settings(self):
         setting_dictionary = {'number_chromosomes': self.form.input_num_chromosomes.text(),
@@ -69,7 +77,7 @@ class FlexAIDManager:
         return setting_dictionary
 
     def colour_specific_cell(self, data):
-        table_widget = self.form.flexaid_table_widget
+        table_widget = self.form.flexaid_result_table
         num_column = table_widget.columnCount()
         row = int(data[1]) - 1
         for column_counter, column in enumerate(range(num_column)):
@@ -81,7 +89,9 @@ class FlexAIDManager:
             table_widget.setItem(row, column, item)
 
     def flexaid_end_processes(self):
+        general_functions.output_message(self.form.output_box, f"=========== FlexAID ===========", 'valid')
         self.worker.quit()
+        self.file_updater_thread.quit()
         self.toggle_buttons(False)
         self.load_show_flexaid_result()
         self.form.flexaid_progress.setValue(self.max_generations)
@@ -120,7 +130,7 @@ class FlexAIDManager:
 
 
 class FileUpdaterThread(QThread):
-    update_signal = pyqtSignal(int, list)
+    update_signal = pyqtSignal(int, tuple)
 
     def __init__(self, update_file_path, hex_colour_list):
         super(FileUpdaterThread, self).__init__()
@@ -135,6 +145,7 @@ class FileUpdaterThread(QThread):
                 self.read_update(self.hex_colour_list)
                 os.remove(self.update_file_path)
                 self.current_generation += 1
+            time.sleep(0.1)
 
     def read_update(self, hex_colour_list, num_results=5):
         number_color_list = general_functions.create_number_list(num_results, len(hex_colour_list))
@@ -219,7 +230,7 @@ class FlexAIDWorkerThread(QThread):
                     t2.write(f'MAXRES {max_results}\n')
                 elif line.startswith('TEMPOP'):
                     t2.write(f'TEMPOP {os.path.join(flexaid_result_path, "temp")}\n')
-                elif line.startswith('NRGSUI'):
+                else:
                     t2.write(line)
         return config_file_output_path
 
@@ -240,9 +251,6 @@ class FlexAIDWorkerThread(QThread):
         flexaid_binary_path = os.path.join(self.binary_folder_path, f'FlexAID{self.binary_suffix}')
         process_ligand_path = os.path.join(self.binary_folder_path, f'Process_ligand{self.binary_suffix}')
         flexaid_deps_path = os.path.join(self.install_dir, 'deps', 'flexaid')
-        simulation_folder_path = os.path.join(self.flexaid_temp_path, 'Simulation')
-        os.makedirs(self.flexaid_temp_path, exist_ok=True)
-        os.makedirs(simulation_folder_path, exist_ok=True)
         os.mkdir(self.flexaid_result_path)
         os.mkdir(os.path.join(self.flexaid_result_path, 'temp'))
         flexaid_result_name_path = os.path.join(self.flexaid_result_path, "RESULT").replace('\\', '/')
@@ -257,7 +265,7 @@ class FlexAIDWorkerThread(QThread):
 
         ga_path = os.path.join(self.flexaid_temp_path, 'ga_inp.dat').replace('\\', '/')
         self.edit_ga(os.path.join(flexaid_deps_path, 'ga_inp.dat'), ga_path, self.setting_dictionary)
-        flexaid_command = f'"{flexaid_binary_path}" "{config_file_path}" "{ga_path}" "{flexaid_result_name_path}"'
+        flexaid_command = f'{flexaid_binary_path} "{config_file_path}" "{ga_path}" "{flexaid_result_name_path}"'
         print(flexaid_command)
         os.system(flexaid_command)
-
+        self.finished.emit()
