@@ -144,7 +144,6 @@ class FileUpdaterThread(QThread):
         while self.running:
             if os.path.exists(self.update_file_path):
                 self.read_update(self.hex_colour_list)
-                os.remove(self.update_file_path)
                 self.current_generation += 1
             time.sleep(0.1)
 
@@ -160,6 +159,12 @@ class FileUpdaterThread(QThread):
                     rmsd = 'N/A'
                     data = (hex_colour_list[number_color_list[top_number - 1]], top_number, cf, fitness, rmsd)
                     self.update_signal.emit(self.current_generation, data)
+        for _ in range(5):
+            try:
+                os.remove(self.update_file_path)
+                break
+            except PermissionError:
+                time.sleep(0.1)
 
     def stop(self):
         self.running = False
