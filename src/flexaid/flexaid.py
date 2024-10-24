@@ -241,7 +241,7 @@ def load_color_list(color_list_path):
     return color_list
 
 
-def run_flexaid(form, temp_path, binary_folder_path, operating_system, binary_suffix, install_dir):
+def run_flexaid(form, binary_folder_path, binary_suffix, install_dir):
     rmsd=form.flexaid_ligref_checkBox.isChecked()
     flexaid_binary_path = os.path.join(binary_folder_path, f'FlexAID{binary_suffix}')
     process_ligand_path = os.path.join(binary_folder_path, f'Process_ligand{binary_suffix}')

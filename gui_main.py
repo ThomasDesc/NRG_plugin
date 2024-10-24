@@ -5,6 +5,7 @@ sys.path.append(install_dir)
 import shutil
 import subprocess
 from src.flexaid import flexaid
+from src.flexaid.flexaid_thread import FlexAIDManager
 from src.getcleft import getcleft
 from src.nrgdock import nrgdock_on_target
 from src.getcleft import spheres
@@ -98,9 +99,7 @@ class Controller:
                                                        filter_for='_sph'))
         self.form.flexaid_retrieve_nrgdock_ligands.clicked.connect(
             lambda: flexaid.retrieve_nrgdock_ligands(os.path.join(self.form.temp_line_edit.text(), 'NRGDock')))
-        self.form.flexaid_button_start.clicked.connect(
-            lambda: flexaid.run_flexaid(self.form, self.form.temp_line_edit.text(), self.binary_folder_path, self.operating_system,
-                                        self.binary_suffix, install_dir))
+        self.form.flexaid_button_start.clicked.connect(self.run_flexaid)
         self.form.flexaid_button_pause.clicked.connect(lambda: flexaid.pause_resume_simulation(self.form))
         self.form.flexaid_button_stop.clicked.connect(lambda: flexaid.stop_simulation(self.form))
         self.form.flexaid_button_abort.clicked.connect(lambda: flexaid.abort_simulation(self.form))
@@ -203,6 +202,10 @@ class Controller:
         self.form.ISOMIF_pushButton.clicked.connect(
             lambda: run_isomif.mif_plot(self.form, self.form.output_box, self.binary_folder_path, self.binary_suffix, self.operating_system,
                                         install_dir))
+
+    def run_flexaid(self):
+        self.flexaid_manager = FlexAIDManager(self.form, self.binary_folder_path, self.binary_suffix, install_dir)
+        self.flexaid_manager.start_run()
 
 
 class NRGSuitePlugin(QtWidgets.QWidget):
