@@ -250,7 +250,7 @@ font-size: 14;</string>
     <string notr="true"/>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>2</number>
    </property>
    <widget class="QWidget" name="getcleft_page">
     <widget class="QTabWidget" name="getcleft_tab_widget">
@@ -1184,7 +1184,7 @@ font-size:14px;
            </sizepolicy>
           </property>
           <property name="text">
-           <string>Run</string>
+           <string>Run NRGDock</string>
           </property>
           <property name="default">
            <bool>true</bool>
@@ -1462,17 +1462,23 @@ font-size:14px;
        <widget class="QWidget" name="gridLayoutWidget">
         <property name="geometry">
          <rect>
-          <x>20</x>
+          <x>10</x>
           <y>27</y>
-          <width>571</width>
+          <width>581</width>
           <height>108</height>
          </rect>
         </property>
         <layout class="QGridLayout" name="gridLayout_4">
-         <item row="1" column="0">
-          <widget class="QLabel" name="label_34">
-           <property name="text">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Ligand: &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         <item row="1" column="1">
+          <widget class="QComboBox" name="flexaid_select_ligand"/>
+         </item>
+         <item row="0" column="1">
+          <widget class="QComboBox" name="flexaid_select_target">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
            </property>
           </widget>
          </item>
@@ -1480,6 +1486,13 @@ font-size:14px;
           <widget class="QLabel" name="label_33">
            <property name="text">
             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Target: &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="label_34">
+           <property name="text">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Ligand: &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
           </widget>
          </item>
@@ -1496,19 +1509,6 @@ font-size:14px;
            </property>
           </widget>
          </item>
-         <item row="1" column="1">
-          <widget class="QComboBox" name="flexaid_select_ligand"/>
-         </item>
-         <item row="0" column="1">
-          <widget class="QComboBox" name="flexaid_select_target">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-          </widget>
-         </item>
          <item row="1" column="2">
           <widget class="QPushButton" name="flexaid_ligand_refresh">
            <property name="sizePolicy">
@@ -1519,16 +1519,6 @@ font-size:14px;
            </property>
            <property name="text">
             <string>Refresh</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="1">
-          <widget class="QPushButton" name="flexaid_retrieve_nrgdock_ligands">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="text">
-            <string>Retrieve NRGDock ligands</string>
            </property>
           </widget>
          </item>
@@ -1550,9 +1540,9 @@ font-size:14px;
        <widget class="QWidget" name="gridLayoutWidget_2">
         <property name="geometry">
          <rect>
-          <x>20</x>
+          <x>10</x>
           <y>30</y>
-          <width>571</width>
+          <width>581</width>
           <height>51</height>
          </rect>
         </property>
@@ -1593,9 +1583,9 @@ font-size:14px;
       <widget class="QWidget" name="horizontalLayoutWidget_2">
        <property name="geometry">
         <rect>
-         <x>10</x>
-         <y>290</y>
-         <width>601</width>
+         <x>20</x>
+         <y>260</y>
+         <width>581</width>
          <height>51</height>
         </rect>
        </property>
@@ -1620,16 +1610,6 @@ font-size:14px;
          </widget>
         </item>
        </layout>
-      </widget>
-      <widget class="QLineEdit" name="simulate_folder_path">
-       <property name="geometry">
-        <rect>
-         <x>12</x>
-         <y>260</y>
-         <width>601</width>
-         <height>21</height>
-        </rect>
-       </property>
       </widget>
      </widget>
      <widget class="QWidget" name="tab">
