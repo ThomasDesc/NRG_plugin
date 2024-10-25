@@ -132,7 +132,6 @@ def atomtype_num(def_file, res, attyp):
     attyp = attyp.replace(" ", "")
     f = open(def_file, 'r')
     Lines = f.readlines()
-    print(Lines)
     for i in range(len(Lines)):
         if Lines[i][:3] == res:
             ind = Lines[i].index(attyp + ':')
