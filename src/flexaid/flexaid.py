@@ -7,7 +7,6 @@ from PyQt5.QtGui import QColor
 from pymol import cmd
 import datetime
 import time
-#TODO: abort and stop from flexaid.py
 
 def load_color_list(color_list_path):
     with open(color_list_path, 'r') as file:
