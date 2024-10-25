@@ -4,8 +4,7 @@ install_dir = os.path.dirname(__file__)
 sys.path.append(install_dir)
 import shutil
 import subprocess
-from src.flexaid import flexaid
-from src.flexaid.flexaid_thread import FlexAIDManager
+from src.flexaid.flexaid import FlexAIDManager, stop_simulation, abort_simulation, pause_resume_simulation
 from src.getcleft import getcleft
 from src.nrgdock import nrgdock_on_target
 from src.getcleft import spheres
@@ -47,8 +46,6 @@ class Controller:
         self.binary_suffix = binary_suffix
         self.operating_system = operating_system
         self.ligand_set_folder_path = ligand_set_folder_path
-        self.getcleftrunner = getcleft.GetCleftRunner(form)
-        self.nrgdockrunner = nrgdock_on_target.NRGDockRunner(form, install_dir, ligand_set_folder_path)
         self.setupConnections()
 
     def setupConnections(self):
@@ -69,8 +66,7 @@ class Controller:
         self.form.button_hide.clicked.connect(lambda: general_functions.pymol_hide_structures(self.form))
         self.form.cleft_button_refresh.clicked.connect(
             lambda: general_functions.refresh_dropdown(self.form.cleft_select_object, self.form.output_box))
-        self.form.button_start.clicked.connect(lambda: self.getcleftrunner.run_task(self.binary_folder_path, self.binary_suffix, install_dir))
-        # self.form.button_start.clicked.connect(self.run_get_cleft)
+        self.form.button_start.clicked.connect(self.run_getcleft)
 
         # Partition Cleft
         self.form.cleft_partition_button_add.clicked.connect(
@@ -90,43 +86,22 @@ class Controller:
                                        self.form.cleft_partition_select_object.currentText()))
 
         # FlexAID:
-        self.form.flexaid_target_refresh.clicked.connect(
-            lambda: general_functions.refresh_dropdown(self.form.flexaid_select_target, self.form.output_box, exclude='_sph'))
-        self.form.flexaid_ligand_refresh.clicked.connect(
-            lambda: general_functions.refresh_dropdown(self.form.flexaid_select_ligand, self.form.output_box, exclude='_sph'))
-        self.form.flexaid_binding_site_refresh.clicked.connect(
-            lambda: general_functions.refresh_dropdown(self.form.flexaid_select_binding_site, self.form.output_box,
-                                                       filter_for='_sph'))
-        self.form.flexaid_retrieve_nrgdock_ligands.clicked.connect(
-            lambda: flexaid.retrieve_nrgdock_ligands(os.path.join(self.form.temp_line_edit.text(), 'NRGDock')))
+        self.form.flexaid_target_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(self.form.flexaid_select_target, self.form.output_box, exclude='_sph'))
+        self.form.flexaid_ligand_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(self.form.flexaid_select_ligand, self.form.output_box, exclude='_sph'))
+        self.form.flexaid_binding_site_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(self.form.flexaid_select_binding_site, self.form.output_box,filter_for='_sph'))
         self.form.flexaid_button_start.clicked.connect(self.run_flexaid)
-        self.form.flexaid_button_pause.clicked.connect(lambda: flexaid.pause_resume_simulation(self.form))
-        self.form.flexaid_button_stop.clicked.connect(lambda: flexaid.stop_simulation(self.form))
-        self.form.flexaid_button_abort.clicked.connect(lambda: flexaid.abort_simulation(self.form))
+        self.form.flexaid_button_pause.clicked.connect(lambda: pause_resume_simulation(self.form, self.flexaid_manager.run_specific_simulate_folder_path))
+        self.form.flexaid_button_stop.clicked.connect(lambda: stop_simulation(self.form, self.flexaid_manager.run_specific_simulate_folder_path))
+        self.form.flexaid_button_abort.clicked.connect(lambda: abort_simulation(self.form, self.flexaid_manager.run_specific_simulate_folder_path))
 
         # NRGDock:
-        self.form.nrgdock_target_refresh.clicked.connect(
-            lambda: general_functions.refresh_dropdown(self.form.nrgdock_select_target, self.form.output_box, exclude='_sph'))
-        self.form.nrgdock_binding_site_refresh.clicked.connect(
-            lambda: general_functions.refresh_dropdown(self.form.nrgdock_select_binding_site, self.form.output_box,
-                                                       filter_for='_sph'))
-        self.form.nrgdock_delete_ligand_set_refresh.clicked.connect(
-            lambda: general_functions.refresh_folder(self.ligand_set_folder_path, self.form.nrgdock_delete_ligand_set_dropdown))
-        self.form.nrgdock_add_ligandset_button.clicked.connect(
-            lambda: general_functions.folder_browser(self.form.nrgdock_add_ligand_file_path, self.ligand_set_folder_path,
-                                                     "Smiles Files (*.smi)"))
-        # self.form.nrgdock_button_ligandset_add.clicked.connect(lambda: nrgdock.process_ligands())
-        self.form.nrgdock_ligand_set_refresh.clicked.connect(
-            lambda: general_functions.refresh_folder(self.ligand_set_folder_path, self.form.nrgdock_select_ligand))
-
-        self.form.nrgdock_button_start.clicked.connect(self.nrgdockrunner.run_nrgdock)
-
-        self.form.nrgdock_result_browse_button.clicked.connect(
-            lambda: general_functions.folder_browser(self.form.nrgdock_result_path,
-                                                     os.path.join(self.form.temp_line_edit.text(), 'NRGDock'),
-                                                     "CSV file (*.csv)"))
-        # self.form.nrgdock_load_csv_button.clicked.connect(
-        #     lambda: nrgdock.get_nrgdock_result_model(self.form.nrgdock_result_path.text(), self.form))
+        self.form.nrgdock_target_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(self.form.nrgdock_select_target, self.form.output_box, exclude='_sph'))
+        self.form.nrgdock_binding_site_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(self.form.nrgdock_select_binding_site, self.form.output_box, filter_for='_sph'))
+        self.form.nrgdock_delete_ligand_set_refresh.clicked.connect(lambda: general_functions.refresh_folder(self.ligand_set_folder_path, self.form.nrgdock_delete_ligand_set_dropdown))
+        self.form.nrgdock_add_ligandset_button.clicked.connect(lambda: general_functions.folder_browser(self.form.nrgdock_add_ligand_file_path, self.ligand_set_folder_path, "Smiles Files (*.smi)"))
+        self.form.nrgdock_ligand_set_refresh.clicked.connect(lambda: general_functions.refresh_folder(self.ligand_set_folder_path, self.form.nrgdock_select_ligand))
+        self.form.nrgdock_button_start.clicked.connect(self.run_nrgdock)
+        self.form.nrgdock_result_browse_button.clicked.connect(lambda: general_functions.folder_browser(self.form.nrgdock_result_path, os.path.join(self.form.temp_line_edit.text(), 'NRGDock'), "CSV file (*.csv)"))
 
         # Surfaces
         self.form.surfaces_refresh_button.clicked.connect(
@@ -202,6 +177,13 @@ class Controller:
         self.form.ISOMIF_pushButton.clicked.connect(
             lambda: run_isomif.mif_plot(self.form, self.form.output_box, self.binary_folder_path, self.binary_suffix, self.operating_system,
                                         install_dir))
+    def run_getcleft(self):
+        self.getcleftrunner = getcleft.GetCleftRunner(self.form)
+        self.getcleftrunner.run_task(self.binary_folder_path, self.binary_suffix, install_dir)
+
+    def run_nrgdock(self):
+        self.nrgdockrunner = nrgdock_on_target.NRGDockRunner(self.form, install_dir, self.ligand_set_folder_path)
+        self.nrgdockrunner.run_nrgdock()
 
     def run_flexaid(self):
         self.flexaid_manager = FlexAIDManager(self.form, self.binary_folder_path, self.binary_suffix, install_dir)

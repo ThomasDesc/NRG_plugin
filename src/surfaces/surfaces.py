@@ -22,19 +22,6 @@ def process_result_flexaid(flexaid_result_file, output):
                         t2.write(line)
 
 
-def load_surfaces_result(form, surfaces_output_path):
-    cmd.delete('all')
-    result_path = form.surfaces_load_result_text.text()
-    result_base_name = os.path.basename(result_path)
-    dst = os.path.join(surfaces_output_path, result_base_name)
-    print(result_base_name)
-    print(dst)
-    shutil.copy(result_path, dst)
-    form.simulate_folder_path.setText(os.path.dirname(dst))
-    cmd.load(dst)
-    form.surface_select_result.addItems([os.path.splitext(os.path.basename(dst))[0]])
-
-
 def create_ligand_file(pdb_file_name, lig_path):
     with open(pdb_file_name, "r") as f:
         lines = f.readlines()
