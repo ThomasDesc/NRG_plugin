@@ -87,7 +87,7 @@ class Controller:
 
         # FlexAID:
         self.form.flexaid_target_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(self.form.flexaid_select_target, self.form.output_box, exclude='_sph'))
-        self.form.flexaid_ligand_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(self.form.flexaid_select_ligand, self.form.output_box, exclude='_sph'))
+        self.form.flexaid_ligand_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(self.form.flexaid_select_ligand, self.form.output_box, exclude=['_sph', self.form.flexaid_select_target.currentText()]))
         self.form.flexaid_binding_site_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(self.form.flexaid_select_binding_site, self.form.output_box,filter_for='_sph'))
         self.form.flexaid_button_start.clicked.connect(self.run_flexaid)
         self.form.flexaid_button_pause.clicked.connect(lambda: pause_resume_simulation(self.form, self.flexaid_manager.run_specific_simulate_folder_path))

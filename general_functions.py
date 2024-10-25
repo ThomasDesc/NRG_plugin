@@ -3,15 +3,17 @@ import numpy as np
 import os
 from PyQt5.QtWidgets import QFileDialog, QMessageBox, QPushButton
 import shutil
+import re
 
 def process_flexaid_result(flexaid_result_file, output):
     with open(flexaid_result_file, 'r') as infile:
         lines = infile.readlines()
     with open(output, 'w') as outfile:
-        for line in lines:
+       for line in lines:
             if 'REMARK' not in line:
                 if 'LIG  9999' in line:
-                    a_name = line[12:17].split()[0] + line[9:11] + ' ' * (5 - len(line[12:17].split()[0] + line[9:11]))
+                    a_name = str(re.sub(r'\d+', '', line[12:17].split()[0])) + str(int(line[9:11])) + ' ' * (
+                            5 - len(str(re.sub(r'\d+', '', line[12:17].split()[0])) + str(int(line[9:11]))))
                     new_line = line[:12] + a_name + line[17:21] + 'L' + line[22:]
                     outfile.write(new_line)
                 else:
@@ -140,7 +142,9 @@ def refresh_dropdown(dropdown_to_refresh, output_box, filter_for='', no_warning=
         list_pymol_objects = [x for x in list_pymol_objects if filter_for in x]
         if add_none:
             list_pymol_objects.append('None')
-    if exclude:
+    if type(exclude) == list:
+        list_pymol_objects = [item for item in list_pymol_objects if all(ex not in item for ex in exclude)]
+    if type(exclude) == str:
         list_pymol_objects = [item for item in list_pymol_objects if exclude not in item]
     if len(list_pymol_objects) == 0 and no_warning is False:
         output_message(output_box, 'No objects found', 'warning')

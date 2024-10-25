@@ -172,7 +172,7 @@ class FileUpdaterThread(QThread):
             if os.path.exists(self.update_file_path):
                 self.read_update(self.hex_colour_list)
                 self.current_generation += 1
-            time.sleep(0.1)
+            time.sleep(0.01)
 
     def read_update(self, hex_colour_list, num_results=5):
         number_color_list = general_functions.create_number_list(num_results, len(hex_colour_list))
@@ -220,7 +220,6 @@ class FlexAIDWorkerThread(QThread):
             process_ligand_command = f'"{process_ligand_path}" -f "{input_path}" -target'
         else:
             process_ligand_command = f'"{process_ligand_path}" -f "{input_path}" --atom_index 90000 -ref'
-        print(process_ligand_command)
         subprocess.run(process_ligand_command, shell=True)
 
     @staticmethod
@@ -299,6 +298,5 @@ class FlexAIDWorkerThread(QThread):
         ga_path = os.path.join(self.flexaid_temp_path, 'ga_inp.dat').replace('\\', '/')
         self.edit_ga(os.path.join(flexaid_deps_path, 'ga_inp.dat'), ga_path, self.setting_dictionary)
         flexaid_command = f'{flexaid_binary_path} "{config_file_path}" "{ga_path}" "{flexaid_result_name_path}"'
-        print(flexaid_command)
         os.system(flexaid_command)
         self.finished.emit()
