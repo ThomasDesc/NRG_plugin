@@ -3,9 +3,9 @@ from nrgten.encom import ENCoM
 from nrgten.atom import Atom
 from pymol import cmd
 from src.surfaces.ligand_atomtypes import add_pdb
-from src.surfaces.run_Surfaces import create_ligand_file, flex_res, process_result_flexaid,compare_residues
+from src.surfaces.run_Surfaces import create_ligand_file, flex_res, compare_residues
 from src.nrgten.model_ensemble import model_states
-import matplotlib.pyplot as plt
+from general_functions import process_flexaid_result
 import os
 import numpy as np
 import plotly.graph_objects as go
@@ -30,7 +30,7 @@ def flex_aid_matrix(main_folder_path):
 
 def encom_model(target_file, main_folder_path, temp_path):
     if flex_res(target_file):
-        process_result_flexaid(target_file, target_file)
+        process_flexaid_result(target_file, target_file)
     list_het = find_het(target_file, temp_path, main_folder_path)
     atype_lists = [os.path.join(main_folder_path, "deps", "nrgten", 'amino_acids.atomtypes')]
     mass_lists = [os.path.join(main_folder_path, "deps", "nrgten", 'amino_acids.masses')]

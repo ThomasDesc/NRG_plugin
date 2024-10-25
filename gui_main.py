@@ -57,15 +57,13 @@ class Controller:
         self.form.button_modeller.clicked.connect(lambda: self.form.stackedWidget.setCurrentIndex(5))
         self.form.button_ISOMIF.clicked.connect(lambda: self.form.stackedWidget.setCurrentIndex(6))
 
-        # save/load
+        # Save/load session
         self.form.button_save.clicked.connect(lambda: general_functions.show_save_dialog(self.form, self.form.temp_line_edit.text()))
-        self.form.button_load.clicked.connect(
-            lambda: general_functions.show_save_dialog(self.form, self.form.temp_line_edit.text(), save=0))
+        self.form.button_load.clicked.connect(lambda: general_functions.show_save_dialog(self.form, self.form.temp_line_edit.text(), save=0))
 
         # GetCleft
         self.form.button_hide.clicked.connect(lambda: general_functions.pymol_hide_structures(self.form))
-        self.form.cleft_button_refresh.clicked.connect(
-            lambda: general_functions.refresh_dropdown(self.form.cleft_select_object, self.form.output_box))
+        self.form.cleft_button_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(self.form.cleft_select_object, self.form.output_box))
         self.form.button_start.clicked.connect(self.run_getcleft)
 
         # Partition Cleft
@@ -73,26 +71,10 @@ class Controller:
             lambda: spheres.display_sphere(self.form.cleft_partition_select_object.currentText(), self.form,
                                            self.form.cleft_partition_radius_slider, self.form.partition_sphere_select,
                                            self.form.temp_line_edit.text()))
-        self.form.cleft_partition_button_refresh.clicked.connect(
-            lambda: general_functions.refresh_dropdown(self.form.cleft_partition_select_object, self.form.output_box,
-                                                       filter_for='_sph'))
+        self.form.cleft_partition_button_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(self.form.cleft_partition_select_object, self.form.output_box,filter_for='_sph'))
         self.form.cleft_partition_button_move.clicked.connect(spheres.move_sphere)
-        self.form.cleft_partition_radius_slider.valueChanged.connect(
-            lambda: spheres.resize_sphere(self.form.partition_sphere_select.currentText(),
-                                          self.form.cleft_partition_radius_slider.value()))
-        self.form.cleft_partition_crop_button.clicked.connect(
-            lambda: spheres.crop_cleft(self.form.partition_sphere_select.currentText(),
-                                       self.form.cleft_partition_radius_slider.value() / 100, self.form.temp_line_edit.text(),
-                                       self.form.cleft_partition_select_object.currentText()))
-
-        # FlexAID:
-        self.form.flexaid_target_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(self.form.flexaid_select_target, self.form.output_box, exclude='_sph'))
-        self.form.flexaid_ligand_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(self.form.flexaid_select_ligand, self.form.output_box, exclude='_sph'))
-        self.form.flexaid_binding_site_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(self.form.flexaid_select_binding_site, self.form.output_box,filter_for='_sph'))
-        self.form.flexaid_button_start.clicked.connect(self.run_flexaid)
-        self.form.flexaid_button_pause.clicked.connect(lambda: pause_resume_simulation(self.form, self.flexaid_manager.run_specific_simulate_folder_path))
-        self.form.flexaid_button_stop.clicked.connect(lambda: stop_simulation(self.form, self.flexaid_manager.run_specific_simulate_folder_path))
-        self.form.flexaid_button_abort.clicked.connect(lambda: abort_simulation(self.form, self.flexaid_manager.run_specific_simulate_folder_path))
+        self.form.cleft_partition_radius_slider.valueChanged.connect( lambda: spheres.resize_sphere(self.form.partition_sphere_select.currentText(), self.form.cleft_partition_radius_slider.value()))
+        self.form.cleft_partition_crop_button.clicked.connect(lambda: spheres.crop_cleft(self.form.partition_sphere_select.currentText(), self.form.cleft_partition_radius_slider.value() / 100, self.form.temp_line_edit.text(), self.form.cleft_partition_select_object.currentText()))
 
         # NRGDock:
         self.form.nrgdock_target_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(self.form.nrgdock_select_target, self.form.output_box, exclude='_sph'))
@@ -102,6 +84,15 @@ class Controller:
         self.form.nrgdock_ligand_set_refresh.clicked.connect(lambda: general_functions.refresh_folder(self.ligand_set_folder_path, self.form.nrgdock_select_ligand))
         self.form.nrgdock_button_start.clicked.connect(self.run_nrgdock)
         self.form.nrgdock_result_browse_button.clicked.connect(lambda: general_functions.folder_browser(self.form.nrgdock_result_path, os.path.join(self.form.temp_line_edit.text(), 'NRGDock'), "CSV file (*.csv)"))
+
+        # FlexAID:
+        self.form.flexaid_target_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(self.form.flexaid_select_target, self.form.output_box, exclude='_sph'))
+        self.form.flexaid_ligand_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(self.form.flexaid_select_ligand, self.form.output_box, exclude='_sph'))
+        self.form.flexaid_binding_site_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(self.form.flexaid_select_binding_site, self.form.output_box,filter_for='_sph'))
+        self.form.flexaid_button_start.clicked.connect(self.run_flexaid)
+        self.form.flexaid_button_pause.clicked.connect(lambda: pause_resume_simulation(self.form, self.flexaid_manager.run_specific_simulate_folder_path))
+        self.form.flexaid_button_stop.clicked.connect(lambda: stop_simulation(self.form, self.flexaid_manager.run_specific_simulate_folder_path))
+        self.form.flexaid_button_abort.clicked.connect(lambda: abort_simulation(self.form, self.flexaid_manager.run_specific_simulate_folder_path))
 
         # Surfaces
         self.form.surfaces_refresh_button.clicked.connect(

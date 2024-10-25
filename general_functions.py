@@ -4,9 +4,20 @@ import os
 from PyQt5.QtWidgets import QFileDialog, QMessageBox, QPushButton
 import shutil
 
+def process_flexaid_result(flexaid_result_file, output):
+    with open(flexaid_result_file, 'r') as infile:
+        lines = infile.readlines()
+    with open(output, 'w') as outfile:
+        for line in lines:
+            if 'REMARK' not in line:
+                if 'LIG  9999' in line:
+                    a_name = line[12:17].split()[0] + line[9:11] + ' ' * (5 - len(line[12:17].split()[0] + line[9:11]))
+                    new_line = line[:12] + a_name + line[17:21] + 'L' + line[22:]
+                    outfile.write(new_line)
+                else:
+                    outfile.write(line)
 
 def output_message(output_box, text, message_type):
-    # Type can be error, warning or valid
     out_color = None
     red = '<span style="color:red;">{}</span>'
     yellow = '<span style="color:orange;">{}</span>'

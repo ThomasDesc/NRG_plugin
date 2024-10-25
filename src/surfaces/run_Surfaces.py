@@ -2,6 +2,7 @@ from general_functions import get_residue_info
 import os
 import matplotlib.pyplot as plt
 from src.surfaces.ligand_atomtypes import add_pdb
+from general_functions import process_flexaid_result
 from src.surfaces.clean_structure import main as clean_structure
 from src.surfaces.surface_cont_lig import main as surface_cont_lig
 from src.surfaces.surface_cont import main as surface_cont
@@ -12,7 +13,6 @@ import pandas as pd
 from PyQt5.QtGui import QStandardItemModel, QStandardItem, QColor
 import csv
 from Bio import PDB
-import re
 from matplotlib.colors import LinearSegmentedColormap
 
 
@@ -112,26 +112,11 @@ def open_res(tableView,index,lheaders):
             cmd.show('lines', 'sele_surfaces')
 
 
-def process_result_flexaid(flexaid_result_file, output):
-    with open(flexaid_result_file, 'r') as t1:
-        text = t1.readlines()
-        with open(output, 'w') as t2:
-            for line in text:
-                if 'REMARK' not in line:
-                    if 'LIG  9999' in line:
-                        a_name = str(re.sub(r'\d+', '',line[12:17].split()[0])) + str(int(line[9:11])) + ' ' * (
-                                    5 - len(str(re.sub(r'\d+', '',line[12:17].split()[0])) + str(int(line[9:11]))))
-                        new_line = line[:12] + a_name + line[17:21] + 'L' + line[22:]
-                        t2.write(new_line)
-                    else:
-                        t2.write(line)
-
-
 def create_ligand_file(pdb_file_name, lig_path):
+    lig_name = os.path.basename(lig_path).strip()
     with open(pdb_file_name, "r") as f:
         lines = f.readlines()
     lig_pdb_file = open(lig_path + ".pdb", "w")
-    lig_name = os.path.basename(lig_path)
     for line in lines:
         if line[:4] == 'ATOM' or line[:4] == 'HETA':
             res = line[17:20].strip()
@@ -145,8 +130,8 @@ def create_ligand_file(pdb_file_name, lig_path):
 
 def flex_res(target_file):
     with open(target_file, "r") as f:
-        texto = f.readlines()
-        for line in texto:
+        lines = f.readlines()
+        for line in lines:
             if 'LIG  9999' in line:
                 return 1
     return 0
@@ -288,7 +273,7 @@ def run_surfaces_ppi(target_file,chain_1, chain_2, temp_path, main_folder_path, 
     def_file = os.path.join(main_folder_path, "deps", "surfaces", 'AMINO_FlexAID.def')
     flexaid_dat_path = os.path.join(main_folder_path, "deps", "surfaces", 'FlexAID.dat')
     if flex_res(target_file):
-        process_result_flexaid(target_file, target_file)
+        process_flexaid_result(target_file, target_file)
     cleaned_file_path = os.path.join(os.path.dirname(target_file), f"cleaned_{os.path.basename(target_file)}")
     clean_pdb_file = open(cleaned_file_path, "w")
     clean_structure(target_file, def_file, clean_pdb_file)
@@ -310,7 +295,7 @@ def run_surfaces_lig(target_file, target_chain, lig, temp_path, main_folder_path
     color_rgb_path = os.path.join(main_folder_path, "deps", "surfaces", 'color_rgb.txt')
     open_def_file = open(def_file, "r")
     if flex_res(target_file):
-        process_result_flexaid(target_file, target_file)
+        process_flexaid_result(target_file, target_file)
     ligand_file_name = os.path.join(os.path.dirname(target_file), lig)
     create_ligand_file(target_file, ligand_file_name)
     custom_def_path = os.path.join(surfaces_output_path, f'custom_{os.path.basename(def_file)}')

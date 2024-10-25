@@ -31,7 +31,8 @@ def abort_simulation(form, specific_simulation_path):
 def stop_simulation(form, specific_simulation_path):
     with open(os.path.join(specific_simulation_path, '.stop'), 'a'):
         pass
-    resume_simulation(form, specific_simulation_path)
+    if form.flexaid_button_pause.text() == 'Resume':
+        resume_simulation(form, specific_simulation_path)
     form.flexaid_button_start.setEnabled(True)
 
 def pause_resume_simulation(form, specific_simulation_path):
@@ -84,9 +85,9 @@ class FlexAIDManager:
         ligand_name = self.form.flexaid_select_ligand.currentText()
         ligand_save_path = os.path.join(self.flexaid_temp_path, 'flexaid_ligand.pdb')
         cmd.save(ligand_save_path, ligand_name)
-        binding_site_name = self.form.flexaid_select_binding_site.currentText()
+        self.binding_site_name = self.form.flexaid_select_binding_site.currentText()
         binding_site_path = os.path.join(self.flexaid_temp_path, 'binding_site_sph_.pdb')
-        cmd.save(binding_site_path, binding_site_name)
+        cmd.save(binding_site_path, self.binding_site_name)
         self.toggle_buttons(True)
         general_functions.output_message(self.form.output_box, f"=========== FlexAID ===========", 'valid')
         general_functions.output_message(self.form.output_box, 'Running FlexAID...', 'valid')
@@ -139,7 +140,7 @@ class FlexAIDManager:
             if file.startswith('RESULT') and not file.endswith('INI.pdb') and file.endswith('.pdb'):
                 file_path = os.path.join(self.run_specific_simulate_folder_path, file)
                 cmd.load(file_path)
-                cmd.group('flexaid_results', os.path.basename(file_path[:-4]))
+                cmd.group(f'FlexAID_{self.binding_site_name}', os.path.basename(file_path[:-4]))
 
     def show_rmsd(self):
         table = self.form.flexaid_result_table

@@ -1,9 +1,7 @@
-from src.surfaces.run_Surfaces import flex_res, process_result_flexaid
 from pymol import cmd
 import os
 import sys
 from general_functions import output_message
-import shutil
 
 
 def get_residue_string(selection_name):

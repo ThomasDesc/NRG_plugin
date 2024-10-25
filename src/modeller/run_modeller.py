@@ -1,28 +1,13 @@
-from general_functions import get_residue_info
+from general_functions import get_residue_info, process_flexaid_result
 from modeller import *
 from modeller.optimizers import MolecularDynamics, ConjugateGradients
 from modeller.automodel import autosched
-from PyQt5.QtWidgets import QApplication, QWidget
-import re
+from PyQt5.QtWidgets import QWidget
+
 
 from pymol import cmd
 import os
 # TODO group residues by property
-
-
-def process_result_flexaid(flexaid_result_file, output):
-    with open(flexaid_result_file, 'r') as t1:
-        text = t1.readlines()
-        with open(output, 'w') as t2:
-            for line in text:
-                if 'REMARK' not in line:
-                    if 'LIG  9999' in line:
-                        a_name = str(re.sub(r'\d+', '',line[12:17].split()[0])) + str(int(line[9:11])) + ' ' * (
-                                    5 - len(str(re.sub(r'\d+', '',line[12:17].split()[0])) + str(int(line[9:11]))))
-                        new_line = line[:12] + a_name + line[17:21] + 'L' + line[22:]
-                        t2.write(new_line)
-                    else:
-                        t2.write(line)
 
 def flex_res(target_file):
     with open(target_file, "r") as f:
@@ -218,7 +203,7 @@ def model_mutations(form, temp_path):
     target_file = os.path.join(temp_path,'modeller', '{}.pdb'.format(target))
     cmd.save(target_file, target)
     if flex_res(target_file):
-        process_result_flexaid(target_file, target_file)
+        process_flexaid_result(target_file, target_file)
     res_list=get_residue_info(res_list)
     amino_list = ['ALA', 'ARG', 'ASN', 'ASP', 'CYS', 'GLN', 'GLU', 'GLY', 'HIS', 'ILE', 'LEU', 'LYS', 'MET', 'PHE', 'PRO', 'SER', 'THR', 'TRP', 'TYR', 'VAL']
     count=1

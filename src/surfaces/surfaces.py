@@ -1,26 +1,11 @@
 import os
-import shutil
 from pymol import cmd
+from general_functions import process_flexaid_result
 from src.surfaces.ligand_atomtypes import add_pdb
 from src.surfaces.clean_structure import main as clean_structure
 from src.surfaces.surface_cont_lig import main as surface_cont_lig
 from src.surfaces.pymol_image_surfaces_lig import generate_session
 #TODO: hide everything when loading result
-
-def process_result_flexaid(flexaid_result_file, output):
-    with open(flexaid_result_file, 'r') as t1:
-        with open(output, 'w') as t2:
-            text = t1.readlines()
-            for line in text:
-                if 'REMARK' not in line:
-                    if 'LIG  9999' in line:
-                        a_name = line[12:17].split()[0] + line[9:11] + ' ' * (
-                                    5 - len(line[12:17].split()[0] + line[9:11]))
-                        new_line = line[:12] + a_name + line[17:21] + 'L' + line[22:]
-                        t2.write(new_line)
-                    else:
-                        t2.write(line)
-
 
 def create_ligand_file(pdb_file_name, lig_path):
     with open(pdb_file_name, "r") as f:
@@ -59,7 +44,7 @@ def run_run_surfaces(selected_result, surfaces_output_path, flexaid_simulation_f
     open_def_file = open(def_file, "r")
     flexaid_result_file = os.path.join(flexaid_simulation_folder, selected_result + '.pdb')
     processed_result_path = os.path.join(surfaces_output_path, os.path.basename(flexaid_result_file)[:-4] + '_processed.pdb')
-    process_result_flexaid(flexaid_result_file, processed_result_path)
+    process_flexaid_result(flexaid_result_file, processed_result_path)
     ligand_file_name = os.path.join(os.path.dirname(processed_result_path), 'LIG')
     create_ligand_file(processed_result_path, ligand_file_name)
     custom_def_path = os.path.join(surfaces_output_path, f'custom_{os.path.basename(def_file)}')
