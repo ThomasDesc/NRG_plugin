@@ -14,7 +14,6 @@ from src.isomif import run_isomif
 import platform
 from pymol.Qt import QtWidgets
 from pymol.Qt.utils import loadUi
-
 try:
     import modeller
 except ImportError:
@@ -22,7 +21,8 @@ except ImportError:
 else:
     from src.nrgten import run_NRGTEN
     from src.modeller import run_modeller
-
+# TODO: when showing surfaces result hide everything else
+# TODO: clickable results in nrgdock table
 
 def test_binary(binary_folder_path, operating_system):
     all_files = os.listdir(binary_folder_path)
