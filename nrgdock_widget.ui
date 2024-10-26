@@ -20,7 +20,7 @@
    <string>NRGSuite_Qt v1.0</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">font-size:14;</string>
+   <string notr="true"/>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -30,6 +30,9 @@
        <width>0</width>
        <height>0</height>
       </size>
+     </property>
+     <property name="styleSheet">
+      <string notr="true"/>
      </property>
      <property name="frameShape">
       <enum>QFrame::NoFrame</enum>
@@ -226,10 +229,10 @@ QPushButton:checked{
          </size>
         </property>
         <property name="styleSheet">
-         <string notr="true"/>
+         <string notr="true">font-size:20;</string>
         </property>
         <property name="currentIndex">
-         <number>1</number>
+         <number>4</number>
         </property>
         <widget class="QWidget" name="getcleft_page">
          <layout class="QVBoxLayout" name="verticalLayout_10">
@@ -239,7 +242,7 @@ QPushButton:checked{
              <bool>true</bool>
             </property>
             <property name="currentIndex">
-             <number>0</number>
+             <number>1</number>
             </property>
             <widget class="QWidget" name="tab_14">
              <attribute name="title">
@@ -249,9 +252,7 @@ QPushButton:checked{
               <item>
                <widget class="QGroupBox" name="groupBox_8">
                 <property name="styleSheet">
-                 <string notr="true">QGroupBox{
-font-size:14px;
-}</string>
+                 <string notr="true"/>
                 </property>
                 <property name="title">
                  <string>Select a structure</string>
@@ -286,9 +287,7 @@ font-size:14px;
               <item>
                <widget class="QGroupBox" name="groupBox_19">
                 <property name="styleSheet">
-                 <string notr="true">QGroupBox{
-font-size:14px;
-}</string>
+                 <string notr="true"/>
                 </property>
                 <property name="title">
                  <string>Parameterisation</string>
@@ -445,9 +444,7 @@ font-size:14px;
               <item>
                <widget class="QGroupBox" name="groupBox_21">
                 <property name="styleSheet">
-                 <string notr="true">QGroupBox{
-font-size:14px;
-}</string>
+                 <string notr="true"/>
                 </property>
                 <property name="title">
                  <string>STEP 1: Select a binding site to partition</string>
@@ -496,9 +493,7 @@ font-size:14px;
               <item>
                <widget class="QGroupBox" name="groupBox_25">
                 <property name="styleSheet">
-                 <string notr="true">QGroupBox{
-font-size:14px;
-}</string>
+                 <string notr="true"/>
                 </property>
                 <property name="title">
                  <string>STEP 2: Add sphere to partition binding site (keep what is the sphere)</string>
@@ -587,9 +582,7 @@ font-size:14px;
               <item>
                <widget class="QGroupBox" name="groupBox_48">
                 <property name="styleSheet">
-                 <string notr="true">QGroupBox{
-font-size:14px;
-}</string>
+                 <string notr="true"/>
                 </property>
                 <property name="title">
                  <string>STEP 3 (optional): Rename binding site</string>
@@ -1675,7 +1668,7 @@ font-size:14px;
               <item row="2" column="0">
                <widget class="QGroupBox" name="groupBox_62">
                 <property name="styleSheet">
-                 <string notr="true">font-size: 14px;</string>
+                 <string notr="true"/>
                 </property>
                 <property name="title">
                  <string>Protein-Protein Interactions</string>
@@ -1960,7 +1953,7 @@ font-size:14px;
                 <item row="1" column="0">
                  <widget class="QLabel" name="label_123">
                   <property name="text">
-                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Ligand&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span&gt;Ligand&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                   </property>
                  </widget>
                 </item>
@@ -1992,7 +1985,7 @@ font-size:14px;
                 <item row="0" column="0">
                  <widget class="QLabel" name="label_122">
                   <property name="text">
-                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Object&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span&gt;Object&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                   </property>
                  </widget>
                 </item>
@@ -2021,7 +2014,7 @@ font-size:14px;
                 <item>
                  <widget class="QLabel" name="label_125">
                   <property name="text">
-                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Object&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span&gt;Object&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                   </property>
                  </widget>
                 </item>
@@ -2823,8 +2816,7 @@ font-size:14px;
         </property>
         <property name="styleSheet">
          <string notr="true">background-color: rgb(0, 0, 0);
-color: rgb(255, 255, 255);
-font-size: 14;</string>
+color: rgb(255, 255, 255);</string>
         </property>
        </widget>
       </item>
