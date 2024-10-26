@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>864</width>
-    <height>732</height>
+    <width>840</width>
+    <height>684</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -20,7 +20,9 @@
    <string>NRGSuite_Qt v1.0</string>
   </property>
   <property name="styleSheet">
-   <string notr="true"/>
+   <string notr="true">QFrame {
+    margin: 0px;
+}</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -41,6 +43,18 @@
       <enum>QFrame::Plain</enum>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
       <item>
        <widget class="QWidget" name="verticalWidget_2" native="true">
         <property name="minimumSize">
@@ -232,7 +246,7 @@ QPushButton:checked{
          <string notr="true">font-size:20;</string>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>1</number>
         </property>
         <widget class="QWidget" name="getcleft_page">
          <layout class="QVBoxLayout" name="verticalLayout_10">
@@ -692,6 +706,10 @@ color: white;
 QHeaderView::selection {
 background-color: black;
 color: white;
+}
+
+QFrame {
+    margin: 0px;
 }</string>
             </property>
             <property name="tabPosition">
@@ -1114,7 +1132,7 @@ color: white;
                     <bool>true</bool>
                    </property>
                    <property name="format">
-                    <string>Screening progress: %p%</string>
+                    <string/>
                    </property>
                   </widget>
                  </item>
@@ -1156,6 +1174,18 @@ color: white;
                  <enum>QFrame::Plain</enum>
                 </property>
                 <layout class="QHBoxLayout" name="horizontalLayout_6">
+                 <property name="leftMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>0</number>
+                 </property>
                  <item>
                   <widget class="QLabel" name="label_111">
                    <property name="text">
@@ -1312,6 +1342,12 @@ color: white;
              <layout class="QVBoxLayout" name="verticalLayout_2">
               <item>
                <widget class="QGroupBox" name="groupBox_53">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
                 <property name="title">
                  <string>Input Files</string>
                 </property>
@@ -1412,7 +1448,7 @@ color: white;
                </widget>
               </item>
               <item>
-               <spacer name="verticalSpacer">
+               <spacer name="verticalSpacer_7">
                 <property name="orientation">
                  <enum>Qt::Vertical</enum>
                 </property>
@@ -1575,6 +1611,12 @@ color: white;
          <layout class="QVBoxLayout" name="verticalLayout_12">
           <item>
            <widget class="QTabWidget" name="tabWidget_5">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="styleSheet">
              <string notr="true">QTableView{
 background-color: black;
@@ -1641,7 +1683,7 @@ color: white;
                    <item>
                     <widget class="QPushButton" name="surfaces_refresh_object_1">
                      <property name="sizePolicy">
-                      <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                      <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                        <horstretch>0</horstretch>
                        <verstretch>0</verstretch>
                       </sizepolicy>
@@ -1852,6 +1894,18 @@ color: white;
                  <enum>QFrame::Plain</enum>
                 </property>
                 <layout class="QHBoxLayout" name="horizontalLayout_8">
+                 <property name="leftMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>0</number>
+                 </property>
                  <item>
                   <widget class="QLabel" name="label_135">
                    <property name="text">
@@ -1926,6 +1980,18 @@ color: white;
                  <enum>QFrame::Raised</enum>
                 </property>
                 <layout class="QHBoxLayout" name="horizontalLayout_9">
+                 <property name="leftMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>0</number>
+                 </property>
                  <item>
                   <widget class="QLabel" name="label_134">
                    <property name="text">
@@ -2300,6 +2366,16 @@ color: white;
              <string>Load</string>
             </property>
             <layout class="QGridLayout" name="gridLayout_10">
+             <item row="0" column="1">
+              <widget class="QComboBox" name="Modeller_select_object">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+              </widget>
+             </item>
              <item row="0" column="2">
               <widget class="QPushButton" name="Modeller_refresh_object">
                <property name="sizePolicy">
@@ -2310,13 +2386,6 @@ color: white;
                </property>
                <property name="text">
                 <string>Refresh</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QLabel" name="label_137">
-               <property name="text">
-                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Selected residue(s):&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
               </widget>
              </item>
@@ -2337,16 +2406,6 @@ color: white;
                </property>
               </widget>
              </item>
-             <item row="0" column="1">
-              <widget class="QComboBox" name="Modeller_select_object">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-              </widget>
-             </item>
              <item row="1" column="2">
               <widget class="QPushButton" name="Modeller_refresh_residue">
                <property name="sizePolicy">
@@ -2357,6 +2416,13 @@ color: white;
                </property>
                <property name="text">
                 <string>Refresh</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_137">
+               <property name="text">
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Selected residue(s):&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
               </widget>
              </item>
@@ -2378,6 +2444,15 @@ color: white;
                 <enum>QFrame::Plain</enum>
                </property>
                <layout class="QHBoxLayout" name="horizontalLayout_16">
+                <property name="leftMargin">
+                 <number>0</number>
+                </property>
+                <property name="topMargin">
+                 <number>0</number>
+                </property>
+                <property name="rightMargin">
+                 <number>0</number>
+                </property>
                 <item>
                  <spacer name="horizontalSpacer_5">
                   <property name="orientation">
@@ -2571,7 +2646,7 @@ color: white;
                </layout>
               </widget>
              </item>
-             <item>
+             <item alignment="Qt::AlignHCenter">
               <widget class="QCheckBox" name="modeller_checkbox_all">
                <property name="text">
                 <string>ALL</string>
