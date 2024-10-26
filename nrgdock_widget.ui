@@ -232,7 +232,7 @@ QPushButton:checked{
          <string notr="true">font-size:20;</string>
         </property>
         <property name="currentIndex">
-         <number>3</number>
+         <number>0</number>
         </property>
         <widget class="QWidget" name="getcleft_page">
          <layout class="QVBoxLayout" name="verticalLayout_10">
@@ -684,7 +684,15 @@ QPushButton:checked{
              <enum>Qt::LeftToRight</enum>
             </property>
             <property name="styleSheet">
-             <string notr="true"/>
+             <string notr="true">QTableView{
+background-color: black;
+color: white;
+}
+
+QHeaderView::selection {
+background-color: black;
+color: white;
+}</string>
             </property>
             <property name="tabPosition">
              <enum>QTabWidget::North</enum>
@@ -1579,7 +1587,7 @@ color: white;
 }</string>
             </property>
             <property name="currentIndex">
-             <number>1</number>
+             <number>0</number>
             </property>
             <widget class="QWidget" name="tab_21">
              <attribute name="title">
