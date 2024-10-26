@@ -114,19 +114,19 @@ class Controller:
 
         # NRGTEN
         self.form.NRGten_target_refresh_object_1.clicked.connect(
-            lambda: general_functions.refresh_dropdown(self.form.NRGten_select_target, self.form.output_box))
+            lambda: general_functions.refresh_dropdown(self.form.NRGten_select_target_object_1, self.form.output_box))
         self.form.NRGten_target_refresh_object_1.clicked.connect(
-            lambda: general_functions.refresh_dropdown(self.form.NRGten_select_ligand, self.form.output_box, lig=1, add_none=1))
+            lambda: general_functions.refresh_dropdown(self.form.NRGten_select_ligand_object_1, self.form.output_box, lig=1, add_none=1))
         self.form.NRGten_target_refresh_object_2.clicked.connect(
-            lambda: general_functions.refresh_dropdown(self.form.NRGten_select_target_2, self.form.output_box, add_none=1))
+            lambda: general_functions.refresh_dropdown(self.form.NRGten_select_target_object_2, self.form.output_box, add_none=1))
         self.form.NRGten_dynasig_run.clicked.connect(
-            lambda: run_NRGTEN.dynamical_signature(self.form.NRGten_select_target.currentText(),
-                                                   self.form.NRGten_select_ligand.currentText(),
-                                                   self.form.NRGten_select_target_2.currentText(),
+            lambda: run_NRGTEN.dynamical_signature(self.form.NRGten_select_target_object_1.currentText(),
+                                                   self.form.NRGten_select_ligand_object_1.currentText(),
+                                                   self.form.NRGten_select_target_object_2.currentText(),
                                                    self.form.NRGten_dynasig_lineEdit.text(), install_dir,
                                                    self.form.temp_line_edit.text()))
         self.form.NRGten_conf_ensem_run.clicked.connect(
-            lambda: run_NRGTEN.conformational_ensemble(self.form.NRGten_select_target.currentText(),
+            lambda: run_NRGTEN.conformational_ensemble(self.form.NRGten_select_target_object_1.currentText(),
                                                        self.form.NRGten_modes_lineEdit.text(),
                                                        self.form.NRGten_step_lineEdit.text(),
                                                        self.form.NRGten_max_conf_lineEdit.text(),

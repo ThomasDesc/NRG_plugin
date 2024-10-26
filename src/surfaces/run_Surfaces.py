@@ -149,9 +149,9 @@ def get_chains_from_object(object_name):
 def load_surfaces(form, temp_path, main_folder_path, binary_folder_path, binary_suffix):
     vcon_binary_path = os.path.join(binary_folder_path, f'vcon{binary_suffix}')
     target = form.surface_select_object_1.currentText()
-    lig = form.surface_select_lig.currentText()
+    lig = form.surface_select_ligand_object_1.currentText()
     target_2 = form.surface_select_object_2.currentText()
-    lig_2 = form.surface_select_lig_2.currentText()
+    lig_2 = form.surface_select_ligand_object_2.currentText()
     chain_1=form.chain_lineEdit.text()
     chain_2=form.chain_lineEdit_1.text()
 

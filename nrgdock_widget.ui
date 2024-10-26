@@ -232,7 +232,7 @@ QPushButton:checked{
          <string notr="true">font-size:20;</string>
         </property>
         <property name="currentIndex">
-         <number>4</number>
+         <number>5</number>
         </property>
         <widget class="QWidget" name="getcleft_page">
          <layout class="QVBoxLayout" name="verticalLayout_10">
@@ -2363,70 +2363,70 @@ QPushButton:checked{
                   </property>
                   <layout class="QVBoxLayout" name="verticalLayout_24">
                    <item>
-                    <widget class="QCheckBox" name="Modeller_checkBox_41">
+                    <widget class="QCheckBox" name="Modeller_checkBox">
                      <property name="text">
                       <string>ALA</string>
                      </property>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QCheckBox" name="Modeller_checkBox_42">
+                    <widget class="QCheckBox" name="Modeller_checkBox_2">
                      <property name="text">
                       <string>ARG</string>
                      </property>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QCheckBox" name="Modeller_checkBox_43">
+                    <widget class="QCheckBox" name="Modeller_checkBox_3">
                      <property name="text">
                       <string>ASN</string>
                      </property>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QCheckBox" name="Modeller_checkBox_44">
+                    <widget class="QCheckBox" name="Modeller_checkBox_4">
                      <property name="text">
                       <string>ASP</string>
                      </property>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QCheckBox" name="Modeller_checkBox_45">
+                    <widget class="QCheckBox" name="Modeller_checkBox_5">
                      <property name="text">
                       <string>CYS</string>
                      </property>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QCheckBox" name="Modeller_checkBox_46">
+                    <widget class="QCheckBox" name="Modeller_checkBox_6">
                      <property name="text">
                       <string>GLN</string>
                      </property>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QCheckBox" name="Modeller_checkBox_47">
+                    <widget class="QCheckBox" name="Modeller_checkBox_7">
                      <property name="text">
                       <string>GLU</string>
                      </property>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QCheckBox" name="Modeller_checkBox_48">
+                    <widget class="QCheckBox" name="Modeller_checkBox_8">
                      <property name="text">
                       <string>GLY</string>
                      </property>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QCheckBox" name="Modeller_checkBox_49">
+                    <widget class="QCheckBox" name="Modeller_checkBox_9">
                      <property name="text">
                       <string>HIS</string>
                      </property>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QCheckBox" name="Modeller_checkBox_50">
+                    <widget class="QCheckBox" name="Modeller_checkBox_10">
                      <property name="text">
                       <string>ILE</string>
                      </property>
@@ -2445,70 +2445,70 @@ QPushButton:checked{
                   </property>
                   <layout class="QVBoxLayout" name="verticalLayout_25">
                    <item>
-                    <widget class="QCheckBox" name="Modeller_checkBox_51">
+                    <widget class="QCheckBox" name="Modeller_checkBox_11">
                      <property name="text">
                       <string>LEU</string>
                      </property>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QCheckBox" name="Modeller_checkBox_52">
+                    <widget class="QCheckBox" name="Modeller_checkBox_12">
                      <property name="text">
                       <string>LYS</string>
                      </property>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QCheckBox" name="Modeller_checkBox_53">
+                    <widget class="QCheckBox" name="Modeller_checkBox_13">
                      <property name="text">
                       <string>MET</string>
                      </property>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QCheckBox" name="Modeller_checkBox_54">
+                    <widget class="QCheckBox" name="Modeller_checkBox_14">
                      <property name="text">
                       <string>PHE</string>
                      </property>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QCheckBox" name="Modeller_checkBox_55">
+                    <widget class="QCheckBox" name="Modeller_checkBox_15">
                      <property name="text">
                       <string>PRO</string>
                      </property>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QCheckBox" name="Modeller_checkBox_56">
+                    <widget class="QCheckBox" name="Modeller_checkBox_16">
                      <property name="text">
                       <string>SER</string>
                      </property>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QCheckBox" name="Modeller_checkBox_57">
+                    <widget class="QCheckBox" name="Modeller_checkBox_17">
                      <property name="text">
                       <string>THR</string>
                      </property>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QCheckBox" name="Modeller_checkBox_58">
+                    <widget class="QCheckBox" name="Modeller_checkBox_18">
                      <property name="text">
                       <string>TRP</string>
                      </property>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QCheckBox" name="Modeller_checkBox_59">
+                    <widget class="QCheckBox" name="Modeller_checkBox_19">
                      <property name="text">
                       <string>TYR</string>
                      </property>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QCheckBox" name="Modeller_checkBox_60">
+                    <widget class="QCheckBox" name="Modeller_checkBox_20">
                      <property name="text">
                       <string>VEL</string>
                      </property>

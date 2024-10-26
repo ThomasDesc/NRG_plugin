@@ -178,8 +178,8 @@ def check_all(form):
 # Example Usage
 def model_mutations(form, temp_path):
     # Specify input PDB file, residue number, and new residue
-    target = form.Modeller_select_target_1.currentText()
-    res_list = form.Modeller_select_target.currentText()
+    target = form.Modeller_select_object.currentText()
+    res_list = form.Modeller_select_residue.currentText()
     mutation_list = [form.Modeller_checkBox.isChecked(),
                      form.Modeller_checkBox_2.isChecked(),
                      form.Modeller_checkBox_3.isChecked(),
