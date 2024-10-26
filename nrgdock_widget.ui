@@ -232,7 +232,7 @@ QPushButton:checked{
          <string notr="true">font-size:20;</string>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>3</number>
         </property>
         <widget class="QWidget" name="getcleft_page">
          <layout class="QVBoxLayout" name="verticalLayout_10">
@@ -609,7 +609,11 @@ QPushButton:checked{
                   </spacer>
                  </item>
                  <item>
-                  <widget class="QLineEdit" name="lineEdit"/>
+                  <widget class="QLineEdit" name="lineEdit">
+                   <property name="alignment">
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                   </property>
+                  </widget>
                  </item>
                 </layout>
                </widget>
@@ -1563,8 +1567,19 @@ QPushButton:checked{
          <layout class="QVBoxLayout" name="verticalLayout_12">
           <item>
            <widget class="QTabWidget" name="tabWidget_5">
+            <property name="styleSheet">
+             <string notr="true">QTableView{
+background-color: black;
+color: white;
+}
+
+QHeaderView::selection {
+background-color: black;
+color: white;
+}</string>
+            </property>
             <property name="currentIndex">
-             <number>0</number>
+             <number>1</number>
             </property>
             <widget class="QWidget" name="tab_21">
              <attribute name="title">
@@ -2130,6 +2145,9 @@ QPushButton:checked{
                     <property name="text">
                      <string>7</string>
                     </property>
+                    <property name="alignment">
+                     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                    </property>
                    </widget>
                   </item>
                  </layout>
@@ -2148,6 +2166,9 @@ QPushButton:checked{
                     <property name="text">
                      <string>0.5</string>
                     </property>
+                    <property name="alignment">
+                     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                    </property>
                    </widget>
                   </item>
                  </layout>
@@ -2163,8 +2184,17 @@ QPushButton:checked{
                   </item>
                   <item>
                    <widget class="QLineEdit" name="NRGten_max_conf_lineEdit">
+                    <property name="minimumSize">
+                     <size>
+                      <width>50</width>
+                      <height>0</height>
+                     </size>
+                    </property>
                     <property name="text">
                      <string>10000</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                     </property>
                    </widget>
                   </item>
