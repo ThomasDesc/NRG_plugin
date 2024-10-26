@@ -20,11 +20,11 @@ def refresh_res(form,out_path):
     l_dir=os.listdir(out_path)
     ind_res = [file[:-4] for file in l_dir if 'List_' in file]
     cf_comp= [file[:-4] for file in l_dir if '_diff.csv' in file]
-    form.surface_select_result_3.clear()
-    form.surface_select_result_3.addItems(ind_res)
-    load_csv_data(form,os.path.join(out_path,form.surface_select_result_3.currentText()+'.txt'))
-    form.surface_select_result_4.clear()
-    form.surface_select_result_4.addItems(cf_comp)
+    form.surface_select_individual_result.clear()
+    form.surface_select_individual_result.addItems(ind_res)
+    load_csv_data(form,os.path.join(out_path,form.surface_select_individual_result.currentText()+'.txt'))
+    form.surface_select_cf_comparison.clear()
+    form.surface_select_cf_comparison.addItems(cf_comp)
 
 
 def load_csv_data(form, csv_file):
@@ -148,9 +148,9 @@ def get_chains_from_object(object_name):
 
 def load_surfaces(form, temp_path, main_folder_path, binary_folder_path, binary_suffix):
     vcon_binary_path = os.path.join(binary_folder_path, f'vcon{binary_suffix}')
-    target = form.surface_select_result.currentText()
+    target = form.surface_select_object_1.currentText()
     lig = form.surface_select_lig.currentText()
-    target_2 = form.surface_select_result_2.currentText()
+    target_2 = form.surface_select_object_2.currentText()
     lig_2 = form.surface_select_lig_2.currentText()
     chain_1=form.chain_lineEdit.text()
     chain_2=form.chain_lineEdit_1.text()
