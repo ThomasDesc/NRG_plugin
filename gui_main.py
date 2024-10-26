@@ -52,8 +52,8 @@ class Controller:
         self.form.button_getcleft.clicked.connect(lambda: self.form.stackedWidget.setCurrentIndex(0))
         self.form.button_nrgdock.clicked.connect(lambda: self.form.stackedWidget.setCurrentIndex(1))
         self.form.button_flexaid.clicked.connect(lambda: self.form.stackedWidget.setCurrentIndex(2))
-        self.form.button_nrgten.clicked.connect(lambda: self.form.stackedWidget.setCurrentIndex(3))
-        self.form.button_surfaces.clicked.connect(lambda: self.form.stackedWidget.setCurrentIndex(4))
+        self.form.button_surfaces.clicked.connect(lambda: self.form.stackedWidget.setCurrentIndex(3))
+        self.form.button_nrgten.clicked.connect(lambda: self.form.stackedWidget.setCurrentIndex(4))
         self.form.button_modeller.clicked.connect(lambda: self.form.stackedWidget.setCurrentIndex(5))
         self.form.button_ISOMIF.clicked.connect(lambda: self.form.stackedWidget.setCurrentIndex(6))
 
@@ -95,43 +95,37 @@ class Controller:
         self.form.flexaid_button_abort.clicked.connect(lambda: abort_simulation(self.form, self.flexaid_manager.run_specific_simulate_folder_path))
 
         # Surfaces
-        self.form.surfaces_refresh_button.clicked.connect(
-            lambda: general_functions.refresh_dropdown(self.form.surface_select_result, self.form.output_box))
-        self.form.surfaces_refresh_button.clicked.connect(
-            lambda: general_functions.refresh_dropdown(self.form.surface_select_lig, self.form.output_box, lig=1, add_none=1))
-        self.form.surfaces_refresh_button_2.clicked.connect(
-            lambda: general_functions.refresh_dropdown(self.form.surface_select_result_2, self.form.output_box, add_none=1))
-        self.form.surfaces_refresh_button_2.clicked.connect(
-            lambda: general_functions.refresh_dropdown(self.form.surface_select_lig_2, self.form.output_box, lig=1, add_none=1))
-        self.form.surfaces_run_button.clicked.connect(
-            lambda: run_Surfaces.load_surfaces(self.form, self.form.temp_line_edit.text(), install_dir, self.binary_folder_path,
-                                               self.binary_suffix))
-        self.form.surface_select_result_3.currentIndexChanged.connect(lambda: run_Surfaces.load_csv_data(self.form, os.path.join(
-            os.path.join(self.form.temp_line_edit.text(), 'Surfaces'), self.form.surface_select_result_3.currentText() + '.txt')))
-        self.form.surface_select_result_4.currentIndexChanged.connect(lambda: run_Surfaces.load_csv_data(self.form, os.path.join(
-            os.path.join(self.form.temp_line_edit.text(), 'Surfaces'), self.form.surface_select_result_4.currentText() + '.csv')))
-        self.form.surfaces_refresh_button_3.clicked.connect(
-            lambda: run_Surfaces.refresh_res(self.form, os.path.join(self.form.temp_line_edit.text(), 'Surfaces')))
-        self.form.surfaces_refresh_button_3.clicked.connect(lambda: run_Surfaces.load_csv_data(self.form, os.path.join(
-            self.form.temp_line_edit.text(), 'Surfaces', self.form.surface_select_result_4.currentText() + '.csv')))
-        self.form.Surfaces_pushButton_2.clicked.connect(lambda: run_Surfaces.read_and_select_residues(
-            os.path.join(self.form.temp_line_edit.text(), 'Surfaces', self.form.surface_select_result_3.currentText() + '.txt'),
-            self.form.surface_select_result_3.currentText()[5:-11], num_rows=self.form.TOPN_lineEdit_2.text()))
+        self.form.surfaces_refresh_object_1.clicked.connect(lambda: general_functions.refresh_dropdown(self.form.surface_select_object_1, self.form.output_box))
+        self.form.surfaces_refresh_object_1.clicked.connect(lambda: general_functions.refresh_dropdown(self.form.surface_select_ligand_object_1, self.form.output_box, lig=1, add_none=1))
+        self.form.surfaces_refresh_object_2.clicked.connect(lambda: general_functions.refresh_dropdown(self.form.surface_select_object_2, self.form.output_box, add_none=1))
+        self.form.surfaces_refresh_object_2.clicked.connect(lambda: general_functions.refresh_dropdown(self.form.surface_select_ligand_object_2, self.form.output_box, lig=1, add_none=1))
+        self.form.surfaces_button_run.clicked.connect(lambda: run_Surfaces.load_surfaces(self.form, self.form.temp_line_edit.text(), install_dir, self.binary_folder_path, self.binary_suffix))
+
+        self.form.surface_select_individual_result.currentIndexChanged.connect(lambda: run_Surfaces.load_csv_data(self.form, os.path.join(
+            os.path.join(self.form.temp_line_edit.text(), 'Surfaces'), self.form.surface_select_individual_result.currentText() + '.txt')))
+
+        self.form.surface_select_cf_comparison.currentIndexChanged.connect(lambda: run_Surfaces.load_csv_data(self.form, os.path.join(
+            os.path.join(self.form.temp_line_edit.text(), 'Surfaces'), self.form.surface_select_cf_comparison.currentText() + '.csv')))
+
+        self.form.surfaces_refresh_result.clicked.connect(lambda: run_Surfaces.refresh_res(self.form, os.path.join(self.form.temp_line_edit.text(), 'Surfaces')))
+        self.form.surfaces_refresh_result.clicked.connect(lambda: run_Surfaces.load_csv_data(self.form, os.path.join(self.form.temp_line_edit.text(), 'Surfaces', self.form.surface_select_cf_comparison.currentText() + '.csv')))
+        self.form.surfaces_button_interface.clicked.connect(lambda: run_Surfaces.read_and_select_residues(os.path.join(self.form.temp_line_edit.text(), 'Surfaces', self.form.surface_select_individual_result.currentText() + '.txt'),
+            self.form.surface_select_individual_result.currentText()[5:-11], num_rows=self.form.TOPN_lineEdit_2.text()))
 
         # NRGTEN
-        self.form.NRGten_target_refresh.clicked.connect(
+        self.form.NRGten_target_refresh_object_1.clicked.connect(
             lambda: general_functions.refresh_dropdown(self.form.NRGten_select_target, self.form.output_box))
-        self.form.NRGten_target_refresh.clicked.connect(
+        self.form.NRGten_target_refresh_object_1.clicked.connect(
             lambda: general_functions.refresh_dropdown(self.form.NRGten_select_ligand, self.form.output_box, lig=1, add_none=1))
-        self.form.NRGten_target_refresh_2.clicked.connect(
+        self.form.NRGten_target_refresh_object_2.clicked.connect(
             lambda: general_functions.refresh_dropdown(self.form.NRGten_select_target_2, self.form.output_box, add_none=1))
-        self.form.NRGten_dynasig_pushButton.clicked.connect(
+        self.form.NRGten_dynasig_run.clicked.connect(
             lambda: run_NRGTEN.dynamical_signature(self.form.NRGten_select_target.currentText(),
                                                    self.form.NRGten_select_ligand.currentText(),
                                                    self.form.NRGten_select_target_2.currentText(),
                                                    self.form.NRGten_dynasig_lineEdit.text(), install_dir,
                                                    self.form.temp_line_edit.text()))
-        self.form.NRGten_conf_ensem_pushButton.clicked.connect(
+        self.form.NRGten_conf_ensem_run.clicked.connect(
             lambda: run_NRGTEN.conformational_ensemble(self.form.NRGten_select_target.currentText(),
                                                        self.form.NRGten_modes_lineEdit.text(),
                                                        self.form.NRGten_step_lineEdit.text(),
@@ -141,31 +135,30 @@ class Controller:
                                                        self.form.temp_line_edit.text(), self.form))
 
         # Modeller
-        self.form.Modeller_target_refresh_1.clicked.connect(
-            lambda: general_functions.refresh_dropdown(self.form.Modeller_select_target_1, self.form.output_box))
-        self.form.Modeller_target_refresh.clicked.connect(
-            lambda: general_functions.refresh_dropdown(self.form.Modeller_select_target, self.form.output_box, lig=1))
-        self.form.Modeller_pushButton.clicked.connect(lambda: run_modeller.model_mutations(self.form, self.form.temp_line_edit.text()))
-        self.form.Modeller_checkBox_all.clicked.connect(lambda: run_modeller.check_all(self.form))
+        self.form.Modeller_refresh_object.clicked.connect(
+            lambda: general_functions.refresh_dropdown(self.form.Modeller_select_object, self.form.output_box))
+        self.form.Modeller_refresh_residue.clicked.connect(
+            lambda: general_functions.refresh_dropdown(self.form.Modeller_select_residue, self.form.output_box, lig=1))
+        self.form.modeller_button_mutate.clicked.connect(lambda: run_modeller.model_mutations(self.form, self.form.temp_line_edit.text()))
+        self.form.modeller_checkbox_all.clicked.connect(lambda: run_modeller.check_all(self.form))
 
         # isomif functions
-        self.form.ISOMIF_target_refresh.clicked.connect(
-            lambda: general_functions.refresh_dropdown(self.form.ISOMIF_select_target, self.form.output_box))
-        self.form.ISOMIF_target_refresh_1.clicked.connect(
-            lambda: general_functions.refresh_dropdown(self.form.ISOMIF_select_target_1, self.form.output_box, add_none=1))
-        self.form.ISOMIF_cleft_refresh.clicked.connect(
-            lambda: general_functions.refresh_dropdown(self.form.ISOMIF_select_cleft, self.form.output_box, filter_for='sph'))
-        self.form.ISOMIF_cleft_refresh.clicked.connect(
-            lambda: general_functions.refresh_dropdown(self.form.ISOMIF_select_lig, self.form.output_box, lig=1, add_none=1))
-        self.form.ISOMIF_cleft_refresh_1.clicked.connect(
-            lambda: general_functions.refresh_dropdown(self.form.ISOMIF_select_cleft_1,
-                                                       self.form.output_box,
-                                                       filter_for='sph',
-                                                       add_none=1))
-        self.form.ISOMIF_cleft_refresh_1.clicked.connect(
-            lambda: general_functions.refresh_dropdown(self.form.ISOMIF_select_lig_1, self.form.output_box, lig=1, add_none=1))
+        self.form.ISOMIF_target_refresh_object_1.clicked.connect(
+            lambda: general_functions.refresh_dropdown(self.form.ISOMIF_select_target_object_1, self.form.output_box))
+        self.form.ISOMIF_target_refresh_object_2.clicked.connect(
+            lambda: general_functions.refresh_dropdown(self.form.ISOMIF_select_target_object_2, self.form.output_box, add_none=1))
 
-        self.form.ISOMIF_pushButton.clicked.connect(
+        self.form.ISOMIF_cleft_refresh_object_1.clicked.connect(
+            lambda: general_functions.refresh_dropdown(self.form.ISOMIF_select_cleft_object_1, self.form.output_box, filter_for='sph'))
+        self.form.ISOMIF_cleft_refresh_object_1.clicked.connect(
+            lambda: general_functions.refresh_dropdown(self.form.ISOMIF_select_ligand_object_1, self.form.output_box, lig=1, add_none=1))
+
+        self.form.ISOMIF_cleft_refresh_object_2.clicked.connect(
+            lambda: general_functions.refresh_dropdown(self.form.ISOMIF_select_cleft_object_2, self.form.output_box, filter_for='sph', add_none=1))
+        self.form.ISOMIF_cleft_refresh_object_2.clicked.connect(
+            lambda: general_functions.refresh_dropdown(self.form.ISOMIF_select_ligand_object_2, self.form.output_box, lig=1, add_none=1))
+
+        self.form.ISOMIF_run.clicked.connect(
             lambda: run_isomif.mif_plot(self.form, self.form.output_box, self.binary_folder_path, self.binary_suffix, self.operating_system,
                                         install_dir))
     def run_getcleft(self):
@@ -206,7 +199,7 @@ class NRGSuitePlugin(QtWidgets.QWidget):
         self.form.nrgdock_cpu_usage_target.setCurrentText("75%")
         self.controller = Controller(self.form, self.binary_folder_path, self.binary_suffix, self.operating_system, self.ligand_set_folder_path)
         self.form.nrgdock_progress_label.setText('')
-        self.form.nrgdock_loading_gif.setText('')
+        # self.form.nrgdock_loading_gif.setText('')
 
     def load_ui(self):
         self.form = loadUi(os.path.join(install_dir, 'nrgdock_widget.ui'), self)
