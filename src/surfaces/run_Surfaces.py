@@ -152,8 +152,8 @@ def load_surfaces(form, temp_path, main_folder_path, binary_folder_path, binary_
     lig = form.surface_select_ligand_object_1.currentText()
     target_2 = form.surface_select_object_2.currentText()
     lig_2 = form.surface_select_ligand_object_2.currentText()
-    chain_1=form.chain_lineEdit.text()
-    chain_2=form.chain_lineEdit_1.text()
+    chain_1=form.surfaces_chain.text()
+    chain_2=form.surfaces_chain.text()
 
     if lig != 'None':
         if target_2 == 'None':
