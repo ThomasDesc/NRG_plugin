@@ -133,27 +133,43 @@ def run_mif(target,form,temp_path,cleft_file,mif_binary_path,mifView_binary_path
     os.system(command_view)
     cmd.load(target_file[:-4]+'_h.pml')
     cmd.delete(target+'_h')
+    try:
+        cmd.set_name('neg_100',f'{target}_neg_100')
+        cmd.group(f'{target}_isomif', f'{target}_neg_100')
+    except:
+        print('no neg_100')
+    try:
+        cmd.set_name('don_100',f'{target}_don_100')
+        cmd.group(f'{target}_isomif', f'{target}_don_100')
+    except:
+        print('no don_100')
+    try:
+        cmd.set_name('acc_100',f'{target}_acc_100')
+        cmd.group(f'{target}_isomif', f'{target}_acc_100')
+    except:
+        print('no acc_100')
 
-    cmd.set_name('neg_100',f'{target}_neg_100')
-    cmd.group(f'{target}_isomif', f'{target}_neg_100')
-
-    cmd.set_name('don_100',f'{target}_don_100')
-    cmd.group(f'{target}_isomif', f'{target}_don_100')
-
-    cmd.set_name('acc_100',f'{target}_acc_100')
-    cmd.group(f'{target}_isomif', f'{target}_acc_100')
-
-    cmd.set_name('pos_100',f'{target}_pos_100')
-    cmd.group(f'{target}_isomif', f'{target}_pos_100')
-
-    cmd.set_name('arm_100',f'{target}_arm_100')
-    cmd.group(f'{target}_isomif', f'{target}_arm_100')
-
-    cmd.set_name('hyd_100',f'{target}_hyd_100')
-    cmd.group(f'{target}_isomif', f'{target}_hyd_100')
-
-    cmd.set_name('100', f'{target}_100')
-    cmd.group(f'{target}_isomif', f'{target}_100')
+    try:
+        cmd.set_name('pos_100',f'{target}_pos_100')
+        cmd.group(f'{target}_isomif', f'{target}_pos_100')
+    except:
+        print('no pos_100')
+    try:
+        cmd.set_name('arm_100',f'{target}_arm_100')
+        cmd.group(f'{target}_isomif', f'{target}_arm_100')
+    except:
+        print('no arm_100')
+    try:
+        cmd.set_name('hyd_100',f'{target}_hyd_100')
+        cmd.group(f'{target}_isomif', f'{target}_hyd_100')
+    except:
+        print('no hyd_100')
+    try:
+        cmd.set_name('100', f'{target}_100')
+        cmd.group(f'{target}_isomif', f'{target}_100')
+        cmd.disable(f'{target}_100')
+    except:
+        print('no 100')
 
     cmd.group('isomif_results', f'{target}_isomif')
 
