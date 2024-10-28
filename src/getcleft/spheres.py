@@ -20,8 +20,8 @@ def get_max_coords(cleft_coordinates, center):
     return radius
 
 
-def display_sphere(cleft_object_name, form, slider, partition_sphere_select, temp_path):
-    sphere_name = 'SPHERE_1'
+def display_sphere(cleft_object_name, form, slider, temp_path):
+    sphere_name = 'SPHERE'
     if cleft_object_name == '':
         output_message(form.output_box, 'No cleft object selected in step 1', 'warning')
     elif sphere_name in cmd.get_object_list():
@@ -51,8 +51,6 @@ def display_sphere(cleft_object_name, form, slider, partition_sphere_select, tem
         slider.setMaximum(slider_max)
         slider.setValue(slider_max)
         slider.setSingleStep(10)
-        partition_sphere_select.addItem(sphere_name)
-        partition_sphere_select.setCurrentText(sphere_name)
 
 
 def resize_sphere(sphere_name, slider_value):
@@ -67,27 +65,37 @@ def move_sphere():
     wiz = wizard.Sphere()
     cmd.set_wizard(wiz)
 
+def delete_sphere(sphere_object, slider):
+    cmd.delete(sphere_object)
+    slider.setEnabled(False)
 
-def crop_cleft(object_name, sphere_vdw, temp_path, cleft_name):
-    getcleft_output_path = os.path.join(temp_path, 'GetCleft')
-    cleft_save_path = os.path.join(getcleft_output_path, 'Clefts')
-    sphere_coords = np.array(cmd.get_model(object_name).atom[0].coord)
-    min_coords = np.array([sphere_coords-sphere_vdw])
-    max_coords = np.array([sphere_coords+sphere_vdw])
-    cleft_path = os.path.join(cleft_save_path, cleft_name + '.pdb')
-    lines, partition_coords = read_coords_cleft(cleft_path)
-    indices = np.where((partition_coords > min_coords).all(axis=1) & (partition_coords < max_coords).all(axis=1))[0] + 1
-    lines_to_output = [lines[0]] + [lines[i] for i in indices]
-    partition_path = os.path.join(cleft_save_path, cleft_name + '_cropped.pdb')
-    with open(partition_path, 'w') as f:
-        f.writelines(lines_to_output)
-    partition_name = os.path.basename(partition_path).split('.')[0]
-    cmd.set("auto_zoom", 0)
-    cmd.load(partition_path, format='pdb')
-    cmd.hide('everything', partition_name)
-    cmd.show('surface', partition_name)
-    cmd.color('grey60', partition_name)
-    cmd.disable(f'{object_name} {cleft_name}')
-    cmd.enable(cleft_name)
-    cmd.refresh()
+def crop_cleft(sphere_name, sphere_vdw, temp_path, cleft_name, output_box, slider):
+    try:
+        cmd.count_atoms(sphere_name)
+    except Exception:
+        output_message(output_box, 'No sphere in PyMOL. Press add in step 2.', 'warning')
+        return
+    else:
+        getcleft_output_path = os.path.join(temp_path, 'GetCleft')
+        cleft_save_path = os.path.join(getcleft_output_path, 'Clefts')
+        sphere_coords = np.array(cmd.get_model(sphere_name).atom[0].coord)
+        min_coords = np.array([sphere_coords-sphere_vdw])
+        max_coords = np.array([sphere_coords+sphere_vdw])
+        cleft_path = os.path.join(cleft_save_path, cleft_name + '.pdb')
+        lines, partition_coords = read_coords_cleft(cleft_path)
+        indices = np.where((partition_coords > min_coords).all(axis=1) & (partition_coords < max_coords).all(axis=1))[0] + 1
+        lines_to_output = [lines[0]] + [lines[i] for i in indices]
+        partition_path = os.path.join(cleft_save_path, cleft_name + '_cropped.pdb')
+        with open(partition_path, 'w') as f:
+            f.writelines(lines_to_output)
+        partition_name = os.path.basename(partition_path).split('.')[0]
+        cmd.set("auto_zoom", 0)
+        cmd.load(partition_path, format='pdb')
+        cmd.hide('everything', partition_name)
+        cmd.show('surface', partition_name)
+        cmd.color('grey60', partition_name)
+        delete_sphere(sphere_name, slider)
+        cmd.disable(cleft_name)
+        cmd.enable(cleft_name)
+        cmd.refresh()
 

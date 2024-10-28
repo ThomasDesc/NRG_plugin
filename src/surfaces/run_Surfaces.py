@@ -221,6 +221,7 @@ def load_surfaces(form, temp_path, main_folder_path, binary_folder_path, binary_
                     for item in list(cf_dic):
                         t1.write('{},{}\n'.format(item, cf_dic[item]))
                 read_and_select_residues(csv_file, target)
+    form.Surfaces_tabs.setCurrentIndex(1)
 
 
 def cf_calculatior(res_file):

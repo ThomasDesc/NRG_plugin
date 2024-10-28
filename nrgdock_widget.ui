@@ -246,7 +246,7 @@ QPushButton:checked{
          <string notr="true">font-size:20;</string>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>3</number>
         </property>
         <widget class="QWidget" name="getcleft_page">
          <layout class="QVBoxLayout" name="verticalLayout_10">
@@ -285,7 +285,7 @@ QPushButton:checked{
                  <item>
                   <widget class="QPushButton" name="cleft_button_refresh">
                    <property name="sizePolicy">
-                    <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                      <horstretch>0</horstretch>
                      <verstretch>0</verstretch>
                     </sizepolicy>
@@ -351,7 +351,7 @@ QPushButton:checked{
                  <item row="1" column="0">
                   <widget class="QLabel" name="label_55">
                    <property name="text">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Residue in contact (e.g. ALA13A):&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Residue in contact (e.g. ALA13A-):&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                    </property>
                   </widget>
                  </item>
@@ -400,10 +400,16 @@ QPushButton:checked{
                 <item>
                  <widget class="QPushButton" name="button_start">
                   <property name="sizePolicy">
-                   <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                     <horstretch>0</horstretch>
                     <verstretch>0</verstretch>
                    </sizepolicy>
+                  </property>
+                  <property name="minimumSize">
+                   <size>
+                    <width>175</width>
+                    <height>0</height>
+                   </size>
                   </property>
                   <property name="styleSheet">
                    <string notr="true"/>
@@ -431,6 +437,12 @@ QPushButton:checked{
                 </item>
                 <item>
                  <widget class="QPushButton" name="button_hide">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
                   <property name="minimumSize">
                    <size>
                     <width>80</width>
@@ -447,6 +459,12 @@ QPushButton:checked{
                 </item>
                 <item>
                  <widget class="QPushButton" name="pushButton">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
                   <property name="text">
                    <string>Clear</string>
                   </property>
@@ -493,7 +511,7 @@ QPushButton:checked{
                  <item>
                   <widget class="QComboBox" name="cleft_partition_select_object">
                    <property name="sizePolicy">
-                    <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                      <horstretch>0</horstretch>
                      <verstretch>0</verstretch>
                     </sizepolicy>
@@ -502,6 +520,12 @@ QPushButton:checked{
                  </item>
                  <item>
                   <widget class="QPushButton" name="cleft_partition_button_refresh">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
                    <property name="text">
                     <string>Refresh</string>
                    </property>
@@ -518,12 +542,57 @@ QPushButton:checked{
                 <property name="title">
                  <string>STEP 2: Add sphere to partition binding site (keep what is the sphere)</string>
                 </property>
-                <layout class="QGridLayout" name="gridLayout6">
-                 <item row="0" column="4">
-                  <widget class="QPushButton" name="cleft_partition_button_add">
+                <layout class="QGridLayout" name="gridLayout_13">
+                 <item row="0" column="0">
+                  <widget class="QLabel" name="label_22">
                    <property name="text">
-                    <string>Add</string>
+                    <string>Sphere:</string>
                    </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="1">
+                  <widget class="QFrame" name="frame_2">
+                   <property name="frameShape">
+                    <enum>QFrame::NoFrame</enum>
+                   </property>
+                   <property name="frameShadow">
+                    <enum>QFrame::Plain</enum>
+                   </property>
+                   <layout class="QHBoxLayout" name="horizontalLayout_5">
+                    <property name="leftMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="bottomMargin">
+                     <number>0</number>
+                    </property>
+                    <item>
+                     <widget class="QPushButton" name="cleft_partition_button_add">
+                      <property name="text">
+                       <string>Add</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="cleft_partition_button_move">
+                      <property name="text">
+                       <string>Move</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="cleft_partition_button_delete">
+                      <property name="text">
+                       <string>Delete</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
                   </widget>
                  </item>
                  <item row="1" column="0">
@@ -533,54 +602,16 @@ QPushButton:checked{
                    </property>
                   </widget>
                  </item>
-                 <item row="0" column="6">
-                  <widget class="QPushButton" name="cleft_partition_button_delete">
-                   <property name="text">
-                    <string>Delete</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="2">
-                  <spacer name="horizontalSpacer_20">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                 <item row="0" column="3">
-                  <widget class="QComboBox" name="partition_sphere_select">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="0">
-                  <widget class="QLabel" name="label_22">
-                   <property name="text">
-                    <string>Sphere objects:</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="5">
-                  <widget class="QPushButton" name="cleft_partition_button_move">
-                   <property name="text">
-                    <string>Move</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="2" colspan="2">
+                 <item row="1" column="1">
                   <widget class="QSlider" name="cleft_partition_radius_slider">
                    <property name="enabled">
                     <bool>false</bool>
+                   </property>
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
                    </property>
                    <property name="minimum">
                     <number>50</number>
@@ -611,22 +642,9 @@ QPushButton:checked{
                  <item>
                   <widget class="QLabel" name="label_58">
                    <property name="text">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Cleft object:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;New binding site name:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                    </property>
                   </widget>
-                 </item>
-                 <item>
-                  <spacer name="horizontalSpacer_21">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
                  </item>
                  <item>
                   <widget class="QLineEdit" name="lineEdit">
@@ -641,37 +659,11 @@ QPushButton:checked{
               <item>
                <layout class="QHBoxLayout" name="horizontalLayout0">
                 <item>
-                 <spacer name="horizontalSpacer_22">
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>40</width>
-                    <height>20</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
-                <item>
                  <widget class="QPushButton" name="cleft_partition_crop_button">
                   <property name="text">
                    <string>Crop binding site</string>
                   </property>
                  </widget>
-                </item>
-                <item>
-                 <spacer name="horizontalSpacer_23">
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>40</width>
-                    <height>20</height>
-                   </size>
-                  </property>
-                 </spacer>
                 </item>
                </layout>
               </item>
@@ -1636,7 +1628,7 @@ QFrame {
         <widget class="QWidget" name="surfaces_page">
          <layout class="QVBoxLayout" name="verticalLayout_12">
           <item>
-           <widget class="QTabWidget" name="tabWidget_5">
+           <widget class="QTabWidget" name="Surfaces_tabs">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
               <horstretch>0</horstretch>
@@ -1657,7 +1649,7 @@ color: white;
             <property name="currentIndex">
              <number>0</number>
             </property>
-            <widget class="QWidget" name="tab_21">
+            <widget class="QWidget" name="surfaces_run_tab">
              <attribute name="title">
               <string>Run</string>
              </attribute>
@@ -1906,7 +1898,7 @@ color: white;
               </item>
              </layout>
             </widget>
-            <widget class="QWidget" name="tab_22">
+            <widget class="QWidget" name="surfaces_result_tab">
              <attribute name="title">
               <string>Results</string>
              </attribute>

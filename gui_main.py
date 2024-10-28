@@ -70,13 +70,12 @@ class Controller:
         # Partition Cleft
         self.form.cleft_partition_button_add.clicked.connect(
             lambda: spheres.display_sphere(self.form.cleft_partition_select_object.currentText(), self.form,
-                                           self.form.cleft_partition_radius_slider, self.form.partition_sphere_select,
-                                           self.form.temp_line_edit.text()))
+                                           self.form.cleft_partition_radius_slider, self.form.temp_line_edit.text()))
         self.form.cleft_partition_button_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(self.form.cleft_partition_select_object, self.form.output_box,filter_for='_sph'))
         self.form.cleft_partition_button_move.clicked.connect(spheres.move_sphere)
-        self.form.cleft_partition_radius_slider.valueChanged.connect( lambda: spheres.resize_sphere(self.form.partition_sphere_select.currentText(), self.form.cleft_partition_radius_slider.value()))
-        self.form.cleft_partition_crop_button.clicked.connect(lambda: spheres.crop_cleft(self.form.partition_sphere_select.currentText(), self.form.cleft_partition_radius_slider.value() / 100, self.form.temp_line_edit.text(), self.form.cleft_partition_select_object.currentText()))
-
+        self.form.cleft_partition_radius_slider.valueChanged.connect( lambda: spheres.resize_sphere('SPHERE', self.form.cleft_partition_radius_slider.value()))
+        self.form.cleft_partition_crop_button.clicked.connect(lambda: spheres.crop_cleft('SPHERE', self.form.cleft_partition_radius_slider.value() / 100, self.form.temp_line_edit.text(), self.form.cleft_partition_select_object.currentText(), self.form.output_box, self.form.cleft_partition_radius_slider))
+        self.form.cleft_partition_button_delete.clicked.connect(lambda: spheres.delete_sphere('SPHERE', self.form.cleft_partition_radius_slider))
         # NRGDock:
         self.form.nrgdock_target_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(self.form.nrgdock_select_target, self.form.output_box, exclude='_sph'))
         self.form.nrgdock_binding_site_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(self.form.nrgdock_select_binding_site, self.form.output_box, filter_for='_sph'))
@@ -199,9 +198,10 @@ class NRGSuitePlugin(QtWidgets.QWidget):
         general_functions.refresh_dropdown(self.form.cleft_select_object, self.form.output_box, no_warning=True)
         general_functions.refresh_folder(self.ligand_set_folder_path, self.form.nrgdock_select_ligand)
         self.form.nrgdock_cpu_usage_target.setCurrentText("75%")
-        self.color_list = general_functions.load_color_list(os.path.join(install_dir, 'deps', 'getcleft', 'color_list_new.txt'))
+        self.color_list = general_functions.load_color_list(os.path.join(install_dir, 'deps', 'getcleft', 'color_list.txt'))
         self.form.nrgdock_progress_label.setText('')
         self.form.nrgdock_loading_gif.setText('')
+        self.form.nrgdock_progress.hide()
         self.controller = Controller(self.form, self.binary_folder_path, self.binary_suffix, self.operating_system, self.ligand_set_folder_path, self.color_list)
 
     def load_ui(self):

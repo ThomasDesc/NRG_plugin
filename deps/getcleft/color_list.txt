@@ -1,20 +1,20 @@
-red
-br8
-tv_red
-oxygen
-iron
-tv_orange
-sulfur
-gold
-yelloworange
-neodymium
-limon
-chartreuse
-tv_green
-limegreen
-teal
-rhodium
-slate
-tv_blue
-blue
-density
+red (255,0,0)
+tv_blue (0,204,255)
+yelloworange (255,174,0)
+tv_green (0,255,0)
+br8 (255,119,0)
+chartreuse (127,255,0)
+iron (142,134,128)
+blue (0,0,255)
+limon (0,255,127)
+rhodium (141,158,167)
+teal (0,128,128)
+tv_red (255,0,0)
+oxygen (255,0,255)
+density (100,100,100)
+sulfur (255,255,0)
+limegreen (50,205,50)
+gold (255,215,0)
+tv_orange (255,85,0)
+neodymium (136,45,23)
+slate (112,128,144)

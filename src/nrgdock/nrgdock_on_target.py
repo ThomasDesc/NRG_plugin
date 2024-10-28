@@ -21,6 +21,7 @@ class NRGDockRunner:
         self.ligand_set_folder_path = ligand_set_folder_path
 
     def initialise_progress_bar(self):
+        self.form.nrgdock_progress.show()
         self.form.nrgdock_progress.setEnabled(True)
         self.form.nrgdock_progress_label.setText('Screening progress: 0%')
         self.form.nrgdock_progress_bar.setValue(0)
