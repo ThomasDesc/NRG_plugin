@@ -6,9 +6,18 @@ import subprocess
 
 
 class GetCleftRunner:
-    def __init__(self, form):
+    def __init__(self, form, binary_folder_path, binary_suffix, install_dir, color_list):
         super().__init__()
         self.form = form
+        self.binary_folder_path = binary_folder_path
+        self.binary_suffix = binary_suffix
+        self.install_dir = install_dir
+        self.color_list = color_list
+        self.temp_path = self.form.temp_line_edit.text()
+        self.pymol_object = self.form.cleft_select_object.currentText()
+        if self.pymol_object == '':
+            raise ValueError('No object selected')
+        self.parameter_dictionary = self.get_parameters()
 
     def get_parameters(self):
         min_radius = self.form.input_min_radii.text()
@@ -25,15 +34,9 @@ class GetCleftRunner:
         }
         return parameter_dictionary
 
-    def run_task(self, binary_folder_path, binary_suffix, install_dir):
-        temp_path = self.form.temp_line_edit.text()
-        pymol_object = self.form.cleft_select_object.currentText()
-        if pymol_object == '':
-            general_functions.output_message(self.form.output_box, 'No object selected', 'warning')
-            return
-        parameter_dictionary = self.get_parameters()
-
-        self.worker = GetCleftWorker(binary_folder_path, binary_suffix, temp_path, install_dir, pymol_object, parameter_dictionary)
+    def run_task(self):
+        self.worker = GetCleftWorker(self.binary_folder_path, self.binary_suffix, self.temp_path, self.install_dir,
+                                     self.pymol_object, self.parameter_dictionary, self.color_list)
         self.worker.message_signal.connect(self.handle_message_signal)
         self.worker.start()
 
@@ -44,7 +47,7 @@ class GetCleftRunner:
 class GetCleftWorker(QThread):
     message_signal = pyqtSignal(str, str)
 
-    def __init__(self, binary_folder_path, binary_suffix, temp_path, install_dir, pymol_object, parameter_dictionary):
+    def __init__(self, binary_folder_path, binary_suffix, temp_path, install_dir, pymol_object, parameter_dictionary, color_list):
         super().__init__()
         self.binary_folder_path = binary_folder_path
         self.binary_suffix = binary_suffix
@@ -52,6 +55,7 @@ class GetCleftWorker(QThread):
         self.install_dir = install_dir
         self.pymol_object = pymol_object
         self.parameter_dictionary = parameter_dictionary
+        self.color_list = color_list
 
     def get_arg_str(self, getcleft_path, receptor_pdb_path, cleft_save_path, parameter_dictionary):
         min_radius = parameter_dictionary['min_radius']
@@ -79,7 +83,6 @@ class GetCleftWorker(QThread):
         sph_file_list = sorted(sph_file_list, key=lambda d: d['name'])
         if len(sph_file_list) == 0:
             self.message_signal.emit('No clefts were found', 'warning')
-        number_color_list = general_functions.create_number_list(len(sph_file_list), len(color_list))
         for cleft_counter, binding_site in enumerate(sph_file_list):
             try:
                 cmd.load(binding_site['path'], binding_site['name'], state=1)
@@ -88,33 +91,26 @@ class GetCleftWorker(QThread):
                 if cleft_counter >= len(color_list):
                     cmd.color('grey50', binding_site['name'])
                 else:
-                    cmd.color(color_list[number_color_list[cleft_counter]], binding_site['name'])
+                    cmd.color(color_list[cleft_counter]['name'], binding_site['name'])
                 cmd.show('surface', binding_site['name'])
-            except:
+            except Exception as e:
                 self.message_signal.emit(f"ERROR: Failed to load cleft object  {binding_site['name']}", 'warning')
                 continue
         cmd.zoom(pymol_object)
         cmd.refresh()
         cmd.set("auto_zoom", auto_zoom)
 
-    def load_color_list(self, color_list_path):
-        with open(color_list_path, 'r') as file:
-            color_list = [line.strip() for line in file]
-        return color_list
-
-
     def run(self):
         getcleft_binary_path = os.path.join(self.binary_folder_path, f'GetCleft{self.binary_suffix}')
         getcleft_output_path = os.path.join(self.temp_path, 'GetCleft')
         cleft_save_path = os.path.join(getcleft_output_path, 'Clefts', self.pymol_object)
-        color_list_path = os.path.join(self.install_dir, 'deps', 'getcleft', 'color_list.txt')
-        color_list = self.load_color_list(color_list_path)
         os.makedirs(getcleft_output_path, exist_ok=True)
         os.makedirs(cleft_save_path, exist_ok=True)
         object_save_path = os.path.join(getcleft_output_path, 'tmp.pdb')
         cmd.save(object_save_path, self.pymol_object)
         getcleft_command = self.get_arg_str(getcleft_binary_path, object_save_path, cleft_save_path, self.parameter_dictionary)
-        self.message_signal.emit('Running GetCleft...', 'valid')
+        self.message_signal.emit('=========== GetCleft ===========', 'valid')
+        self.message_signal.emit('Starting to generate clefts', 'valid')
         subprocess.run(getcleft_command, check=True)
-        self.load_show_cleft(cleft_save_path, color_list, self.pymol_object)
-        self.message_signal.emit('Done GetClef' , 'valid')
+        self.load_show_cleft(cleft_save_path, self.color_list, self.pymol_object)
+        self.message_signal.emit('=========== END GetCleft ===========' , 'valid')

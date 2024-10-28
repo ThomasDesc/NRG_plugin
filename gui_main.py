@@ -40,12 +40,13 @@ def test_binary(binary_folder_path, operating_system):
 
 
 class Controller:
-    def __init__(self, form, binary_folder_path, binary_suffix, operating_system, ligand_set_folder_path):
+    def __init__(self, form, binary_folder_path, binary_suffix, operating_system, ligand_set_folder_path, color_list):
         self.form = form
         self.binary_folder_path = binary_folder_path
         self.binary_suffix = binary_suffix
         self.operating_system = operating_system
         self.ligand_set_folder_path = ligand_set_folder_path
+        self.color_list = color_list
         self.setupConnections()
 
     def setupConnections(self):
@@ -162,15 +163,19 @@ class Controller:
             lambda: run_isomif.mif_plot(self.form, self.form.output_box, self.binary_folder_path, self.binary_suffix, self.operating_system,
                                         install_dir))
     def run_getcleft(self):
-        self.getcleftrunner = getcleft.GetCleftRunner(self.form)
-        self.getcleftrunner.run_task(self.binary_folder_path, self.binary_suffix, install_dir)
+        try:
+            self.getcleftrunner = getcleft.GetCleftRunner(self.form, self.binary_folder_path, self.binary_suffix, install_dir, self.color_list)
+        except ValueError as e:
+            general_functions.output_message(self.form.output_box, e, 'warning')
+        else:
+            self.getcleftrunner.run_task()
 
     def run_nrgdock(self):
         self.nrgdockrunner = nrgdock_on_target.NRGDockRunner(self.form, install_dir, self.ligand_set_folder_path)
         self.nrgdockrunner.run_nrgdock()
 
     def run_flexaid(self):
-        self.flexaid_manager = FlexAIDManager(self.form, self.binary_folder_path, self.binary_suffix, install_dir)
+        self.flexaid_manager = FlexAIDManager(self.form, self.binary_folder_path, self.binary_suffix, install_dir, self.color_list)
         self.flexaid_manager.start_run()
 
 
@@ -180,7 +185,6 @@ class NRGSuitePlugin(QtWidgets.QWidget):
         self.form = None
         self.binary_suffix = None
         self.operating_system = None
-        # QtWidgets.QApplication.setStyle("Fusion")
         self.get_os()
         self.binary_folder_path = os.path.join(install_dir, 'bin', self.operating_system)
         print('binary path: ', self.binary_folder_path)
@@ -189,17 +193,16 @@ class NRGSuitePlugin(QtWidgets.QWidget):
         self.get_folders()
         self.manage_dirs()
         self.check_modeller()
-
         self.form.stackedWidget.setCurrentIndex(0)
         self.form.flexaid_tab.setTabEnabled(2, False)
         self.form.NRGDock_tabs.setTabEnabled(2, False)
-
         general_functions.refresh_dropdown(self.form.cleft_select_object, self.form.output_box, no_warning=True)
         general_functions.refresh_folder(self.ligand_set_folder_path, self.form.nrgdock_select_ligand)
         self.form.nrgdock_cpu_usage_target.setCurrentText("75%")
-        self.controller = Controller(self.form, self.binary_folder_path, self.binary_suffix, self.operating_system, self.ligand_set_folder_path)
+        self.color_list = general_functions.load_color_list(os.path.join(install_dir, 'deps', 'getcleft', 'color_list_new.txt'))
         self.form.nrgdock_progress_label.setText('')
-        # self.form.nrgdock_loading_gif.setText('')
+        self.form.nrgdock_loading_gif.setText('')
+        self.controller = Controller(self.form, self.binary_folder_path, self.binary_suffix, self.operating_system, self.ligand_set_folder_path, self.color_list)
 
     def load_ui(self):
         self.form = loadUi(os.path.join(install_dir, 'nrgdock_widget.ui'), self)
@@ -241,10 +244,10 @@ class NRGSuitePlugin(QtWidgets.QWidget):
     def check_modeller(self):
         if 'modeller' not in sys.modules:
             general_functions.output_message(self.form.output_box, 'Modeller install not detected. '
-                                                              'The modeller tab will be unavailable. '
-                                                              'Please install via conda.', 'warning')
+                                                                   'The modeller tab will be unavailable. '
+                                                                   'It will not possible to optimise states in the NRGTEN tab. '
+                                                                   '\nPlease install via conda.', 'warning')
             general_functions.output_message(self.form.output_box, '=====================', 'warning')
-            self.form.button_nrgten.setEnabled(False)
+            self.form.NRGten_optmizestates.setEnabled(False)
             self.form.button_modeller.setEnabled(False)
-            self.form.button_nrgten.setStyleSheet("background-color: black; color: white;")
             self.form.button_modeller.setStyleSheet("background-color: black; color: white;")

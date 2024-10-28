@@ -182,12 +182,12 @@ class NRGDockManager(QThread):
         cmd.hide('everything', self.binding_site_name)
         cmd.show('mesh', self.binding_site_name)
 
-        self.message_signal.emit(f"=========== NRGDock ===========")
-        self.message_signal.emit(f"NRGDock: Processing Target")
+        self.message_signal.emit("=========== NRGDock ===========")
+        self.message_signal.emit(f"Processing Target")
         subprocess.run([sys.executable, os.path.join(self.install_dir, 'src', 'nrgdock', 'process_target.py'),
                         '-p', self.nrgdock_output_path, '-t', self.binding_site_name, '-o', '-d',
                         os.path.join(self.install_dir, 'deps', 'nrgdock')], check=True)
-        self.message_signal.emit(f"NRGDock: Screening has started")
+        self.message_signal.emit(f"Screening has started")
 
         completed_tasks = 0
         total_tasks = int(((total_number_ligands - self.starting_ligand) / self.step)) + 1
@@ -214,9 +214,9 @@ class NRGDockManager(QThread):
                     self.screen_progress_signal.emit(progress_percentage)
                 except Exception as e:
                     print(f"Error occurred: {e}")
-        self.message_signal.emit('NRGDock: Screening has finished')
+        self.message_signal.emit('Screening has finished')
         top_n_name_list, csv_output_path = self.merge_csv(docking_result_folder)
         self.manage_poses(top_n_name_list, os.path.join(self.nrgdock_output_path, 'ligand_poses',  self.binding_site_name), self.binding_site_name)
         self.finished_signal.emit()
-        self.message_signal.emit(f"=========== END NRGDock ===========")
+        self.message_signal.emit("=========== END NRGDock ===========")
         self.update_table_signal.emit(csv_output_path)

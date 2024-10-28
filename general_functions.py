@@ -228,28 +228,17 @@ def get_residue_info(selection):
     residue_info = [[resname, resn, chain] for resname, resn, chain in unique_residues]
     return residue_info
 
-
-def create_number_list(length_TotColor, length_TotalColorList):
-    if length_TotColor == 1:
-        return [0]
-    else:
-        number_list = []
-        modulo = (length_TotalColorList - 1) % (length_TotColor - 1)
-        partition = (length_TotalColorList - modulo - 1) / (length_TotColor - 1)
-        step_start = 0
-        step_end = length_TotalColorList - 1
-        for i in range(0, length_TotColor):
-            if ((i % 2) == 0):
-                number_list.append(step_start)
-                step_start = step_start + partition
-            else:
-                number_list.append(step_end)
-                step_end = step_end - partition
-        number_list.sort()
-        return [int(i) for i in number_list]
-
-
 def surfaces_enable_buttons(form):
     form.flexaid_retrieve_nrgdock_ligands.setEnabled(True)
     form.surfaces_retreive_flexaid_result.setEnabled(True)
 
+def load_color_list(color_list_path):
+    with open(color_list_path) as infile:
+        lines = infile.readlines()
+    list_of_dicts = []
+    for line in lines:
+        line = line.strip()
+        name, rgb = line.split(' ')
+        rgb_tuple = tuple(map(int, rgb.strip('()').split(',')))
+        list_of_dicts.append({'name': name, 'rgb': rgb_tuple})
+    return list_of_dicts

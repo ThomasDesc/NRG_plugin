@@ -8,11 +8,6 @@ from pymol import cmd
 import datetime
 import time
 
-def load_color_list(color_list_path):
-    with open(color_list_path, 'r') as file:
-        color_list = [line.strip() for line in file]
-    return color_list
-
 def pause_simulation(form, specific_simulation_path):
     with open(os.path.join(specific_simulation_path, '.pause'), 'a'):
         pass
@@ -43,7 +38,7 @@ def pause_resume_simulation(form, specific_simulation_path):
 
 
 class FlexAIDManager:
-    def __init__(self, form, binary_folder_path, binary_suffix, install_dir):
+    def __init__(self, form, binary_folder_path, binary_suffix, install_dir, color_list):
         self.form = form
         self.flexaid_temp_path = os.path.join(self.form.temp_line_edit.text(), 'FlexAID')
         self.flexaid_simulation_folder = os.path.join(self.flexaid_temp_path, 'Simulation')
@@ -60,16 +55,16 @@ class FlexAIDManager:
         self.form.flexaid_progress.setValue(0)
         self.form.flexaid_progress.setMaximum(self.max_generations)
         self.form.generation_label.setText(f'Generation: 0/{self.max_generations}')
-
         self.flexaid_deps_path = os.path.join(install_dir, 'deps', 'flexaid')
-        self.hex_color_list = load_color_list(os.path.join(self.flexaid_deps_path, 'hex_colors.txt'))
+        self.color_list = color_list
+        self.form.flexaid_result_table.setRowCount(0) # Resets the table each run
 
     def start_run(self):
         self.start_file_updater()
         self.start_flexaid_thread()
 
     def start_file_updater(self):
-        self.file_updater_thread = FileUpdaterThread(self.update_file_path, self.hex_color_list)
+        self.file_updater_thread = FileUpdaterThread(self.update_file_path)
         self.file_updater_thread.update_signal.connect(self.perform_updates)
         self.file_updater_thread.start()
 
@@ -90,7 +85,7 @@ class FlexAIDManager:
         cmd.save(binding_site_path, self.binding_site_name)
         self.toggle_buttons(True)
         general_functions.output_message(self.form.output_box, f"=========== FlexAID ===========", 'valid')
-        general_functions.output_message(self.form.output_box, 'Running FlexAID...', 'valid')
+        general_functions.output_message(self.form.output_box, 'Docking...', 'valid')
         self.form.flexaid_tab.setCurrentIndex(2)
         self.form.flexaid_tab.setTabEnabled(2, True)
         self.worker = FlexAIDWorkerThread(self.binary_folder_path, self.binary_suffix, self.install_dir,
@@ -100,27 +95,47 @@ class FlexAIDManager:
         self.worker.start()
 
     def get_simulation_settings(self):
-        setting_dictionary = {'number_chromosomes': self.form.input_num_chromosomes.text(),
-                              'number_generations': self.form.input_num_generations.text()}
+        setting_dictionary = {'number_chromosomes': int(self.form.input_num_chromosomes.text()),
+                              'number_generations': int(self.form.input_num_generations.text()),
+                              'max_results': int(self.form.flexaid_max_results.text())}
         return setting_dictionary
 
     def colour_specific_cell(self, data):
         table_widget = self.form.flexaid_result_table
         num_column = table_widget.columnCount()
-        row = int(data[1]) - 1
-        for column_counter, column in enumerate(range(num_column)):
-            if column_counter == 0:
+        row = int(data[0]) - 1
+        if row >= table_widget.rowCount():
+            table_widget.insertRow(row)
+        for column in range(num_column):
+            if column == 0:
                 item = QTableWidgetItem()
-                item.setBackground(QColor(data[column_counter]))
+                r, g, b = self.color_list[row]["rgb"]
+                item.setBackground(QColor(r, g, b))
             else:
-                item = QTableWidgetItem(str(data[column_counter]))
+                item = QTableWidgetItem(str(data[column-1]))
             table_widget.setItem(row, column, item)
+
+    def final_table_update(self):
+        try:
+            with open(os.path.join(os.path.join(self.run_specific_simulate_folder_path, 'result.cad'))) as f:
+                lines = f.readlines()
+        except FileNotFoundError:
+            general_functions.output_message(self.form.output_box, f"No result file: {os.path.join(self.run_specific_simulate_folder_path, 'result.cad')}", 'error')
+        result_counter = 1
+        for line in lines:
+            if line.startswith('Cluster'):
+                line = line.split(':')[-1].strip().split(' ')
+                cf = float(line[1].split('=')[-1])
+                data = (result_counter, cf, 'N/A', 'N/A')
+                self.colour_specific_cell(data)
+                result_counter += 1
 
     def flexaid_end_processes(self):
         general_functions.output_message(self.form.output_box, f"=========== FlexAID ===========", 'valid')
         self.worker.quit()
         self.file_updater_thread.quit()
         self.toggle_buttons(False)
+        self.final_table_update()
         self.load_show_flexaid_result()
         self.form.flexaid_progress.setValue(self.max_generations)
         self.form.generation_label.setText(f'Generation: {self.max_generations}/{self.max_generations}')
@@ -136,46 +151,50 @@ class FlexAIDManager:
         result_files = next(os.walk(self.run_specific_simulate_folder_path), (None, None, []))[2]
         result_files = sorted(result_files)
         cmd.disable('everything')
+        true_result = 0
+        cmd.delete(f'FlexAID_{self.binding_site_name}')
         for file in result_files:
             if file.startswith('RESULT') and not file.endswith('INI.pdb') and file.endswith('.pdb'):
                 file_path = os.path.join(self.run_specific_simulate_folder_path, file)
-                cmd.load(file_path)
+                file_name = os.path.splitext(os.path.basename(file_path))[0]
+                cmd.load(file_path, file_name)
+                color_name = self.color_list[true_result]['name']
+                cmd.color(color_name, f"{file_name} and resn LIG")
                 cmd.group(f'FlexAID_{self.binding_site_name}', os.path.basename(file_path[:-4]))
+                true_result += 1
 
     def show_rmsd(self):
         table = self.form.flexaid_result_table
         last_column = table.columnCount() - 1
         rmsd_list = []
-        for i in range(5):
+        for i in range(self.simulation_settings['max_results']):
             with open(os.path.join(self.run_specific_simulate_folder_path, f'RESULT_{i}.pdb'), 'r') as t1:
                 lines = t1.readlines()
                 for line in lines:
                     if 'RMSD to' in line:
                         rmsd_list.append(line.split()[1])
                         break
-        for row in range(5):
+        for row in range(self.simulation_settings['max_results']):
             table.setItem(row, last_column, QTableWidgetItem(rmsd_list[row]))
 
 
 class FileUpdaterThread(QThread):
     update_signal = pyqtSignal(int, tuple)
 
-    def __init__(self, update_file_path, hex_colour_list):
+    def __init__(self, update_file_path):
         super(FileUpdaterThread, self).__init__()
         self.update_file_path = update_file_path
-        self.hex_colour_list = hex_colour_list
         self.current_generation = 0
         self.running = True
 
     def run(self):
         while self.running:
             if os.path.exists(self.update_file_path):
-                self.read_update(self.hex_colour_list)
+                self.read_update()
                 self.current_generation += 1
             time.sleep(0.01)
 
-    def read_update(self, hex_colour_list, num_results=5):
-        number_color_list = general_functions.create_number_list(num_results, len(hex_colour_list))
+    def read_update(self):
         with open(self.update_file_path, "r") as f:
             for line_counter, line in enumerate(f):
                 if line_counter > 1 and self.current_generation % 10 == 0:
@@ -184,7 +203,7 @@ class FileUpdaterThread(QThread):
                     cf = line[-5]
                     fitness = line[-1]
                     rmsd = 'N/A'
-                    data = (hex_colour_list[number_color_list[top_number - 1]], top_number, cf, fitness, rmsd)
+                    data = (top_number, cf, fitness, rmsd)
                     self.update_signal.emit(self.current_generation, data)
         for _ in range(5):
             try:
@@ -206,13 +225,13 @@ class FlexAIDWorkerThread(QThread):
         self.binary_folder_path = binary_folder_path
         self.binary_suffix = binary_suffix
         self.install_dir = install_dir
-        self.max_results = 10
         self.flexaid_result_path = flexaid_result_path
         self.flexaid_temp_path = flexaid_temp_path
         self.target_save_path = target_save_path
         self.ligand_save_path = ligand_save_path
         self.binding_site_path = binding_site_path
         self.setting_dictionary = setting_dictionary
+        self.max_results = setting_dictionary['max_results']
 
     @staticmethod
     def process_ligand(process_ligand_path, input_path, istarget=False):
