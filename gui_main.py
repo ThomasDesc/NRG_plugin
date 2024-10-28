@@ -14,12 +14,12 @@ from src.isomif import run_isomif
 import platform
 from pymol.Qt import QtWidgets
 from pymol.Qt.utils import loadUi
+from src.nrgten import run_NRGTEN
 try:
     import modeller
 except ImportError:
     print('Modeller not installed.')
 else:
-    from src.nrgten import run_NRGTEN
     from src.modeller import run_modeller
 # TODO: when showing surfaces result hide everything else
 # TODO: clickable results in nrgdock table
@@ -123,7 +123,7 @@ class Controller:
             lambda: run_NRGTEN.dynamical_signature(self.form.NRGten_select_target_object_1.currentText(),
                                                    self.form.NRGten_select_ligand_object_1.currentText(),
                                                    self.form.NRGten_select_target_object_2.currentText(),
-                                                   self.form.NRGten_dynasig_lineEdit.text(), install_dir,
+                                                   self.form.NRGten_dynasig_beta.text(), install_dir,
                                                    self.form.temp_line_edit.text()))
         self.form.NRGten_conf_ensem_run.clicked.connect(
             lambda: run_NRGTEN.conformational_ensemble(self.form.NRGten_select_target_object_1.currentText(),

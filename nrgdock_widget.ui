@@ -2207,7 +2207,7 @@ color: white;
               </spacer>
              </item>
              <item>
-              <widget class="QLineEdit" name="NRGten_dynasig_beta_value">
+              <widget class="QLineEdit" name="NRGten_dynasig_beta">
                <property name="text">
                 <string>1</string>
                </property>
