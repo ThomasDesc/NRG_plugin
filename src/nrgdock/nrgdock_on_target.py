@@ -95,6 +95,11 @@ class NRGDockRunner:
         self.movie.stop()
         self.form.nrgdock_loading_gif.hide()
 
+    def quit_workers(self):
+        self.nrgdock_thread.stop()
+        self.nrgdock_thread.quit()
+        self.nrgdock_thread.wait()
+
 
 class NRGDockManager(QThread):
     message_signal = pyqtSignal(str)
@@ -115,6 +120,10 @@ class NRGDockManager(QThread):
         self.target_name = target_name
         self.binding_site_name = binding_site_name
         self.number_of_cores = number_of_cores
+        self._is_running = True
+
+    def stop(self):
+        self._is_running = False
 
     @staticmethod
     def run_subprocess(current_ligand_number, last_ligand, install_dir, nrgdock_target_folder, ligand_path, config_path,
@@ -188,36 +197,48 @@ class NRGDockManager(QThread):
         subprocess.run([sys.executable, os.path.join(self.install_dir, 'src', 'nrgdock', 'process_target.py'),
                         '-p', self.nrgdock_output_path, '-t', self.binding_site_name, '-o', '-d',
                         os.path.join(self.install_dir, 'deps', 'nrgdock')], check=True)
-        self.message_signal.emit(f"Screening has started")
 
-        completed_tasks = 0
-        total_tasks = int(((total_number_ligands - self.starting_ligand) / self.step)) + 1
-        with ThreadPoolExecutor(self.number_of_cores) as executor:
-            futures = []
-            for current_ligand_number in range(self.starting_ligand, total_number_ligands, self.step):
-                last_ligand = min(current_ligand_number + self.step, total_number_ligands)
-                futures.append(executor.submit(
-                    self.run_subprocess,
-                    current_ligand_number,
-                    last_ligand,
-                    self.install_dir,
-                    nrgdock_target_folder,
-                    ligand_path,
-                    config_path,
-                    self.nrgdock_output_path,
-                    total_number_ligands
-                ))
-            for future in as_completed(futures):
-                try:
-                    future.result()
-                    completed_tasks += 1
-                    progress_percentage = int((completed_tasks / total_tasks) * 100)
-                    self.screen_progress_signal.emit(progress_percentage)
-                except Exception as e:
-                    print(f"Error occurred: {e}")
-        self.message_signal.emit('Screening has finished')
-        top_n_name_list, csv_output_path = self.merge_csv(docking_result_folder)
-        self.manage_poses(top_n_name_list, os.path.join(self.nrgdock_output_path, 'ligand_poses',  self.binding_site_name), self.binding_site_name)
-        self.finished_signal.emit()
-        self.message_signal.emit("=========== END NRGDock ===========")
-        self.update_table_signal.emit(csv_output_path)
+        #In the process of working on stopping nrgdock properly and on command
+
+
+
+
+
+        if self._is_running:
+            self.message_signal.emit(f"Screening has started")
+
+            completed_tasks = 0
+            total_tasks = int(((total_number_ligands - self.starting_ligand) / self.step)) + 1
+            with ThreadPoolExecutor(self.number_of_cores) as executor:
+                futures = []
+                for current_ligand_number in range(self.starting_ligand, total_number_ligands, self.step):
+                    last_ligand = min(current_ligand_number + self.step, total_number_ligands)
+                    futures.append(executor.submit(
+                        self.run_subprocess,
+                        current_ligand_number,
+                        last_ligand,
+                        self.install_dir,
+                        nrgdock_target_folder,
+                        ligand_path,
+                        config_path,
+                        self.nrgdock_output_path,
+                        total_number_ligands
+                    ))
+                for future in as_completed(futures):
+                    print(self._is_running)
+                    if not self._is_running:
+                        break
+                    try:
+                        future.result()
+                        completed_tasks += 1
+                        progress_percentage = int((completed_tasks / total_tasks) * 100)
+                        self.screen_progress_signal.emit(progress_percentage)
+                    except Exception as e:
+                        print(f"Error occurred: {e}")
+            if self._is_running:
+                self.message_signal.emit('Screening has finished')
+                top_n_name_list, csv_output_path = self.merge_csv(docking_result_folder)
+                self.manage_poses(top_n_name_list, os.path.join(self.nrgdock_output_path, 'ligand_poses',  self.binding_site_name), self.binding_site_name)
+                self.finished_signal.emit()
+                self.message_signal.emit("=========== END NRGDock ===========")
+                self.update_table_signal.emit(csv_output_path)
