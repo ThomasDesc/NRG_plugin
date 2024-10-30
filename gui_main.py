@@ -12,8 +12,8 @@ import general_functions
 from src.surfaces import run_Surfaces
 from src.isomif import run_isomif
 import platform
-from pymol.Qt import QtWidgets
-from pymol.Qt.utils import loadUi
+from PyQt5.QtWidgets import QWidget
+from PyQt5.uic import loadUi
 from src.nrgten import run_NRGTEN
 try:
     import modeller
@@ -172,18 +172,18 @@ class Controller:
             self.getcleftrunner.run_task()
 
     def run_nrgdock(self):
-        self.nrgdockrunner = nrgdock_on_target.NRGDockRunner(self.form, install_dir, self.ligand_set_folder_path)
+        self.nrgdockrunner = nrgdock_on_target.NRGDockManager(self.form, install_dir, self.ligand_set_folder_path)
         self.nrgdockrunner.run_nrgdock()
 
     def abort_nrgdock(self):
-        self.nrgdockrunner.quit_workers()
+        self.nrgdockrunner.handle_thread_finished()
 
     def run_flexaid(self):
         self.flexaid_manager = FlexAIDManager(self.form, self.binary_folder_path, self.binary_suffix, install_dir, self.color_list)
         self.flexaid_manager.start_run()
 
 
-class NRGSuitePlugin(QtWidgets.QWidget):
+class NRGSuitePlugin(QWidget):
     def __init__(self):
         super().__init__()
         self.form = None

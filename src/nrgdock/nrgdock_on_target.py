@@ -1,6 +1,5 @@
 from PyQt5.QtCore import pyqtSignal, QThread, QObject
 import os
-from pymol import cmd
 import subprocess
 import sys
 import pandas as pd
@@ -8,12 +7,13 @@ import glob
 import numpy as np
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from PyQt5.QtGui import QStandardItemModel, QStandardItem, QMovie
+from pymol import cmd
 import multiprocessing
 import general_functions
 # TODO: run on more than 1 bd site
 # TODO: load own ligands (generate library from smiles)
 
-class NRGDockRunner:
+class NRGDockManager:
     def __init__(self, form, install_dir, ligand_set_folder_path):
         super().__init__()
         self.form = form
@@ -56,7 +56,7 @@ class NRGDockRunner:
         self.initialise_progress_bar()
         self.start_loading_gif()
         general_functions.disable_run_mutate_buttons(self.form, disable=True)
-        self.nrgdock_thread = NRGDockManager(self.ligand_set_folder_path, self.install_dir, nrgdock_output_path,
+        self.nrgdock_thread = NRGDockThread(self.ligand_set_folder_path, self.install_dir, nrgdock_output_path,
                                           n_poses_to_save, nrgdock_start_ligand, ligand_set_name,
                                           target_name, binding_site_name, number_of_cores)
         self.nrgdock_thread.message_signal.connect(self.handle_message_signal)
@@ -91,17 +91,19 @@ class NRGDockRunner:
         self.form.NRGDock_tabs.setCurrentIndex(2)
 
     def handle_thread_finished(self):
+        self.quit_worker()
         general_functions.disable_run_mutate_buttons(self.form, enable=True)
         self.movie.stop()
         self.form.nrgdock_loading_gif.hide()
 
-    def quit_workers(self):
+    def quit_worker(self):
         self.nrgdock_thread.stop()
         self.nrgdock_thread.quit()
-        self.nrgdock_thread.wait()
+        # self.nrgdock_thread.wait()
+        self.nrgdock_thread = None
 
 
-class NRGDockManager(QThread):
+class NRGDockThread(QThread):
     message_signal = pyqtSignal(str)
     screen_progress_signal = pyqtSignal(int)
     update_table_signal = pyqtSignal(str)
@@ -113,36 +115,53 @@ class NRGDockManager(QThread):
         self.ligand_set_folder_path = ligand_set_folder_path
         self.install_dir = install_dir
         self.nrgdock_output_path = nrgdock_output_path
-        self.step = 100
+        self.step = 50
         self.nrgdock_top_n_poses = nrgdock_top_n_poses
         self.starting_ligand = nrgdock_start_ligand
         self.ligand_set_name = ligand_set_name
         self.target_name = target_name
         self.binding_site_name = binding_site_name
         self.number_of_cores = number_of_cores
-        self._is_running = True
+        self.is_running = True
+        self.folder_prep()
+        print('Is running: ', self.is_running)
+
+    def folder_prep(self):
+        self.deps_path = os.path.join(self.install_dir, 'deps', 'nrgdock')
+        self.config_path = os.path.join(self.deps_path, 'config.txt')
+        self.nrgdock_target_folder = os.path.join(self.nrgdock_output_path, self.binding_site_name)
+        self.ligand_poses_folder = os.path.join(self.nrgdock_output_path, 'ligand_poses', self.binding_site_name)
+        self.docking_result_folder = os.path.join(self.nrgdock_output_path, 'results', self.binding_site_name)
+        self.binding_site_folder_path = os.path.join(self.nrgdock_target_folder, 'get_cleft')
+        os.makedirs(self.nrgdock_target_folder, exist_ok=True)
+        os.makedirs(self.ligand_poses_folder, exist_ok=True)
+        os.makedirs(self.docking_result_folder, exist_ok=True)
+        os.makedirs(self.binding_site_folder_path, exist_ok=True)
+        self.ligand_path = os.path.join(self.ligand_set_folder_path, self.ligand_set_name, 'preprocessed_ligands_1_conf')
+        self.total_number_ligands = len(np.load(os.path.join(self.ligand_path, 'ligand_atom_type.npy')))
+        self.target_file_path = os.path.join(self.nrgdock_target_folder, 'receptor.mol2')
+        self.binding_site_file_path = os.path.join(self.binding_site_folder_path, 'receptor_sph_1.pdb')
+        cmd.save(self.target_file_path, self.target_name)
+        cmd.save(self.binding_site_file_path, self.binding_site_name)
+        self.processes = []
+        self.executor = None
+        cmd.hide('everything', self.binding_site_name)
+        cmd.show('mesh', self.binding_site_name)
 
     def stop(self):
-        self._is_running = False
+        self.is_running = False
 
-    @staticmethod
-    def run_subprocess(current_ligand_number, last_ligand, install_dir, nrgdock_target_folder, ligand_path, config_path,
-                       nrgdock_output_path, ligand_number):
-        if last_ligand > ligand_number:
-            last_ligand = ligand_number
-        # Run the subprocess
-        subprocess.run([sys.executable,
-                        os.path.join(install_dir, 'src', 'nrgdock', 'main_processed_target.py'),
-                        '-p', nrgdock_target_folder,
-                        '-t', 'ligand',
-                        '-s', str(current_ligand_number),
-                        '-e', str(last_ligand),
-                        '-l', ligand_path,
-                        '-si', '2',
-                        '-c', config_path,
-                        '-te', nrgdock_output_path,
-                        '-mp'],
-                       check=True)
+        if self.executor:
+            self.executor.shutdown(wait=False)
+
+        if self.process_target_process and self.process_target_process.poll() is None:
+            self.process_target_process.terminate()
+
+        for process in self.processes:
+            if process.poll() is None:
+                process.terminate()
+                process.wait()
+
 
     @staticmethod
     def merge_csv(folder):
@@ -172,73 +191,67 @@ class NRGDockManager(QThread):
                 cmd.group(f'NRGDock_{binding_site_name}', name)
 
     def run(self):
-        deps_path = os.path.join(self.install_dir, 'deps', 'nrgdock')
-        config_path = os.path.join(deps_path, 'config.txt')
-        nrgdock_target_folder = os.path.join(self.nrgdock_output_path, self.binding_site_name)
-        ligand_poses_folder = os.path.join(self.nrgdock_output_path, 'ligand_poses', self.binding_site_name)
-        docking_result_folder = os.path.join(self.nrgdock_output_path, 'results', self.binding_site_name)
-        os.makedirs(nrgdock_target_folder, exist_ok=True)
-        os.makedirs(ligand_poses_folder, exist_ok=True)
-        os.makedirs(docking_result_folder, exist_ok=True)
-
-        ligand_path = os.path.join(self.ligand_set_folder_path, self.ligand_set_name, 'preprocessed_ligands_1_conf')
-        total_number_ligands = len(np.load(os.path.join(ligand_path, 'ligand_atom_type.npy')))
-        target_file_path = os.path.join(nrgdock_target_folder, 'receptor.mol2')
-        cmd.save(target_file_path, self.target_name)
-        binding_site_folder_path = os.path.join(nrgdock_target_folder, 'get_cleft')
-        os.makedirs(binding_site_folder_path, exist_ok=True)
-        binding_site_file_path = os.path.join(binding_site_folder_path, 'receptor_sph_1.pdb')
-        cmd.save(binding_site_file_path, self.binding_site_name)
-        cmd.hide('everything', self.binding_site_name)
-        cmd.show('mesh', self.binding_site_name)
-
         self.message_signal.emit("=========== NRGDock ===========")
         self.message_signal.emit(f"Processing Target")
-        subprocess.run([sys.executable, os.path.join(self.install_dir, 'src', 'nrgdock', 'process_target.py'),
-                        '-p', self.nrgdock_output_path, '-t', self.binding_site_name, '-o', '-d',
-                        os.path.join(self.install_dir, 'deps', 'nrgdock')], check=True)
+        self.process_target_process = subprocess.Popen([sys.executable,
+                                                        os.path.join(self.install_dir, 'src', 'nrgdock', 'process_target.py'),
+                                                        '-p', self.nrgdock_output_path,
+                                                        '-t', self.binding_site_name,
+                                                        '-o',
+                                                        '-d', os.path.join(self.install_dir, 'deps', 'nrgdock')])
+        while self.is_running and self.process_target_process.poll() is None:
+            self.msleep(100)
 
-        #In the process of working on stopping nrgdock properly and on command
-
-
-
-
-
-        if self._is_running:
+        if self.is_running:
             self.message_signal.emit(f"Screening has started")
-
             completed_tasks = 0
-            total_tasks = int(((total_number_ligands - self.starting_ligand) / self.step)) + 1
-            with ThreadPoolExecutor(self.number_of_cores) as executor:
-                futures = []
-                for current_ligand_number in range(self.starting_ligand, total_number_ligands, self.step):
-                    last_ligand = min(current_ligand_number + self.step, total_number_ligands)
-                    futures.append(executor.submit(
-                        self.run_subprocess,
-                        current_ligand_number,
-                        last_ligand,
-                        self.install_dir,
-                        nrgdock_target_folder,
-                        ligand_path,
-                        config_path,
-                        self.nrgdock_output_path,
-                        total_number_ligands
-                    ))
-                for future in as_completed(futures):
-                    print(self._is_running)
-                    if not self._is_running:
-                        break
-                    try:
-                        future.result()
-                        completed_tasks += 1
-                        progress_percentage = int((completed_tasks / total_tasks) * 100)
-                        self.screen_progress_signal.emit(progress_percentage)
-                    except Exception as e:
-                        print(f"Error occurred: {e}")
-            if self._is_running:
-                self.message_signal.emit('Screening has finished')
-                top_n_name_list, csv_output_path = self.merge_csv(docking_result_folder)
-                self.manage_poses(top_n_name_list, os.path.join(self.nrgdock_output_path, 'ligand_poses',  self.binding_site_name), self.binding_site_name)
-                self.finished_signal.emit()
-                self.message_signal.emit("=========== END NRGDock ===========")
-                self.update_table_signal.emit(csv_output_path)
+            total_tasks = int(((self.total_number_ligands - self.starting_ligand) / self.step)) + 1
+            self.commands = self.make_commands(self.nrgdock_target_folder, self.ligand_path, self.config_path, self.total_number_ligands)
+            num_processes = os.cpu_count()
+
+            self.executor = ThreadPoolExecutor(max_workers=num_processes)
+            futures = {self.executor.submit(self.run_command, command): command for command in self.commands}
+            for future in as_completed(futures):
+                if not self.is_running :
+                    break
+                try:
+                    future.result()
+                    completed_tasks += 1
+                    progress_percentage = int((completed_tasks / total_tasks) * 100)
+                    self.screen_progress_signal.emit(progress_percentage)
+                except Exception as e:
+                    print(f"Error occurred: {e}")
+
+        if self.is_running:
+            self.message_signal.emit('Screening has finished')
+            top_n_name_list, csv_output_path = self.merge_csv(self.docking_result_folder)
+            self.manage_poses(top_n_name_list, os.path.join(self.nrgdock_output_path, 'ligand_poses',  self.binding_site_name), self.binding_site_name)
+            self.finished_signal.emit()
+            self.message_signal.emit("=========== END NRGDock ===========")
+            self.update_table_signal.emit(csv_output_path)
+
+    def run_command(self, command):
+        process = subprocess.Popen(command)
+        self.processes.append(process)
+        process.wait()
+
+
+    def make_commands(self, nrgdock_target_folder, ligand_path, config_path, total_number_ligands):
+        command_list = []
+        for current_ligand_number in range(self.starting_ligand, total_number_ligands, self.step):
+            last_ligand = min(current_ligand_number + self.step, total_number_ligands)
+            temp_command = [sys.executable,
+             os.path.join(self.install_dir, 'src', 'nrgdock', 'main_processed_target.py'),
+             '-p', nrgdock_target_folder,
+             '-t', 'ligand',
+             '-s', str(current_ligand_number),
+             '-e', str(last_ligand),
+             '-l', ligand_path,
+             '-si', '2',
+             '-c', config_path,
+             '-te', self.nrgdock_output_path,
+             '-mp']
+            command_list.append(temp_command)
+        return command_list
+
+
