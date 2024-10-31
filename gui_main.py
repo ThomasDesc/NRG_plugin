@@ -177,6 +177,7 @@ class Controller:
 
     def abort_nrgdock(self):
         self.nrgdockrunner.handle_thread_finished()
+        self.nrgdockrunner = None
 
     def run_flexaid(self):
         self.flexaid_manager = FlexAIDManager(self.form, self.binary_folder_path, self.binary_suffix, install_dir, self.color_list)

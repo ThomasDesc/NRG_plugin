@@ -26,6 +26,7 @@ class NRGDockManager:
         self.form.nrgdock_progress_label.setText('Screening progress: 0%')
         self.form.nrgdock_progress_bar.setValue(0)
         self.form.nrgdock_progress_bar.setMaximum(100)
+        self.form.nrgdock_button_cancel.setEnabled(True)
 
     def start_loading_gif(self):
         self.label_size = self.form.nrgdock_loading_gif.size()
@@ -33,6 +34,7 @@ class NRGDockManager:
         self.form.nrgdock_loading_gif.setMovie(self.movie)
         self.movie.setScaledSize(self.label_size)
         self.movie.start()
+        self.form.nrgdock_loading_gif.show()
 
     def run_nrgdock(self):
         nrgdock_output_path = os.path.join(self.form.temp_line_edit.text(), 'NRGDock')
@@ -91,16 +93,15 @@ class NRGDockManager:
         self.form.NRGDock_tabs.setCurrentIndex(2)
 
     def handle_thread_finished(self):
-        self.quit_worker()
+        self.nrgdock_thread.stop()
+        self.nrgdock_thread.quit()
+        self.nrgdock_thread.wait()
+        self.nrgdock_thread = None
+        self.form.nrgdock_progress.hide()
         general_functions.disable_run_mutate_buttons(self.form, enable=True)
         self.movie.stop()
         self.form.nrgdock_loading_gif.hide()
-
-    def quit_worker(self):
-        self.nrgdock_thread.stop()
-        self.nrgdock_thread.quit()
-        # self.nrgdock_thread.wait()
-        self.nrgdock_thread = None
+        self.form.nrgdock_button_cancel.setDisabled(True)
 
 
 class NRGDockThread(QThread):
@@ -124,7 +125,6 @@ class NRGDockThread(QThread):
         self.number_of_cores = number_of_cores
         self.is_running = True
         self.folder_prep()
-        print('Is running: ', self.is_running)
 
     def folder_prep(self):
         self.deps_path = os.path.join(self.install_dir, 'deps', 'nrgdock')
@@ -207,9 +207,7 @@ class NRGDockThread(QThread):
             completed_tasks = 0
             total_tasks = int(((self.total_number_ligands - self.starting_ligand) / self.step)) + 1
             self.commands = self.make_commands(self.nrgdock_target_folder, self.ligand_path, self.config_path, self.total_number_ligands)
-            num_processes = os.cpu_count()
-
-            self.executor = ThreadPoolExecutor(max_workers=num_processes)
+            self.executor = ThreadPoolExecutor(max_workers=self.number_of_cores)
             futures = {self.executor.submit(self.run_command, command): command for command in self.commands}
             for future in as_completed(futures):
                 if not self.is_running :
