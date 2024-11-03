@@ -86,7 +86,7 @@ class Controller:
         self.form.nrgdock_button_start.clicked.connect(self.run_nrgdock)
         self.form.nrgdock_button_cancel.clicked.connect(self.abort_nrgdock)
         self.form.nrgdock_result_browse_button.clicked.connect(lambda: general_functions.folder_browser(self.form.nrgdock_result_path, os.path.join(self.form.temp_line_edit.text(), 'NRGDock'), "CSV file (*.csv)"))
-
+        self.form.nrgdock_result_table.clicked.connect(lambda index: nrgdock_on_target.show_ligand_from_table(self.form.nrgdock_result_table, index))
         # FlexAID:
         self.form.flexaid_target_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(self.form.flexaid_select_target, self.form.output_box, exclude='_sph'))
         self.form.flexaid_ligand_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(self.form.flexaid_select_ligand, self.form.output_box, exclude=['_sph', self.form.flexaid_select_target.currentText()]))

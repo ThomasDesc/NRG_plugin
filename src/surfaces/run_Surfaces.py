@@ -103,7 +103,7 @@ def compare_residues(pdb1, pdb2):
     return '_'.join(differences)
 
 
-def open_res(tableView,index,lheaders):
+def open_res(tableView, index, lheaders):
     if lheaders==3:
         if index.column()==0 or index.column()==1:
             cell_text = tableView.model().data(index)
