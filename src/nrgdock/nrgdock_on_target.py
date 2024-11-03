@@ -17,14 +17,10 @@ import general_functions
 # print objects in a group: cmd.get_object_list('(NRGDock_3cqw_sph_2)')
 def get_group_of_object(object_name):
     all_objects = cmd.get_names("all")  # Get all objects and groups in PyMOL
-    print('all objects:', all_objects)
     for pymol_object in all_objects:
-        print('type: ', cmd.get_type(pymol_object))
         if cmd.get_type(pymol_object) == "object:group":  # Check if it is a group
-            print('group:', pymol_object)
-            members = cmd.get_object_list(f'({pymol_object})')
-            print('members:', members)
-            if object_name in members:
+            group_members = cmd.get_object_list(f'({pymol_object})')
+            if object_name in group_members:
                 return pymol_object
     return None
 
