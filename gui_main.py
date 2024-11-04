@@ -11,6 +11,7 @@ from src.getcleft import spheres
 import general_functions
 from src.surfaces import run_Surfaces
 from src.isomif import run_isomif
+from src.nrgdock import nrgdock_smiles_management
 import platform
 from PyQt5.QtWidgets import QWidget
 from PyQt5.uic import loadUi
@@ -80,12 +81,16 @@ class Controller:
         # NRGDock:
         self.form.nrgdock_target_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(self.form.nrgdock_select_target, self.form.output_box, exclude='_sph'))
         self.form.nrgdock_binding_site_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(self.form.nrgdock_select_binding_site, self.form.output_box, filter_for='_sph'))
-        self.form.nrgdock_delete_ligand_set_refresh.clicked.connect(lambda: general_functions.refresh_folder(self.ligand_set_folder_path, self.form.nrgdock_delete_ligand_set_dropdown))
-        self.form.nrgdock_add_ligandset_button.clicked.connect(lambda: general_functions.folder_browser(self.form.nrgdock_add_ligand_file_path, self.ligand_set_folder_path, "Smiles Files (*.smi)"))
         self.form.nrgdock_ligand_set_refresh.clicked.connect(lambda: general_functions.refresh_folder(self.ligand_set_folder_path, self.form.nrgdock_select_ligand))
         self.form.nrgdock_button_start.clicked.connect(self.run_nrgdock)
         self.form.nrgdock_button_cancel.clicked.connect(self.abort_nrgdock)
         self.form.nrgdock_result_browse_button.clicked.connect(lambda: general_functions.folder_browser(self.form.nrgdock_result_path, os.path.join(self.form.temp_line_edit.text(), 'NRGDock'), "CSV file (*.csv)"))
+
+        # NRGDock ligand manager:
+        self.form.nrgdock_add_ligandset_button.clicked.connect(lambda: general_functions.folder_browser(self.form.nrgdock_add_ligand_file_path, self.ligand_set_folder_path, "Smiles Files (*.smi)"))
+        self.form.nrgdock_delete_ligand_set_refresh.clicked.connect(lambda: general_functions.refresh_folder(self.ligand_set_folder_path, self.form.nrgdock_delete_ligand_set_dropdown, ignore_defaults=True))
+        self.form.nrgdock_ligand_set_delete.clicked.connect(lambda: nrgdock_smiles_management.delete_ligand_set(self.form.nrgdock_delete_ligand_set_dropdown.currentText(), self.ligand_set_folder_path, self.form.output_box))
+
 
         # FlexAID:
         self.form.flexaid_target_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(self.form.flexaid_select_target, self.form.output_box, exclude='_sph'))

@@ -157,8 +157,15 @@ def refresh_dropdown(dropdown_to_refresh, output_box, filter_for='', no_warning=
 
 
 
-def refresh_folder(folder_path, dropdown_to_refresh):
+def refresh_folder(folder_path, dropdown_to_refresh, ignore_defaults=False):
     folders = next(os.walk(folder_path))[1]
+    if ignore_defaults:
+        filtered_folders = []
+        for folder in folders:
+            filenames = next(os.walk(os.path.join(folder_path, folder)), (None, None, []))[2]
+            if '.default' not in filenames:
+                filtered_folders.append(folder)
+        folders = filtered_folders
     folders = sorted([item.replace('_', ' ') for item in folders])
     dropdown_to_refresh.clear()
     dropdown_to_refresh.addItems(folders)

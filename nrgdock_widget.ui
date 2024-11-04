@@ -717,7 +717,7 @@ QFrame {
              <enum>QTabWidget::Rounded</enum>
             </property>
             <property name="currentIndex">
-             <number>1</number>
+             <number>0</number>
             </property>
             <property name="usesScrollButtons">
              <bool>false</bool>
@@ -859,7 +859,7 @@ QFrame {
               <item>
                <widget class="QGroupBox" name="groupBox_50">
                 <property name="enabled">
-                 <bool>false</bool>
+                 <bool>true</bool>
                 </property>
                 <property name="title">
                  <string>Ligand Set Manager</string>
@@ -867,6 +867,9 @@ QFrame {
                 <layout class="QVBoxLayout" name="verticalLayout_7">
                  <item>
                   <widget class="QTabWidget" name="tabWidget">
+                   <property name="enabled">
+                    <bool>true</bool>
+                   </property>
                    <property name="currentIndex">
                     <number>1</number>
                    </property>
@@ -894,6 +897,9 @@ QFrame {
                      </item>
                      <item row="1" column="1">
                       <widget class="QPushButton" name="nrgdock_button_ligandset_add">
+                       <property name="enabled">
+                        <bool>true</bool>
+                       </property>
                        <property name="text">
                         <string>Add</string>
                        </property>
@@ -906,20 +912,6 @@ QFrame {
                      <string>Delete</string>
                     </attribute>
                     <layout class="QGridLayout" name="gridLayout_6">
-                     <item row="0" column="3">
-                      <widget class="QPushButton" name="nrgdock_delete_ligand_set_refresh">
-                       <property name="text">
-                        <string>Refresh</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="1" column="2">
-                      <widget class="QPushButton" name="nrgdock_ligand_set_delete">
-                       <property name="text">
-                        <string>Delete</string>
-                       </property>
-                      </widget>
-                     </item>
                      <item row="0" column="0">
                       <widget class="QLabel" name="label_27">
                        <property name="text">
@@ -927,21 +919,29 @@ QFrame {
                        </property>
                       </widget>
                      </item>
-                     <item row="0" column="2">
-                      <widget class="QComboBox" name="nrgdock_delete_ligand_set_dropdown"/>
+                     <item row="1" column="1">
+                      <widget class="QPushButton" name="nrgdock_ligand_set_delete">
+                       <property name="text">
+                        <string>Delete</string>
+                       </property>
+                      </widget>
                      </item>
                      <item row="0" column="1">
-                      <spacer name="horizontalSpacer_4">
-                       <property name="orientation">
-                        <enum>Qt::Horizontal</enum>
+                      <widget class="QComboBox" name="nrgdock_delete_ligand_set_dropdown">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
                        </property>
-                       <property name="sizeHint" stdset="0">
-                        <size>
-                         <width>40</width>
-                         <height>20</height>
-                        </size>
+                      </widget>
+                     </item>
+                     <item row="0" column="2">
+                      <widget class="QPushButton" name="nrgdock_delete_ligand_set_refresh">
+                       <property name="text">
+                        <string>Refresh</string>
                        </property>
-                      </spacer>
+                      </widget>
                      </item>
                     </layout>
                    </widget>
