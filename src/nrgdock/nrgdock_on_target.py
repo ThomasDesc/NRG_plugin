@@ -13,6 +13,34 @@ import general_functions
 # TODO: run on more than 1 bd site
 # TODO: load own ligands (generate library from smiles)
 
+
+# print objects in a group: cmd.get_object_list('(NRGDock_3cqw_sph_2)')
+def get_group_of_object(object_name):
+    all_objects = cmd.get_names("all")  # Get all objects and groups in PyMOL
+    for pymol_object in all_objects:
+        if cmd.get_type(pymol_object) == "object:group":  # Check if it is a group
+            group_members = cmd.get_object_list(f'({pymol_object})')
+            if object_name in group_members:
+                return pymol_object
+    return None
+
+def show_ligand_from_table(table_object, index):
+    print(index.column())
+    if index.column() == 0: # Corresponds to index of column
+        cell_text = table_object.model().data(index)
+        group_name = get_group_of_object(cell_text)
+        if not group_name:
+            print('no group found')
+        else:
+            cmd.hide("everything", group_name)
+            cmd.show('sticks', cell_text)
+            cmd.zoom(cell_text)
+    else:
+        print('Name column not selected')
+
+
+
+
 class NRGDockManager:
     def __init__(self, form, install_dir, ligand_set_folder_path):
         super().__init__()

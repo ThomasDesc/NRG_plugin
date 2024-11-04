@@ -85,6 +85,7 @@ class Controller:
         self.form.nrgdock_button_start.clicked.connect(self.run_nrgdock)
         self.form.nrgdock_button_cancel.clicked.connect(self.abort_nrgdock)
         self.form.nrgdock_result_browse_button.clicked.connect(lambda: general_functions.folder_browser(self.form.nrgdock_result_path, os.path.join(self.form.temp_line_edit.text(), 'NRGDock'), "CSV file (*.csv)"))
+        self.form.nrgdock_result_table.clicked.connect(lambda index: nrgdock_on_target.show_ligand_from_table(self.form.nrgdock_result_table, index))
 
         # NRGDock ligand manager:
         self.form.nrgdock_add_ligandset_button.clicked.connect(lambda: general_functions.folder_browser(self.form.nrgdock_add_ligand_file_path, self.ligand_set_folder_path, "Smiles Files (*.smi)"))
