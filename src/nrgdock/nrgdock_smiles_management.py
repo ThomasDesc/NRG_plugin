@@ -10,3 +10,4 @@ def delete_ligand_set(ligand_set_name, ligand_set_folder, output_box):
     if os.path.exists(ligand_set_path):
         shutil.rmtree(ligand_set_path)
         output_message(output_box, f'Deleted ligand set {ligand_set_name}', 'valid')
+
