@@ -1,6 +1,9 @@
 import os
 import numpy as np
-from main_processed_target import get_params_dict
+import sys
+install_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+sys.path.append(install_dir)
+from src.nrgdock.main_processed_target import get_params_dict
 import concurrent.futures
 from itertools import repeat
 import argparse

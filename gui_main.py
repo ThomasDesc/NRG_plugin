@@ -1,5 +1,9 @@
 import os
 import sys
+from gettext import install
+
+from src.nrgdock.generate_conformers import generate_conformers
+
 install_dir = os.path.dirname(__file__)
 sys.path.append(install_dir)
 import shutil
@@ -91,6 +95,7 @@ class Controller:
         self.form.nrgdock_add_ligandset_button.clicked.connect(lambda: general_functions.folder_browser(self.form.nrgdock_add_ligand_file_path, self.ligand_set_folder_path, "Smiles Files (*.smi)"))
         self.form.nrgdock_delete_ligand_set_refresh.clicked.connect(lambda: general_functions.refresh_folder(self.ligand_set_folder_path, self.form.nrgdock_delete_ligand_set_dropdown, ignore_defaults=True))
         self.form.nrgdock_ligand_set_delete.clicked.connect(lambda: nrgdock_smiles_management.delete_ligand_set(self.form.nrgdock_delete_ligand_set_dropdown.currentText(), self.ligand_set_folder_path, self.form.output_box))
+        self.form.nrgdock_button_ligandset_add.clicked.connect(self.run_generate_conformers)
 
 
         # FlexAID:
@@ -184,6 +189,10 @@ class Controller:
     def abort_nrgdock(self):
         self.nrgdockrunner.handle_thread_finished()
         self.nrgdockrunner = None
+
+    def run_generate_conformers(self):
+        self.conformer_generator = nrgdock_smiles_management.ConfGeneratorManager(self.form, install_dir, self.ligand_set_folder_path)
+        self.conformer_generator.generate_conformer()
 
     def run_flexaid(self):
         self.flexaid_manager = FlexAIDManager(self.form, self.binary_folder_path, self.binary_suffix, install_dir, self.color_list)

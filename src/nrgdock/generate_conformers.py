@@ -1,16 +1,15 @@
 import concurrent.futures
 import os
-from sys import exception
-
+import sys
+install_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+sys.path.append(install_dir)
 from rdkit import Chem
 from rdkit.Chem import AllChem, rdMolDescriptors
-import sys
-from main_processed_target import get_params_dict
+from src.nrgdock.main_processed_target import get_params_dict
 from itertools import repeat
 from datetime import datetime
-from rdkit.Chem import rdForceFieldHelpers
 from rdkit.Chem import rdDistGeom
-from process_ligands import preprocess_ligands_one_target
+from src.nrgdock.process_ligands import preprocess_ligands_one_target
 import subprocess
 from pathlib import Path
 import json
@@ -48,7 +47,8 @@ def generate_conformers(smiles_line, no_conformers, name_position):
     mol_weight = rdMolDescriptors.CalcExactMolWt(molecule)
     num_heavy_atoms = molecule.GetNumHeavyAtoms()
     # print(f"Molecular weight of the molecule in Daltons: {mol_weight:.2f} Da")
-    if mol_weight > 1000 or num_heavy_atoms <= 3:
+    if mol_weight > 1800 or num_heavy_atoms <= 3:
+        print("Molecular weight is over 1800 Da or the molecule has fewer than 3 heavy atoms: Ignoring")
         return None
     else:
         mol = Chem.AddHs(molecule, addCoords=True)
@@ -69,23 +69,30 @@ def generate_conformers(smiles_line, no_conformers, name_position):
 def read_params():
     smiles_path = sys.argv[1]
     optimize = sys.argv[2]
-    custom_output_path = sys.argv[3]
+    custom_output_file_path = sys.argv[3]
+    try:
+        custom_deps_path = sys.argv[4]
+    except IndexError:
+        custom_deps_path = None
     convert = True
     preprocess = True
-    main(smiles_path, optimize, custom_output_path, preprocess, convert)
+    main(smiles_path, optimize, custom_output_file_path, preprocess, convert, custom_deps_path)
 
 
-def main(smiles_path, optimize, custom_output_path, preprocess, convert):
+def main(smiles_path, optimize, custom_output_file_path, preprocess, convert, custom_deps_path):
     print("Started generating conformers @ ", datetime.now())
     root_software_path = Path(__file__).resolve().parents[1]
     os.chdir(root_software_path)
-    name_position = -2
+    name_position = -1
     print("Dont forget to specify in what column the name is for the smiles file")
     print("Path to smiles: ", smiles_path)
-    params_dict = get_params_dict(os.path.join(root_software_path, "deps/config.txt"))
+    config_path = os.path.join(root_software_path, "deps/config.txt")
+    if custom_deps_path:
+        config_path = os.path.join(custom_deps_path, "config.txt")
+    params_dict = get_params_dict(config_path)
     conf_num = params_dict["CONFORMER_NUMBER"]
-    if custom_output_path != "False":
-        sdf_output_file = custom_output_path
+    if custom_output_file_path != "False":
+        sdf_output_file = custom_output_file_path
         output_folder = os.path.dirname(sdf_output_file)
         if not os.path.isdir(output_folder):
             os.mkdir(output_folder)
@@ -108,16 +115,6 @@ def main(smiles_path, optimize, custom_output_path, preprocess, convert):
         if lines[0].startswith('smiles'):
             lines = lines[1:]
 
-    # for line_counter, line in enumerate(lines):
-    #     print(f"{line_counter+1}/{len(lines)}")
-    #     mol = generate_conformers(line, conf_num, name_position)
-    #     if mol is not None:
-    #         for cid in range(mol.GetNumConformers()):
-    #             if optimize == "yes":
-    #                 Chem.rdForceFieldHelpers.MMFFOptimizeMoleculeConfs(mol, cid)
-    #             mol = Chem.RemoveHs(mol)
-    #             writer.write(mol, cid)
-
     with concurrent.futures.ThreadPoolExecutor() as executor:
         for mol in executor.map(generate_conformers, lines, repeat(conf_num), repeat(name_position)):
             if mol is not None:
@@ -137,9 +134,11 @@ def main(smiles_path, optimize, custom_output_path, preprocess, convert):
         subprocess.run(open_babel_command, shell=True, check=True)
         print("removing")
         os.remove(sdf_output_file)
-
     if preprocess:
-        rad_dict = load_rad_dict("./deps/atom_type_radius.json")
+        rad_dict_path = os.path.join(root_software_path, "deps", "atom_type_radius.json")
+        if custom_deps_path:
+            rad_dict_path = os.path.join(custom_deps_path, "atom_type_radius.json")
+        rad_dict = load_rad_dict(rad_dict_path)
         preprocess_ligands_one_target(rad_dict, conf_num, output_folder,
                                       'single_file', mol2_output_file,
                                       None)

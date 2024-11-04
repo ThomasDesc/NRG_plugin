@@ -31,7 +31,7 @@ def install_package(package, main_folder_path):
 
 
 def check_packages(install_dir):
-    packages = ['nrgten', 'Bio', 'pandas', 'matplotlib', 'colour', 'scipy', 'numpy==2.0', 'numba', 'plotly']
+    packages = ['nrgten', 'Bio', 'pandas', 'matplotlib', 'colour', 'scipy', 'numpy==2.0', 'numba', 'plotly', 'rdkit']
     for package in packages:
         install_package(package, install_dir)
 
