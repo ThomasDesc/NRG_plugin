@@ -153,11 +153,11 @@ def load_surfaces(form, temp_path, main_folder_path, binary_folder_path, binary_
     target_2 = form.surface_select_object_2.currentText()
     lig_2 = form.surface_select_ligand_object_2.currentText()
     chain_1=form.surfaces_chain.text()
-    chain_2=form.surfaces_chain.text()
+    chain_2=form.surfaces_chain_2.text()
 
     if lig != 'None':
         if target_2 == 'None':
-            target_file =  os.path.join(temp_path,'Surfaces', f'{target}.pdb')
+            target_file =  os.path.join(temp_path,'Surfaces', f'{target}_{lig}.pdb')
             cmd.save(target_file, target)
             ligands = get_residue_info(lig)
             for ligand in ligands:
@@ -165,7 +165,7 @@ def load_surfaces(form, temp_path, main_folder_path, binary_folder_path, binary_
                 interac_dic = run_surfaces_lig(target_file, target_chain, ligand[0], temp_path, main_folder_path, vcon_binary_path,form)
         else:
             cf_dic = {}
-            target_file =  os.path.join(temp_path,'Surfaces', f'{target}.pdb')
+            target_file =  os.path.join(temp_path,'Surfaces', f'{target}_{lig}.pdb')
             cmd.save(target_file, target)
             ligands = get_residue_info(lig)
             for ligand in ligands:
@@ -176,7 +176,7 @@ def load_surfaces(form, temp_path, main_folder_path, binary_folder_path, binary_
             for state in range(cmd.count_states(target_2)):
                 output_file = os.path.join(temp_path, f'{target_2}_{state + 1}.pdb')
                 cmd.save(output_file, target_2, state=state + 1)
-                diff = compare_residues(target_file, output_file)
+                diff = compare_residues(target_file, output_file) + f'_{chain_1}_{chain_2}'
                 os.rename(output_file, os.path.join(temp_path, 'Surfaces', f'{target_2}_{diff}.pdb'))
                 output_file = os.path.join(temp_path, 'Surfaces', f'{target_2}_{diff}.pdb')
                 target_chain = get_chains_from_object(target_2)
@@ -194,12 +194,12 @@ def load_surfaces(form, temp_path, main_folder_path, binary_folder_path, binary_
     else:
         if chain_1!='None' and chain_2!='None':
             if target_2 == 'None':
-                target_file =  os.path.join(temp_path,'Surfaces', f'{target}.pdb')
+                target_file =  os.path.join(temp_path,'Surfaces', f'{target}_{chain_1}_{chain_2}.pdb')
                 cmd.save(target_file, target)
                 csv_file_surf=run_surfaces_ppi(target_file, chain_1,chain_2,temp_path, main_folder_path, vcon_binary_path,form)
                 read_and_select_residues(csv_file_surf,target,num_rows=10)
             else:
-                target_file = os.path.join(temp_path,'Surfaces', f'{target}.pdb')
+                target_file =  os.path.join(temp_path,'Surfaces', f'{target}_{chain_1}_{chain_2}.pdb')
                 cmd.save(target_file, target)
                 csv_file_surf = run_surfaces_ppi(target_file, chain_1, chain_2, temp_path, main_folder_path,
                                                  vcon_binary_path, form)
@@ -207,9 +207,9 @@ def load_surfaces(form, temp_path, main_folder_path, binary_folder_path, binary_
                 cf_ref=cf_calculatior(csv_file_surf)
                 cf_dic={}
                 for state in range(cmd.count_states(target_2)):
-                    output_file = os.path.join(temp_path,'Surfaces', f'{target_2}_{state + 1}.pdb')
+                    output_file = os.path.join(temp_path,'Surfaces', f'{target_2}_{chain_1}_{chain_2}_{state + 1}.pdb')
                     cmd.save(output_file, target_2, state=state + 1)
-                    diff = compare_residues(target_file, output_file)
+                    diff = compare_residues(target_file, output_file) + f'_{chain_1}_{chain_2}'
                     os.rename(output_file, os.path.join(temp_path, 'Surfaces', f'{target_2}_{diff}.pdb'))
                     output_file = os.path.join(temp_path, 'Surfaces', f'{target_2}_{diff}.pdb')
                     csv_file_surf = run_surfaces_ppi(output_file, chain_1, chain_2, temp_path, main_folder_path,
