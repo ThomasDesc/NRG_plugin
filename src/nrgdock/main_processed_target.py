@@ -2,7 +2,6 @@ import os
 import numpy as np
 from numba import njit
 import timeit
-import multiprocessing
 from pathlib import Path
 import argparse
 import math as m

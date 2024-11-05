@@ -1,5 +1,9 @@
 import os
 import sys
+from gettext import install
+
+from src.nrgdock.generate_conformers import generate_conformers
+
 install_dir = os.path.dirname(__file__)
 sys.path.append(install_dir)
 import shutil
@@ -11,15 +15,16 @@ from src.getcleft import spheres
 import general_functions
 from src.surfaces import run_Surfaces
 from src.isomif import run_isomif
+from src.nrgdock import nrgdock_smiles_management
 import platform
-from pymol.Qt import QtWidgets
-from pymol.Qt.utils import loadUi
+from PyQt5.QtWidgets import QWidget
+from PyQt5.uic import loadUi
+from src.nrgten import run_NRGTEN
 try:
     import modeller
 except ImportError:
     print('Modeller not installed.')
 else:
-    from src.nrgten import run_NRGTEN
     from src.modeller import run_modeller
 # TODO: when showing surfaces result hide everything else
 # TODO: clickable results in nrgdock table
@@ -76,14 +81,22 @@ class Controller:
         self.form.cleft_partition_radius_slider.valueChanged.connect( lambda: spheres.resize_sphere('SPHERE', self.form.cleft_partition_radius_slider.value()))
         self.form.cleft_partition_crop_button.clicked.connect(lambda: spheres.crop_cleft('SPHERE', self.form.cleft_partition_radius_slider.value() / 100, self.form.temp_line_edit.text(), self.form.cleft_partition_select_object.currentText(), self.form.output_box, self.form.cleft_partition_radius_slider))
         self.form.cleft_partition_button_delete.clicked.connect(lambda: spheres.delete_sphere('SPHERE', self.form.cleft_partition_radius_slider))
+
         # NRGDock:
         self.form.nrgdock_target_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(self.form.nrgdock_select_target, self.form.output_box, exclude='_sph'))
         self.form.nrgdock_binding_site_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(self.form.nrgdock_select_binding_site, self.form.output_box, filter_for='_sph'))
-        self.form.nrgdock_delete_ligand_set_refresh.clicked.connect(lambda: general_functions.refresh_folder(self.ligand_set_folder_path, self.form.nrgdock_delete_ligand_set_dropdown))
-        self.form.nrgdock_add_ligandset_button.clicked.connect(lambda: general_functions.folder_browser(self.form.nrgdock_add_ligand_file_path, self.ligand_set_folder_path, "Smiles Files (*.smi)"))
         self.form.nrgdock_ligand_set_refresh.clicked.connect(lambda: general_functions.refresh_folder(self.ligand_set_folder_path, self.form.nrgdock_select_ligand))
         self.form.nrgdock_button_start.clicked.connect(self.run_nrgdock)
+        self.form.nrgdock_button_cancel.clicked.connect(self.abort_nrgdock)
         self.form.nrgdock_result_browse_button.clicked.connect(lambda: general_functions.folder_browser(self.form.nrgdock_result_path, os.path.join(self.form.temp_line_edit.text(), 'NRGDock'), "CSV file (*.csv)"))
+        self.form.nrgdock_result_table.clicked.connect(lambda index: nrgdock_on_target.show_ligand_from_table(self.form.nrgdock_result_table, index))
+
+        # NRGDock ligand manager:
+        self.form.nrgdock_add_ligandset_button.clicked.connect(lambda: general_functions.folder_browser(self.form.nrgdock_add_ligand_file_path, self.ligand_set_folder_path, "Smiles Files (*.smi)"))
+        self.form.nrgdock_delete_ligand_set_refresh.clicked.connect(lambda: general_functions.refresh_folder(self.ligand_set_folder_path, self.form.nrgdock_delete_ligand_set_dropdown, ignore_defaults=True))
+        self.form.nrgdock_ligand_set_delete.clicked.connect(lambda: nrgdock_smiles_management.delete_ligand_set(self.form.nrgdock_delete_ligand_set_dropdown.currentText(), self.ligand_set_folder_path, self.form.output_box))
+        self.form.nrgdock_button_ligandset_add.clicked.connect(self.run_generate_conformers)
+
 
         # FlexAID:
         self.form.flexaid_target_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(self.form.flexaid_select_target, self.form.output_box, exclude='_sph'))
@@ -92,7 +105,7 @@ class Controller:
         self.form.flexaid_button_start.clicked.connect(self.run_flexaid)
         self.form.flexaid_button_pause.clicked.connect(lambda: pause_resume_simulation(self.form, self.flexaid_manager.run_specific_simulate_folder_path))
         self.form.flexaid_button_stop.clicked.connect(lambda: stop_simulation(self.form, self.flexaid_manager.run_specific_simulate_folder_path))
-        self.form.flexaid_button_abort.clicked.connect(lambda: abort_simulation(self.form, self.flexaid_manager.run_specific_simulate_folder_path))
+        self.form.flexaid_button_abort.clicked.connect(lambda: abort_simulation(self.form, self.flexaid_manager.run_specific_simulate_folder_path, self.flexaid_manager))
 
         # Surfaces
         self.form.surfaces_refresh_object_1.clicked.connect(lambda: general_functions.refresh_dropdown(self.form.surface_select_object_1, self.form.output_box))
@@ -170,15 +183,23 @@ class Controller:
             self.getcleftrunner.run_task()
 
     def run_nrgdock(self):
-        self.nrgdockrunner = nrgdock_on_target.NRGDockRunner(self.form, install_dir, self.ligand_set_folder_path)
+        self.nrgdockrunner = nrgdock_on_target.NRGDockManager(self.form, install_dir, self.ligand_set_folder_path)
         self.nrgdockrunner.run_nrgdock()
+
+    def abort_nrgdock(self):
+        self.nrgdockrunner.handle_thread_finished()
+        self.nrgdockrunner = None
+
+    def run_generate_conformers(self):
+        self.conformer_generator = nrgdock_smiles_management.ConfGeneratorManager(self.form, install_dir, self.ligand_set_folder_path)
+        self.conformer_generator.generate_conformer()
 
     def run_flexaid(self):
         self.flexaid_manager = FlexAIDManager(self.form, self.binary_folder_path, self.binary_suffix, install_dir, self.color_list)
         self.flexaid_manager.start_run()
 
 
-class NRGSuitePlugin(QtWidgets.QWidget):
+class NRGSuitePlugin(QWidget):
     def __init__(self):
         super().__init__()
         self.form = None

@@ -17,11 +17,12 @@ def resume_simulation(form, specific_simulation_path):
     os.remove(os.path.join(specific_simulation_path, '.pause'))
     form.flexaid_button_pause.setText('Pause')
 
-def abort_simulation(form, specific_simulation_path):
+def abort_simulation(form, specific_simulation_path, flexaid_manager):
     with open(os.path.join(specific_simulation_path, '.abort'), 'a'):
         pass
     form.flexaid_button_start.setEnabled(True)
     form.flexaid_tab.setCurrentIndex(1)
+    flexaid_manager.quit_workers()
 
 def stop_simulation(form, specific_simulation_path):
     with open(os.path.join(specific_simulation_path, '.stop'), 'a'):
@@ -58,6 +59,7 @@ class FlexAIDManager:
         self.flexaid_deps_path = os.path.join(install_dir, 'deps', 'flexaid')
         self.color_list = color_list
         self.form.flexaid_result_table.setRowCount(0) # Resets the table each run
+        self.threads = []
 
     def start_run(self):
         self.start_file_updater()
@@ -66,6 +68,7 @@ class FlexAIDManager:
     def start_file_updater(self):
         self.file_updater_thread = FileUpdaterThread(self.update_file_path)
         self.file_updater_thread.update_signal.connect(self.perform_updates)
+        self.threads.append(self.file_updater_thread)
         self.file_updater_thread.start()
 
     def perform_updates(self, current_generation, data):
@@ -92,6 +95,7 @@ class FlexAIDManager:
                                           self.run_specific_simulate_folder_path, self.flexaid_temp_path,
                                           target_save_path, ligand_save_path, binding_site_path, self.simulation_settings)
         self.worker.finished.connect(self.flexaid_end_processes)
+        self.threads.append(self.worker)
         self.worker.start()
 
     def get_simulation_settings(self):
@@ -130,10 +134,17 @@ class FlexAIDManager:
                 self.colour_specific_cell(data)
                 result_counter += 1
 
+    def quit_workers(self):
+        print('Started terminating threads')
+        for worker in self.threads:
+            worker.stop()
+            worker.quit()
+            worker.wait()
+
+
     def flexaid_end_processes(self):
         general_functions.output_message(self.form.output_box, f"=========== FlexAID ===========", 'valid')
-        self.worker.quit()
-        self.file_updater_thread.quit()
+        self.quit_workers()
         self.toggle_buttons(False)
         self.final_table_update()
         self.load_show_flexaid_result()
@@ -185,10 +196,13 @@ class FileUpdaterThread(QThread):
         super(FileUpdaterThread, self).__init__()
         self.update_file_path = update_file_path
         self.current_generation = 0
-        self.running = True
+        self._is_running = True
+
+    def stop(self):
+        self._is_running = False
 
     def run(self):
-        while self.running:
+        while self._is_running:
             if os.path.exists(self.update_file_path):
                 self.read_update()
                 self.current_generation += 1
@@ -212,9 +226,6 @@ class FileUpdaterThread(QThread):
             except PermissionError:
                 time.sleep(0.1)
 
-    def stop(self):
-        self.running = False
-
 
 class FlexAIDWorkerThread(QThread):
     finished = pyqtSignal()
@@ -232,6 +243,8 @@ class FlexAIDWorkerThread(QThread):
         self.binding_site_path = binding_site_path
         self.setting_dictionary = setting_dictionary
         self.max_results = setting_dictionary['max_results']
+        self._is_running = True
+        self._process = None  # Store the process handle
 
     @staticmethod
     def process_ligand(process_ligand_path, input_path, istarget=False):
@@ -298,24 +311,35 @@ class FlexAIDWorkerThread(QThread):
                 else:
                     ga_write.write(line)
 
+    def stop(self):
+        self._is_running = False
+        if self._process and self._process.poll() is None:
+            self._process.terminate()
+
     def run(self):
-        flexaid_binary_path = os.path.join(self.binary_folder_path, f'FlexAID{self.binary_suffix}')
-        process_ligand_path = os.path.join(self.binary_folder_path, f'Process_ligand{self.binary_suffix}')
-        flexaid_deps_path = os.path.join(self.install_dir, 'deps', 'flexaid')
-        os.mkdir(self.flexaid_result_path)
-        os.mkdir(os.path.join(self.flexaid_result_path, 'temp'))
-        flexaid_result_name_path = os.path.join(self.flexaid_result_path, "RESULT").replace('\\', '/')
+        if self._is_running:
+            flexaid_binary_path = os.path.join(self.binary_folder_path, f'FlexAID{self.binary_suffix}')
+            process_ligand_path = os.path.join(self.binary_folder_path, f'Process_ligand{self.binary_suffix}')
+            flexaid_deps_path = os.path.join(self.install_dir, 'deps', 'flexaid')
+            os.mkdir(self.flexaid_result_path)
+            os.mkdir(os.path.join(self.flexaid_result_path, 'temp'))
+            flexaid_result_name_path = os.path.join(self.flexaid_result_path, "RESULT").replace('\\', '/')
 
-        self.process_ligand(process_ligand_path, self.target_save_path, istarget=True)
-        self.process_ligand(process_ligand_path, self.ligand_save_path)
-        target_inp_path = os.path.splitext(self.target_save_path)[0] + '.inp.pdb'
-        ligand_inp_path = os.path.splitext(self.ligand_save_path)[0] + '.inp'
-        config_file_path = self.write_config(target_inp_path, self.binding_site_path, ligand_inp_path, self.max_results,
-                                             self.flexaid_temp_path, self.flexaid_result_path,
-                                             flexaid_deps_path).replace('\\', '/')
+            self.process_ligand(process_ligand_path, self.target_save_path, istarget=True)
+            self.process_ligand(process_ligand_path, self.ligand_save_path)
+            target_inp_path = os.path.splitext(self.target_save_path)[0] + '.inp.pdb'
+            ligand_inp_path = os.path.splitext(self.ligand_save_path)[0] + '.inp'
+            config_file_path = self.write_config(target_inp_path, self.binding_site_path, ligand_inp_path, self.max_results,
+                                                 self.flexaid_temp_path, self.flexaid_result_path,
+                                                 flexaid_deps_path).replace('\\', '/')
 
-        ga_path = os.path.join(self.flexaid_temp_path, 'ga_inp.dat').replace('\\', '/')
-        self.edit_ga(os.path.join(flexaid_deps_path, 'ga_inp.dat'), ga_path, self.setting_dictionary)
-        flexaid_command = f'{flexaid_binary_path} "{config_file_path}" "{ga_path}" "{flexaid_result_name_path}"'
-        os.system(flexaid_command)
-        self.finished.emit()
+            ga_path = os.path.join(self.flexaid_temp_path, 'ga_inp.dat').replace('\\', '/')
+            self.edit_ga(os.path.join(flexaid_deps_path, 'ga_inp.dat'), ga_path, self.setting_dictionary)
+            flexaid_command = [flexaid_binary_path, config_file_path, ga_path, flexaid_result_name_path]
+
+            self._process = subprocess.Popen(flexaid_command)
+            while self._is_running and self._process.poll() is None:
+                self.msleep(100)
+
+            if self._process.poll() == 0:
+                self.finished.emit()
