@@ -175,6 +175,7 @@ def split_states(residues, pdb_file):
         pymol.cmd.select('surfaces_sele',os.path.basename(pdb_file[:-4])+' and chain ' + C)
         pymol.cmd.extract(os.path.basename(pdb_file[:-4])+'_chain' + C, 'surfaces_sele')
         pymol.cmd.group(os.path.basename(pdb_file[:-4])+'_surfaces',os.path.basename(pdb_file[:-4])+'_chain' + C)
+    pymol.cmd.delete(os.path.basename(pdb_file[:-4]))
     return (chains)
 
 def show_separate_surfaces(chains,pdb_file):

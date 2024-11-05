@@ -123,8 +123,10 @@ def write_b_factor(target, dyna_sig, temp_path, labels):
                 key = '{}_{}_{}'.format(line[17:20], line[21], int(line[22:26]))
                 number = b_factor_dict[key]
                 lined = f"{number:.2f}"
+                lined_abs=f"{abs(number):.2f}"
                 lined = lined.rjust(6)
-                texto_list.append(line[:60] + lined + line[66:])
+                lined_abs= lined_abs.rjust(6)
+                texto_list.append(line[:54] + lined_abs + lined+ line[66:])
             else:
                 texto_list.append(line)
     output_path = os.path.join(temp_path,'NRGTEN', f'{target}_dynasig.pdb')
@@ -153,7 +155,8 @@ def dynamical_signature(target, lig, target_2, beta, main_folder_path, temp_path
         cmd.disable(target)
         cmd.load(target_file[:-4] + '_dynasig.pdb')
         cmd.spectrum(selection=os.path.basename(target_file[:-4] + '_dynasig.pdb')[:-4], palette='blue_white_red',
-                     expression='b')
+                     expression='q')
+        cmd.cartoon('putty',selection=os.path.basename(target_file[:-4] + '_dynasig.pdb')[:-4])
         if lig != 'None':
             output_file = os.path.join(temp_path,'NRGTEN', f'no_lig_{target}.pdb')
             remove_selection_and_save(target, lig, output_file)
@@ -172,15 +175,17 @@ def dynamical_signature(target, lig, target_2, beta, main_folder_path, temp_path
 
             write_b_factor(key_base, dyna_sig_no_lig, temp_path, model_no_lig.get_mass_labels())
             cmd.load(output_file[:-4] + '_dynasig.pdb')
-            cmd.spectrum(selection=key_base + '_dynasig', palette='blue_white_red', expression='b', minimum=-1,
+            cmd.spectrum(selection=key_base + '_dynasig', palette='blue_white_red', expression='q', minimum=-1,
                          maximum=1)
+            cmd.cartoon('putty', selection=key_base+ '_dynasig.pdb')
     else:
         cmd.save(target_file, target)
         b_fact_dict = run_dynamical_signature(target_file, beta, main_folder_path, temp_path)[1]
         cmd.disable(target)
         cmd.load(target_file[:-4] + '_dynasig.pdb')
         cmd.spectrum(selection=os.path.basename(target_file[:-4] + '_dynasig.pdb')[:-4], palette='blue_white_red',
-                     expression='b')
+                     expression='q')
+        cmd.cartoon('putty', selection=os.path.basename(target_file[:-4] + '_dynasig.pdb')[:-4])
         object_list = []
         diff_list=[]
         plots = []
@@ -259,8 +264,9 @@ def dynamical_signature(target, lig, target_2, beta, main_folder_path, temp_path
         fig.show()
 
         for state in diff_list:
-            cmd.spectrum(selection=f'{target_2}_dynasigdif_{state}', palette='blue_white_red', expression='b',
+            cmd.spectrum(selection=f'{target_2}_dynasigdif_{state}', palette='blue_white_red', expression='q',
                          minimum=-1, maximum=1)
+            cmd.cartoon('putty', selection=f'{target_2}_dynasigdif_{state}')
         create_group(f'{target_2}_dynasigdif', object_list)
 
 
