@@ -123,7 +123,7 @@ class Controller:
             lambda: run_NRGTEN.dynamical_signature(self.form.NRGten_select_target_object_1.currentText(),
                                                    self.form.NRGten_select_ligand_object_1.currentText(),
                                                    self.form.NRGten_select_target_object_2.currentText(),
-                                                   self.form.NRGten_dynasig_lineEdit.text(), install_dir,
+                                                   self.form.NRGten_dynasig_beta_value.text(), install_dir,
                                                    self.form.temp_line_edit.text()))
         self.form.NRGten_conf_ensem_run.clicked.connect(
             lambda: run_NRGTEN.conformational_ensemble(self.form.NRGten_select_target_object_1.currentText(),
