@@ -3,6 +3,7 @@ import general_functions
 import os
 from pymol import cmd
 import subprocess
+import re
 
 
 class GetCleftRunner:
@@ -77,16 +78,23 @@ class GetCleftWorker(QThread):
         all_files = os.listdir(cleft_save_path)
         sph_file_list = []
         for filename in all_files:
+            file_path = os.path.join(cleft_save_path, filename)
             if filename.find('sph') != -1:
-                sph_file_list.append({'path': os.path.join(cleft_save_path, filename),
-                                      'name': filename.split('.')[0]})
+                numbers = re.findall(r'\d+', filename)
+                new_file_name = f'bd_site_{numbers[-1]}.pdb'
+                new_bd_site_path = os.path.join(cleft_save_path, new_file_name)
+                os.rename(file_path, new_bd_site_path)
+                file_data = {'path': new_bd_site_path, 'name': f"{self.pymol_object}_{new_file_name.split('.')[0]}"}
+                sph_file_list.append(file_data)
+            if filename.find('clf') != -1:
+                os.remove(file_path)
         sph_file_list = sorted(sph_file_list, key=lambda d: d['name'])
         if len(sph_file_list) == 0:
             self.message_signal.emit('No clefts were found', 'warning')
         for cleft_counter, binding_site in enumerate(sph_file_list):
             try:
                 cmd.load(binding_site['path'], binding_site['name'], state=1)
-                cmd.group(f'Clefts_{self.pymol_object}', binding_site['name'])
+                cmd.group(f"gc_{self.pymol_object}", binding_site['name'])
                 cmd.hide('everything', binding_site['name'])
                 if cleft_counter >= len(color_list):
                     cmd.color('grey50', binding_site['name'])
@@ -96,7 +104,8 @@ class GetCleftWorker(QThread):
             except Exception as e:
                 self.message_signal.emit(f"ERROR: Failed to load cleft object  {binding_site['name']}", 'warning')
                 continue
-        cmd.zoom(pymol_object)
+        cmd.group('GetCleft', f"gc_{self.pymol_object}")
+        cmd.zoom(pymol_object, buffer=4, complete=1)
         cmd.refresh()
         cmd.set("auto_zoom", auto_zoom)
 

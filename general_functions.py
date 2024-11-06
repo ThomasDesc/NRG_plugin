@@ -119,6 +119,21 @@ def show_save_dialog(self,temp_path,save=1):
                 show_popup(self,dir_path,temp_path,0)
 
 
+def refresh_dropdown_bd_site(dropdown_to_refresh, target, output_box):
+    if target is None or target == '':
+        return
+    else:
+        loaded_objects = cmd.get_names(type='objects', enabled_only=0)
+        if f'gc_{target}' in loaded_objects:
+            binding_sites = cmd.get_object_list(f'(gc_{target})')
+            if not binding_sites or len(binding_sites) == 0:
+                output_message(output_box, f'No binding sites found for {target}', 'warning')
+            else:
+                dropdown_to_refresh.clear()
+                binding_sites = sorted(binding_sites)
+                dropdown_to_refresh.addItems(binding_sites)
+                dropdown_to_refresh.setCurrentText(binding_sites[0])
+
 
 def refresh_dropdown(dropdown_to_refresh, output_box, filter_for='', no_warning=False,exclude=None, non_group=1, lig=0, add_none=0):
     list_pymol_objects = cmd.get_names('all')
@@ -180,16 +195,15 @@ def folder_browser(text_window, ligand_set_path, file_extension):
 
 def pymol_hide_structures(form):
     list_pymol_objects = cmd.get_names('all')
-    list_pymol_objects = [x for x in list_pymol_objects if 'sph' in x]
     if form.button_hide.isChecked():
         if not list_pymol_objects:
             output_message(form.output_box, 'No clefts to hide', 'warning')
         else:
             form.button_hide.setText('Show')
-            cmd.hide('everything', ','.join(list_pymol_objects))
+            cmd.hide('everything', 'bd_site_*')
     else:
         form.button_hide.setText('Hide')
-        cmd.show('surface', ','.join(list_pymol_objects))
+        cmd.show('surface', 'bd_site_*')
 
 
 def get_mouse_config():

@@ -11,7 +11,8 @@ from pymol import cmd
 import multiprocessing
 import general_functions
 # TODO: run on more than 1 bd site
-# TODO: load own ligands (generate library from smiles)
+# TODO: better folder management (store each run in a folder named by target, binding site, ligand set)
+# TODO: do not preprocess if new run uses same target and binding site
 
 
 # print objects in a group: cmd.get_object_list('(NRGDock_3cqw_sph_2)')
@@ -25,20 +26,17 @@ def get_group_of_object(object_name):
     return None
 
 def show_ligand_from_table(table_object, index):
-    print(index.column())
     if index.column() == 0: # Corresponds to index of column
         cell_text = table_object.model().data(index)
         group_name = get_group_of_object(cell_text)
         if not group_name:
             print('no group found')
         else:
-            cmd.hide("everything", group_name)
-            cmd.show('sticks', cell_text)
-            cmd.zoom(cell_text)
-    else:
-        print('Name column not selected')
-
-
+            objects = cmd.get_object_list(f'({group_name})')
+            for group_object in objects:
+                cmd.disable(group_object)
+            cmd.enable(cell_text)
+            cmd.zoom(cell_text, buffer=4, complete=1)
 
 
 class NRGDockManager:
@@ -205,7 +203,7 @@ class NRGDockThread(QThread):
         return top_10_names, csv_output_path
 
     @staticmethod
-    def manage_poses(top_n_name_list, ligand_poses_folder, binding_site_name):
+    def manage_poses(top_n_name_list, ligand_poses_folder, binding_site_name, target_name, ligand_set_name):
         ligand_files = glob.glob(os.path.join(ligand_poses_folder, "*.pdb"))
         top_n_name_set = set(top_n_name_list)
         for file in ligand_files:
@@ -216,7 +214,8 @@ class NRGDockThread(QThread):
             file_path = os.path.join(ligand_poses_folder, f"{name}.pdb")
             if os.path.exists(file_path):
                 cmd.load(file_path)
-                cmd.group(f'NRGDock_{binding_site_name}', name)
+                cmd.group(f"{binding_site_name}_{ligand_set_name}", name)
+        cmd.group('NRGDock', f"{binding_site_name}_{ligand_set_name}")
 
     def run(self):
         self.message_signal.emit("=========== NRGDock ===========")
@@ -251,7 +250,8 @@ class NRGDockThread(QThread):
         if self.is_running:
             self.message_signal.emit('Screening has finished')
             top_n_name_list, csv_output_path = self.merge_csv(self.docking_result_folder)
-            self.manage_poses(top_n_name_list, os.path.join(self.nrgdock_output_path, 'ligand_poses',  self.binding_site_name), self.binding_site_name)
+            ligand_pose_path = os.path.join(self.nrgdock_output_path, 'ligand_poses',  self.binding_site_name)
+            self.manage_poses(top_n_name_list, ligand_pose_path, self.binding_site_name, self.target_name, self.ligand_set_name)
             self.finished_signal.emit()
             self.message_signal.emit("=========== END NRGDock ===========")
             self.update_table_signal.emit(csv_output_path)
