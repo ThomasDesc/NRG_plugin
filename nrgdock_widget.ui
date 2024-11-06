@@ -127,7 +127,7 @@ QPushButton:checked{
          <item>
           <widget class="QPushButton" name="button_flexaid">
            <property name="text">
-            <string>FLEXAID</string>
+            <string>FlexAID</string>
            </property>
            <property name="checkable">
             <bool>true</bool>
@@ -182,7 +182,7 @@ QPushButton:checked{
          <item>
           <widget class="QPushButton" name="button_ISOMIF">
            <property name="text">
-            <string>ISOMIF</string>
+            <string>IsoMIF</string>
            </property>
            <property name="checkable">
             <bool>true</bool>
@@ -717,7 +717,7 @@ QFrame {
              <enum>QTabWidget::Rounded</enum>
             </property>
             <property name="currentIndex">
-             <number>0</number>
+             <number>1</number>
             </property>
             <property name="usesScrollButtons">
              <bool>false</bool>
