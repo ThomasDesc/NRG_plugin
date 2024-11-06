@@ -5,7 +5,7 @@ install_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 sys.path.append(install_dir)
 from rdkit import Chem
 from rdkit.Chem import AllChem, rdMolDescriptors
-from src.nrgdock.main_processed_target import get_params_dict
+from src.nrgdock.nrgdock import get_params_dict
 from itertools import repeat
 from datetime import datetime
 from rdkit.Chem import rdDistGeom

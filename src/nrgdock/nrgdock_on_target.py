@@ -267,7 +267,7 @@ class NRGDockThread(QThread):
         for current_ligand_number in range(self.starting_ligand, total_number_ligands, self.step):
             last_ligand = min(current_ligand_number + self.step, total_number_ligands)
             temp_command = [sys.executable,
-             os.path.join(self.install_dir, 'src', 'nrgdock', 'main_processed_target.py'),
+             os.path.join(self.install_dir, 'src', 'nrgdock', 'nrgdock.py'),
              '-p', nrgdock_target_folder,
              '-t', 'ligand',
              '-s', str(current_ligand_number),
