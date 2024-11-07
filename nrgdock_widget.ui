@@ -246,7 +246,7 @@ QPushButton:checked{
          <string notr="true">font-size:20;</string>
         </property>
         <property name="currentIndex">
-         <number>1</number>
+         <number>3</number>
         </property>
         <widget class="QWidget" name="getcleft_page">
          <layout class="QVBoxLayout" name="verticalLayout_10">

@@ -1,3 +1,5 @@
+from tokenize import group
+
 from PyQt5.QtCore import pyqtSignal, QThread, QObject
 import os
 import subprocess
@@ -20,13 +22,13 @@ import re
 def get_group_of_object(object_name):
     all_objects = cmd.get_names("all")  # Get all objects and groups in PyMOL
     for pymol_object in all_objects:
-        if cmd.get_type(pymol_object) == "object:group":  # Check if it is a group
+        if pymol_object != 'NRGDock' and cmd.get_type(pymol_object) == "object:group":  # Check if it is a group
             group_members = cmd.get_object_list(f'({pymol_object})')
             if object_name in group_members:
                 return pymol_object
     return None
 
-def show_ligand_from_table(table_object):
+def show_ligand_from_table(table_object, binding_site, ligand_set):
     selected_indexes = table_object.selectionModel().selectedIndexes()
     ligands_to_show = []
     for index in selected_indexes:
@@ -35,9 +37,11 @@ def show_ligand_from_table(table_object):
         if column == 0:
             ligands_to_show.append(cell_text)
     if ligands_to_show:
+        ligands_to_show = [f"{item}_{binding_site}_{ligand_set.replace(' ', '_')}" for item in ligands_to_show]
         group_name = get_group_of_object(ligands_to_show[0])
         if not group_name:
             print('no group found')
+            return
         else:
             group_objects = cmd.get_object_list(f'({group_name})')
             for group_object in group_objects:
@@ -45,9 +49,6 @@ def show_ligand_from_table(table_object):
                     cmd.disable(group_object)
                 else:
                     cmd.enable(group_object)
-        bd_site_name = re.match(r"(.+?_bd_site_\d+)", group_name).group(1)
-        if bd_site_name:
-            cmd.zoom(bd_site_name, buffer=2, complete=1)
 
 
 class NRGDockManager:
@@ -134,6 +135,7 @@ class NRGDockManager:
             self.form.nrgdock_progress_label.setText(f'Screening progress: {value}%')
 
     def update_nrgdock_result_table(self, csv_result):
+        self.model.clear()
         df = pd.read_csv(csv_result)
         df = df[['Name', 'CF']]
         self.model.setHorizontalHeaderLabels(df.columns.tolist())
@@ -203,6 +205,7 @@ class NRGDockThread(QThread):
         self.executor = None
         cmd.hide('everything', self.binding_site_name)
         cmd.show('mesh', self.binding_site_name)
+        cmd.zoom(self.binding_site_name, buffer=3, complete=1)
 
     def stop(self):
         self.is_running = False
@@ -240,12 +243,14 @@ class NRGDockThread(QThread):
             file_name = os.path.splitext(os.path.basename(file))[0]
             if file_name not in top_n_name_set:
                 os.remove(file)
+        nrg_result_group_name = f"nrg_{binding_site_name}_{ligand_set_name}"
         for name in top_n_name_list:
+            pymol_object_name = f"{name}_{binding_site_name}_{ligand_set_name}"
             file_path = os.path.join(ligand_poses_folder, f"{name}.pdb")
             if os.path.exists(file_path):
-                cmd.load(file_path)
-                cmd.group(f"{binding_site_name}_{ligand_set_name}", name)
-        cmd.group('NRGDock', f"{binding_site_name}_{ligand_set_name}")
+                cmd.load(file_path, pymol_object_name)
+                cmd.group(nrg_result_group_name, pymol_object_name)
+        cmd.group('NRGDock', nrg_result_group_name)
         cmd.zoom(binding_site_name, buffer=4, complete=1)
 
     def run(self):

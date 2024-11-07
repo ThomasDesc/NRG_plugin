@@ -164,16 +164,18 @@ class FlexAIDManager:
         cmd.disable('everything')
         true_result = 0
         cmd.delete(f'FlexAID_{self.binding_site_name}')
+        cmd.disable('NRGDock,GetCleft,Surfaces')
+        results_group_name = f"flx_{self.ligand_name}_{self.binding_site_name}_{self.simulation_settings['number_chromosomes']}x{self.simulation_settings['number_generations']}"
         for file in result_files:
             if file.startswith('RESULT') and not file.endswith('INI.pdb') and file.endswith('.pdb'):
                 file_path = os.path.join(self.run_specific_simulate_folder_path, file)
                 file_name = os.path.splitext(os.path.basename(file_path))[0]
-                cmd.load(file_path, file_name)
+                cmd.load(file_path, f"{os.path.basename(file_path[:-4])}_{results_group_name}")
                 color_name = self.color_list[true_result]['name']
                 cmd.color(color_name, f"{file_name} and resn LIG")
-                cmd.group(f'flx_{self.binding_site_name}_{self.ligand_name}_{self.simulation_settings['number_chromosomes']}x{self.simulation_settings['number_generations']}', os.path.basename(file_path[:-4]))
+                cmd.group(results_group_name, f"{os.path.basename(file_path[:-4])}_{results_group_name}")
                 true_result += 1
-        cmd.group()
+        cmd.group('FlexAID', results_group_name)
 
     def show_rmsd(self):
         table = self.form.flexaid_result_table
