@@ -80,9 +80,9 @@ class FlexAIDManager:
         target_name = self.form.flexaid_select_target.currentText()
         target_save_path = os.path.join(self.flexaid_temp_path, 'flexaid_target.pdb')
         cmd.save(target_save_path, target_name)
-        ligand_name = self.form.flexaid_select_ligand.currentText()
+        self.ligand_name = self.form.flexaid_select_ligand.currentText()
         ligand_save_path = os.path.join(self.flexaid_temp_path, 'flexaid_ligand.pdb')
-        cmd.save(ligand_save_path, ligand_name)
+        cmd.save(ligand_save_path, self.ligand_name)
         self.binding_site_name = self.form.flexaid_select_binding_site.currentText()
         binding_site_path = os.path.join(self.flexaid_temp_path, 'binding_site_sph_.pdb')
         cmd.save(binding_site_path, self.binding_site_name)
@@ -171,8 +171,9 @@ class FlexAIDManager:
                 cmd.load(file_path, file_name)
                 color_name = self.color_list[true_result]['name']
                 cmd.color(color_name, f"{file_name} and resn LIG")
-                cmd.group(f'FlexAID_{self.binding_site_name}', os.path.basename(file_path[:-4]))
+                cmd.group(f'flx_{self.binding_site_name}_{self.ligand_name}_{self.simulation_settings['number_chromosomes']}x{self.simulation_settings['number_generations']}', os.path.basename(file_path[:-4]))
                 true_result += 1
+        cmd.group()
 
     def show_rmsd(self):
         table = self.form.flexaid_result_table
