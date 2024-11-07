@@ -57,6 +57,9 @@ class NRGDockManager:
         self.install_dir = install_dir
         self.ligand_set_folder_path = ligand_set_folder_path
         self.model = model
+        self.deps_path = os.path.join(self.install_dir, 'deps', 'nrgdock')
+        self.config_path = os.path.join(self.deps_path, 'config.txt')
+        self.update_config()
 
     def initialise_progress_bar(self):
         self.form.nrgdock_progress.show()
@@ -73,6 +76,23 @@ class NRGDockManager:
         self.movie.setScaledSize(self.label_size)
         self.movie.start()
         self.form.nrgdock_loading_gif.show()
+
+    def update_config(self):
+        with open(self.config_path, 'r') as f:
+            lines = f.readlines()
+        for line_counter, line in enumerate(lines):
+            if line.startswith('ROTATIONS_PER_AXIS'):
+                number_of_rotations = self.form.nrgdock_ligand_rotations.text().strip()
+                if not number_of_rotations.isdigit():
+                    general_functions.output_message(self.form.output_box, 'Number of rotations must be an intiger. Defaulting to 9', 'warning')
+                    number_of_rotations = 9
+                elif not 1 <= int(number_of_rotations) <= 32:
+                    general_functions.output_message(self.form.output_box, 'Number of rotations must be between 1 and 32 inclusively. Defaulting to 9', 'warning')
+                    number_of_rotations = 9
+                print(number_of_rotations)
+                lines[line_counter] = f"{line.split(' ')[0]} {number_of_rotations}\n"
+        with open(self.config_path, 'w') as out_file:
+            out_file.writelines(lines)
 
     def run_nrgdock(self):
         nrgdock_output_path = os.path.join(self.form.temp_line_edit.text(), 'NRGDock')

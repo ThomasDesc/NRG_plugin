@@ -134,6 +134,26 @@ def refresh_dropdown_bd_site(dropdown_to_refresh, target, output_box):
                 dropdown_to_refresh.addItems(binding_sites)
                 dropdown_to_refresh.setCurrentText(binding_sites[0])
 
+def refresh_dropdown_target(dropdown_to_refresh, output_box):
+    objects_to_ignore = []
+    all_objects = cmd.get_names("all")  # Get all objects and groups in PyMOL
+    for pymol_object in all_objects:
+        if cmd.get_type(pymol_object) == "object:group":  # Check if it is a group
+            objects_to_ignore.append(pymol_object)
+            group_members = cmd.get_object_list(f'({pymol_object})')
+            for member in group_members:
+                objects_to_ignore.append(member)
+    objects_to_display = []
+    for pymol_object in all_objects:
+        if pymol_object not in objects_to_ignore:
+            objects_to_display.append(pymol_object)
+    dropdown_to_refresh.clear()
+    objects_to_display = sorted(objects_to_display)
+    dropdown_to_refresh.addItems(objects_to_display)
+    if len(objects_to_display) > 0:
+        dropdown_to_refresh.setCurrentText(objects_to_display[0])
+
+
 
 def refresh_dropdown(dropdown_to_refresh, output_box, filter_for='', no_warning=False,exclude=None, non_group=1, lig=0, add_none=0):
     list_pymol_objects = cmd.get_names('all')
