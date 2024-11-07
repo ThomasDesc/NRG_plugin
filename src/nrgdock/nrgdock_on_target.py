@@ -10,6 +10,7 @@ from PyQt5.QtGui import QStandardItemModel, QStandardItem, QMovie
 from pymol import cmd
 import multiprocessing
 import general_functions
+import re
 # TODO: run on more than 1 bd site
 # TODO: better folder management (store each run in a folder named by target, binding site, ligand set)
 # TODO: do not preprocess if new run uses same target and binding site
@@ -25,26 +26,37 @@ def get_group_of_object(object_name):
                 return pymol_object
     return None
 
-def show_ligand_from_table(table_object, index):
-    if index.column() == 0: # Corresponds to index of column
-        cell_text = table_object.model().data(index)
-        group_name = get_group_of_object(cell_text)
+def show_ligand_from_table(table_object):
+    selected_indexes = table_object.selectionModel().selectedIndexes()
+    ligands_to_show = []
+    for index in selected_indexes:
+        cell_text = index.data()
+        column = index.column()
+        if column == 0:
+            ligands_to_show.append(cell_text)
+    if ligands_to_show:
+        group_name = get_group_of_object(ligands_to_show[0])
         if not group_name:
             print('no group found')
         else:
-            objects = cmd.get_object_list(f'({group_name})')
-            for group_object in objects:
-                cmd.disable(group_object)
-            cmd.enable(cell_text)
-            cmd.zoom(cell_text, buffer=4, complete=1)
+            group_objects = cmd.get_object_list(f'({group_name})')
+            for group_object in group_objects:
+                if group_object not in ligands_to_show:
+                    cmd.disable(group_object)
+                else:
+                    cmd.enable(group_object)
+        bd_site_name = re.match(r"(.+?_bd_site_\d+)", group_name).group(1)
+        if bd_site_name:
+            cmd.zoom(bd_site_name, buffer=2, complete=1)
 
 
 class NRGDockManager:
-    def __init__(self, form, install_dir, ligand_set_folder_path):
+    def __init__(self, form, install_dir, ligand_set_folder_path, model):
         super().__init__()
         self.form = form
         self.install_dir = install_dir
         self.ligand_set_folder_path = ligand_set_folder_path
+        self.model = model
 
     def initialise_progress_bar(self):
         self.form.nrgdock_progress.show()
@@ -105,15 +117,14 @@ class NRGDockManager:
     def update_nrgdock_result_table(self, csv_result):
         df = pd.read_csv(csv_result)
         df = df[['Name', 'CF']]
-        model = QStandardItemModel()
-        model.setHorizontalHeaderLabels(df.columns.tolist())
+        self.model.setHorizontalHeaderLabels(df.columns.tolist())
         for index, row in df.iterrows():
             item_list = []
             for data in row:
                 item = QStandardItem(str(data))
                 item_list.append(item)
-            model.appendRow(item_list)
-        self.form.nrgdock_result_table.setModel(model)
+            self.model.appendRow(item_list)
+        self.form.nrgdock_result_table.setModel(self.model)
         self.form.nrgdock_result_table.resizeColumnsToContents()
         self.form.NRGDock_tabs.setTabEnabled(2, True)
         self.form.NRGDock_tabs.setCurrentIndex(2)
@@ -216,6 +227,7 @@ class NRGDockThread(QThread):
                 cmd.load(file_path)
                 cmd.group(f"{binding_site_name}_{ligand_set_name}", name)
         cmd.group('NRGDock', f"{binding_site_name}_{ligand_set_name}")
+        cmd.zoom(binding_site_name, buffer=4, complete=1)
 
     def run(self):
         self.message_signal.emit("=========== NRGDock ===========")

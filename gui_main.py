@@ -1,8 +1,5 @@
 import os
 import sys
-from gettext import install
-
-from src.nrgdock.generate_conformers import generate_conformers
 
 install_dir = os.path.dirname(__file__)
 sys.path.append(install_dir)
@@ -17,7 +14,8 @@ from src.surfaces import run_Surfaces
 from src.isomif import run_isomif
 from src.nrgdock import nrgdock_smiles_management
 import platform
-from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QWidget, QTableWidget
+from PyQt5.QtGui import QStandardItemModel
 from PyQt5.uic import loadUi
 from src.nrgten import run_NRGTEN
 try:
@@ -52,6 +50,9 @@ class Controller:
         self.operating_system = operating_system
         self.ligand_set_folder_path = ligand_set_folder_path
         self.color_list = color_list
+        # self.form.nrgdock_result_table.setSelectionMode(QTableWidget.MultiSelection)
+        self.model = QStandardItemModel()
+        self.form.nrgdock_result_table.setModel(self.model)
         self.setupConnections()
 
     def setupConnections(self):
@@ -89,7 +90,9 @@ class Controller:
         self.form.nrgdock_button_start.clicked.connect(self.run_nrgdock)
         self.form.nrgdock_button_cancel.clicked.connect(self.abort_nrgdock)
         self.form.nrgdock_result_browse_button.clicked.connect(lambda: general_functions.folder_browser(self.form.nrgdock_result_path, os.path.join(self.form.temp_line_edit.text(), 'NRGDock'), "CSV file (*.csv)"))
-        self.form.nrgdock_result_table.clicked.connect(lambda index: nrgdock_on_target.show_ligand_from_table(self.form.nrgdock_result_table, index))
+        # self.form.nrgdock_result_table.clicked.connect(lambda index: nrgdock_on_target.show_ligand_from_table(self.form.nrgdock_result_table, index))
+        self.form.nrgdock_result_table.selectionModel().selectionChanged.connect(lambda: nrgdock_on_target.show_ligand_from_table(self.form.nrgdock_result_table))
+        self.form.pushButton.clicked.connect(lambda: print(self.form.nrgdock_result_table.selectionModel()))
 
         # NRGDock ligand manager:
         self.form.nrgdock_add_ligandset_button.clicked.connect(lambda: general_functions.folder_browser(self.form.nrgdock_add_ligand_file_path, self.ligand_set_folder_path, "Smiles Files (*.smi)"))
@@ -183,7 +186,7 @@ class Controller:
             self.getcleftrunner.run_task()
 
     def run_nrgdock(self):
-        self.nrgdockrunner = nrgdock_on_target.NRGDockManager(self.form, install_dir, self.ligand_set_folder_path)
+        self.nrgdockrunner = nrgdock_on_target.NRGDockManager(self.form, install_dir, self.ligand_set_folder_path, self.model)
         self.nrgdockrunner.run_nrgdock()
 
     def abort_nrgdock(self):
