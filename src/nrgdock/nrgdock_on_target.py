@@ -89,7 +89,6 @@ class NRGDockManager:
                 elif not 1 <= int(number_of_rotations) <= 32:
                     general_functions.output_message(self.form.output_box, 'Number of rotations must be between 1 and 32 inclusively. Defaulting to 9', 'warning')
                     number_of_rotations = 9
-                print(number_of_rotations)
                 lines[line_counter] = f"{line.split(' ')[0]} {number_of_rotations}\n"
         with open(self.config_path, 'w') as out_file:
             out_file.writelines(lines)
