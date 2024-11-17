@@ -120,6 +120,7 @@ def show_save_dialog(self,temp_path,save=1):
 
 
 def refresh_dropdown_bd_site(dropdown_to_refresh, target, output_box):
+    #TODO: ADD button to add all binding site objects.
     if target is None or target == '':
         return
     else:

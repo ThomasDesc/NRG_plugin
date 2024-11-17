@@ -77,7 +77,7 @@ class Controller:
         self.form.cleft_partition_button_add.clicked.connect(
             lambda: spheres.display_sphere(self.form.cleft_partition_select_object.currentText(), self.form,
                                            self.form.cleft_partition_radius_slider, self.form.temp_line_edit.text()))
-        self.form.cleft_partition_button_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(self.form.cleft_partition_select_object, self.form.output_box,filter_for='_sph'))
+        self.form.cleft_partition_button_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(self.form.cleft_partition_select_object, self.form.output_box,filter_for='bd_site'))
         self.form.cleft_partition_button_move.clicked.connect(spheres.move_sphere)
         self.form.cleft_partition_radius_slider.valueChanged.connect( lambda: spheres.resize_sphere('SPHERE', self.form.cleft_partition_radius_slider.value()))
         self.form.cleft_partition_crop_button.clicked.connect(lambda: spheres.crop_cleft('SPHERE', self.form.cleft_partition_radius_slider.value() / 100, self.form.temp_line_edit.text(), self.form.cleft_partition_select_object.currentText(), self.form.output_box, self.form.cleft_partition_radius_slider))
