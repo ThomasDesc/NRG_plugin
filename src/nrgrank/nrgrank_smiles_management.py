@@ -23,7 +23,7 @@ class ConfGeneratorManager:
         self.file_management()
 
     def file_management(self):
-        smiles_path = self.form.nrgdock_add_ligand_file_path.text()
+        smiles_path = self.form.nrgrank_add_ligand_file_path.text()
         new_ligand_folder_name = os.path.splitext(os.path.basename(smiles_path).replace(' ', '_'))[0]
         self.new_ligand_folder_path = os.path.join(self.ligand_set_folder_path, new_ligand_folder_name)
         if not os.path.exists(self.new_ligand_folder_path):
@@ -45,12 +45,12 @@ class GenerateConformerThread(QThread):
         self.optimize = optimize
         self.custom_output_path = custom_output_path
         self.is_running = True
-        self.deps_path = os.path.join(self.install_dir, 'deps', 'nrgdock')
+        self.deps_path = os.path.join(self.install_dir, 'deps', 'nrgrank')
         self.config_path = os.path.join(self.deps_path, 'config.txt')
 
     def run(self):
-        print('running NRGDock thread')
-        generate_conformer_path = os.path.join(self.install_dir, 'src', 'nrgdock','generate_conformers.py')
+        print('running NRGRank thread')
+        generate_conformer_path = os.path.join(self.install_dir, 'src', 'nrgrank','generate_conformers.py')
         sdf_path = os.path.splitext(self.smiles_path)[0] + '.sdf'
         mol2_path = os.path.splitext(self.smiles_path)[0] + '.mol2'
         self.generate_conformer_process = subprocess.Popen([sys.executable,

@@ -194,6 +194,8 @@ def refresh_dropdown(dropdown_to_refresh, output_box, filter_for='', no_warning=
 
 
 def refresh_folder(folder_path, dropdown_to_refresh, ignore_defaults=False):
+    print('===========')
+    print(folder_path)
     folders = next(os.walk(folder_path))[1]
     if ignore_defaults:
         filtered_folders = []
@@ -271,7 +273,7 @@ def get_residue_info(selection):
     return residue_info
 
 def surfaces_enable_buttons(form):
-    form.flexaid_retrieve_nrgdock_ligands.setEnabled(True)
+    form.flexaid_retrieve_nrgrank_ligands.setEnabled(True)
     form.surfaces_retreive_flexaid_result.setEnabled(True)
 
 def load_color_list(color_list_path):

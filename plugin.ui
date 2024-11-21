@@ -112,9 +112,9 @@ QPushButton:checked{
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="button_nrgdock">
+          <widget class="QPushButton" name="button_nrgrank">
            <property name="text">
-            <string>NRGDock</string>
+            <string>NRGRank</string>
            </property>
            <property name="checkable">
             <bool>true</bool>
@@ -660,13 +660,13 @@ QPushButton:checked{
           </item>
          </layout>
         </widget>
-        <widget class="QWidget" name="nrgdock_page">
+        <widget class="QWidget" name="nrgrank_page">
          <property name="styleSheet">
           <string notr="true"/>
          </property>
          <layout class="QHBoxLayout" name="horizontalLayout_4">
           <item>
-           <widget class="QTabWidget" name="NRGDock_tabs">
+           <widget class="QTabWidget" name="NRGRank_tabs">
             <property name="enabled">
              <bool>true</bool>
             </property>
@@ -712,7 +712,7 @@ QFrame {
             <property name="tabsClosable">
              <bool>false</bool>
             </property>
-            <widget class="QWidget" name="nrgdock_settings">
+            <widget class="QWidget" name="nrgrank_settings">
              <attribute name="title">
               <string>Settings</string>
              </attribute>
@@ -731,7 +731,7 @@ QFrame {
                   </widget>
                  </item>
                  <item row="3" column="2">
-                  <widget class="QComboBox" name="nrgdock_cpu_usage_target">
+                  <widget class="QComboBox" name="nrgrank_cpu_usage_target">
                    <item>
                     <property name="text">
                      <string>25%</string>
@@ -755,7 +755,7 @@ QFrame {
                   </widget>
                  </item>
                  <item row="1" column="2">
-                  <widget class="QLineEdit" name="nrgdock_top_n_poses">
+                  <widget class="QLineEdit" name="nrgrank_top_n_poses">
                    <property name="enabled">
                     <bool>true</bool>
                    </property>
@@ -781,7 +781,7 @@ QFrame {
                   </widget>
                  </item>
                  <item row="2" column="2">
-                  <widget class="QLineEdit" name="nrgdock_start_ligand">
+                  <widget class="QLineEdit" name="nrgrank_start_ligand">
                    <property name="text">
                     <string>0</string>
                    </property>
@@ -805,7 +805,7 @@ QFrame {
                   </widget>
                  </item>
                  <item row="0" column="2">
-                  <widget class="QLineEdit" name="nrgdock_ligand_rotations">
+                  <widget class="QLineEdit" name="nrgrank_ligand_rotations">
                    <property name="text">
                     <string>9</string>
                    </property>
@@ -873,17 +873,17 @@ QFrame {
                       </widget>
                      </item>
                      <item row="0" column="1">
-                      <widget class="QLineEdit" name="nrgdock_add_ligand_file_path"/>
+                      <widget class="QLineEdit" name="nrgrank_add_ligand_file_path"/>
                      </item>
                      <item row="0" column="2">
-                      <widget class="QPushButton" name="nrgdock_add_ligandset_button">
+                      <widget class="QPushButton" name="nrgrank_add_ligandset_button">
                        <property name="text">
                         <string>Browse</string>
                        </property>
                       </widget>
                      </item>
                      <item row="1" column="1">
-                      <widget class="QPushButton" name="nrgdock_button_ligandset_add">
+                      <widget class="QPushButton" name="nrgrank_button_ligandset_add">
                        <property name="enabled">
                         <bool>true</bool>
                        </property>
@@ -907,14 +907,14 @@ QFrame {
                       </widget>
                      </item>
                      <item row="1" column="1">
-                      <widget class="QPushButton" name="nrgdock_ligand_set_delete">
+                      <widget class="QPushButton" name="nrgrank_ligand_set_delete">
                        <property name="text">
                         <string>Delete</string>
                        </property>
                       </widget>
                      </item>
                      <item row="0" column="1">
-                      <widget class="QComboBox" name="nrgdock_delete_ligand_set_dropdown">
+                      <widget class="QComboBox" name="nrgrank_delete_ligand_set_dropdown">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                          <horstretch>0</horstretch>
@@ -924,7 +924,7 @@ QFrame {
                       </widget>
                      </item>
                      <item row="0" column="2">
-                      <widget class="QPushButton" name="nrgdock_delete_ligand_set_refresh">
+                      <widget class="QPushButton" name="nrgrank_delete_ligand_set_refresh">
                        <property name="text">
                         <string>Refresh</string>
                        </property>
@@ -939,7 +939,7 @@ QFrame {
               </item>
              </layout>
             </widget>
-            <widget class="QWidget" name="nrgdock_run">
+            <widget class="QWidget" name="nrgrank_run">
              <attribute name="title">
               <string>Run</string>
              </attribute>
@@ -961,7 +961,7 @@ QFrame {
                   </widget>
                  </item>
                  <item row="0" column="1">
-                  <widget class="QComboBox" name="nrgdock_select_target">
+                  <widget class="QComboBox" name="nrgrank_select_target">
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                      <horstretch>0</horstretch>
@@ -971,7 +971,7 @@ QFrame {
                   </widget>
                  </item>
                  <item row="0" column="2">
-                  <widget class="QPushButton" name="nrgdock_target_refresh">
+                  <widget class="QPushButton" name="nrgrank_target_refresh">
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
                      <horstretch>0</horstretch>
@@ -991,7 +991,7 @@ QFrame {
                   </widget>
                  </item>
                  <item row="1" column="1">
-                  <widget class="QComboBox" name="nrgdock_select_ligand">
+                  <widget class="QComboBox" name="nrgrank_select_ligand">
                    <property name="currentText">
                     <string/>
                    </property>
@@ -1001,7 +1001,7 @@ QFrame {
                   </widget>
                  </item>
                  <item row="1" column="2">
-                  <widget class="QPushButton" name="nrgdock_ligand_set_refresh">
+                  <widget class="QPushButton" name="nrgrank_ligand_set_refresh">
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
                      <horstretch>0</horstretch>
@@ -1043,7 +1043,7 @@ QFrame {
                   </spacer>
                  </item>
                  <item>
-                  <widget class="QComboBox" name="nrgdock_select_binding_site">
+                  <widget class="QComboBox" name="nrgrank_select_binding_site">
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                      <horstretch>0</horstretch>
@@ -1075,7 +1075,7 @@ QFrame {
                </spacer>
               </item>
               <item>
-               <widget class="QGroupBox" name="nrgdock_progress">
+               <widget class="QGroupBox" name="nrgrank_progress">
                 <property name="enabled">
                  <bool>false</bool>
                 </property>
@@ -1092,14 +1092,14 @@ QFrame {
                  <item>
                   <layout class="QHBoxLayout" name="horizontalLayout_18">
                    <item>
-                    <widget class="QLabel" name="nrgdock_progress_label">
+                    <widget class="QLabel" name="nrgrank_progress_label">
                      <property name="text">
                       <string>Progress displayed here</string>
                      </property>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QLabel" name="nrgdock_loading_gif">
+                    <widget class="QLabel" name="nrgrank_loading_gif">
                      <property name="minimumSize">
                       <size>
                        <width>25</width>
@@ -1120,7 +1120,7 @@ QFrame {
                   </layout>
                  </item>
                  <item>
-                  <widget class="QProgressBar" name="nrgdock_progress_bar">
+                  <widget class="QProgressBar" name="nrgrank_progress_bar">
                    <property name="autoFillBackground">
                     <bool>false</bool>
                    </property>
@@ -1169,7 +1169,7 @@ QFrame {
                   <number>0</number>
                  </property>
                  <item>
-                  <widget class="QPushButton" name="nrgdock_button_start">
+                  <widget class="QPushButton" name="nrgrank_button_start">
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                      <horstretch>0</horstretch>
@@ -1177,7 +1177,7 @@ QFrame {
                     </sizepolicy>
                    </property>
                    <property name="text">
-                    <string>Run NRGDock</string>
+                    <string>Run NRGRank</string>
                    </property>
                    <property name="default">
                     <bool>true</bool>
@@ -1188,7 +1188,7 @@ QFrame {
                   </widget>
                  </item>
                  <item>
-                  <widget class="QPushButton" name="nrgdock_button_cancel">
+                  <widget class="QPushButton" name="nrgrank_button_cancel">
                    <property name="enabled">
                     <bool>false</bool>
                    </property>
@@ -1202,7 +1202,7 @@ QFrame {
               </item>
              </layout>
             </widget>
-            <widget class="QWidget" name="nrgdock_results">
+            <widget class="QWidget" name="nrgrank_results">
              <attribute name="title">
               <string>Results</string>
              </attribute>
@@ -1236,21 +1236,21 @@ QFrame {
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLineEdit" name="nrgdock_result_path">
+                  <widget class="QLineEdit" name="nrgrank_result_path">
                    <property name="text">
                     <string/>
                    </property>
                   </widget>
                  </item>
                  <item>
-                  <widget class="QPushButton" name="nrgdock_result_browse_button">
+                  <widget class="QPushButton" name="nrgrank_result_browse_button">
                    <property name="text">
                     <string>Browse</string>
                    </property>
                   </widget>
                  </item>
                  <item>
-                  <widget class="QPushButton" name="nrgdock_load_csv_button">
+                  <widget class="QPushButton" name="nrgrank_load_csv_button">
                    <property name="text">
                     <string>Load CSV</string>
                    </property>
@@ -1260,7 +1260,7 @@ QFrame {
                </widget>
               </item>
               <item>
-               <widget class="QTableView" name="nrgdock_result_table"/>
+               <widget class="QTableView" name="nrgrank_result_table"/>
               </item>
              </layout>
             </widget>

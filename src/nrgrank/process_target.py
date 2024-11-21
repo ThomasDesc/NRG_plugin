@@ -1,41 +1,14 @@
 import os
-from time import perf_counter
-
 import numpy as np
 from numba import njit
-import sys
-install_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-sys.path.append(install_dir)
-from src.nrgdock.nrgdock import get_params_dict
+from nrgrank_general_functions import get_params_dict, load_rad_dict, get_radius_number, write_pdb
 import shutil
-# from process_ligands import preprocess_ligands_one_target as preprocess_ligand
 import timeit
 import concurrent.futures
-# from itertools import repeat
 import argparse
 from pathlib import Path
-import json
-import time
-
-def load_rad_dict(filepath):
-    with open(filepath, 'r') as file:
-        loaded_atom_data = json.load(file)
-    return loaded_atom_data
-
-
-def get_radius_number(letter_type, rad_dict):
-    if isinstance(letter_type, int):
-        return list(rad_dict.values())[letter_type-1][1]
-    else:
-        letter_type = letter_type.upper().replace(' ', '')
-        try:
-            atm_info = [rad_dict[letter_type]['type_number'], rad_dict[letter_type]['radius']]
-        except KeyError:
-            atm_info = [39, 2.00]
-        atm_type_num = atm_info[0]
-        atm_rad = atm_info[1]
-        return atm_type_num, atm_rad
-
+import traceback
+from datetime import date
 
 def load_atoms_mol2(filename, rad_dict):
     coord_start = 0
@@ -66,33 +39,15 @@ def load_atoms_mol2(filename, rad_dict):
     return atoms_xyz, atoms_types_sorted, atoms_radius
 
 
-def find_cleft_file(target_folder, ligand_name=None):
-    print('Running GetCleft')
-    receptor_pdb_path = os.path.join(target_folder, "receptor.pdb")
-    if not os.path.exists(receptor_pdb_path):
-        exit('Could not find receptor.pdb file')
-    get_cleft_folder = os.path.join(target_folder, "get_cleft")
-    if not os.path.isdir(get_cleft_folder):
-        os.mkdir(get_cleft_folder)
-    get_cleft_path = ''
-    output = os.path.join(get_cleft_folder, "bd_site")
-    get_cleft_command = f'{get_cleft_path} -p "{receptor_pdb_path}" -o "{output}" -l 1.75 -u 3.6 -s -t 1'
-    if ligand_name:
-        get_cleft_command += f' -a {ligand_name}-'
-    # print(get_cleft_command)
-    os.system(get_cleft_command)
-    for file in os.listdir(get_cleft_folder):
-        if file.find("_sph_") != -1:
-            return
-    exit('Could not find binding site file')
-
-
-
 def find_cleft_file_simple(target_folder):
     get_cleft_folder = os.path.join(target_folder, "get_cleft")
-    for file in os.listdir(get_cleft_folder):
-        if file.find("_sph_") != -1:
-            return os.path.join(get_cleft_folder, file)
+    if not os.path.exists(get_cleft_folder):
+        exit(f'Folder does not exist: {get_cleft_folder}')
+    binding_site_files = sorted([file for file in os.listdir(get_cleft_folder) if (file.find('_sph_') != -1) or (file.find('bd_site') != -1) and file.find('clf') == -1])
+    if len(binding_site_files) > 0:
+        return os.path.join(get_cleft_folder, binding_site_files[0])
+    else:
+        exit('Could not find binding site file with _sph_ in the name in: ' + get_cleft_folder)
 
 
 def load_binding_site_pdb(binding_site):
@@ -107,7 +62,7 @@ def load_binding_site_pdb(binding_site):
     return atom_coord_type_list
 
 
-def load_binding_site_grid(dot_division, a, target_path, padding):
+def make_binding_site_cuboid(dot_division, a, padding, preprocessed_file_path):
     # find min and max coords for box as well as remove or add sphere radius
     x = [np.min(a[:, 0]) - a[np.argmin(a[:, 0]), 3] - padding, np.max(a[:, 0]) + a[np.argmax(a[:, 0]), 3] + padding]
     y = [np.min(a[:, 1]) - a[np.argmin(a[:, 1]), 3] - padding, np.max(a[:, 1]) + a[np.argmax(a[:, 1]), 3] + padding]
@@ -117,26 +72,23 @@ def load_binding_site_grid(dot_division, a, target_path, padding):
         for y_coord in y:
             for z_coord in z:
                 bd_site_box.append([x_coord, y_coord, z_coord])
-    # write_test(bd_site_box, f"{os.path.split(target_path)[-1]}_bd_site_box", f'./temp/ligand_poses', None, None)
+    # write_pdb(bd_site_box, f"{os.path.split(target_path)[-1]}_bd_site_box", f'./temp/ligand_poses', None, None)
     x_range = np.arange(x[0], x[1], dot_division)
     y_range = np.arange(y[0], y[1], dot_division)
     z_range = np.arange(z[0], z[1], dot_division)
-    np.save(os.path.join(target_path, 'preprocessing_files', "range_array"), np.stack((x, y, z)))
+    np.save(os.path.join(preprocessed_file_path, "bd_site_cuboid_coord_range_array"), np.stack((x, y, z)))
     return x_range, y_range, z_range
 
 
-def build_3d_cube_grid(params, target_atoms_xyz, atoms_radius, cw_factor=1):
+def build_index_cubes(params, target_atoms_xyz, atoms_radius, preprocessed_file_path, cw_factor=1):
     water_radius = params['WATER_RADIUS']
-    grid_placeholder = params['GRID_PLACEHOLDER']
+    grid_placeholder = -1
     max_rad = np.amax(atoms_radius, axis=0)
     cell_width = 2 * (max_rad + water_radius)
-    #cell_width = 4
-    # max_xyz = np.amax(target_atoms_xyz, axis=0)
     max_xyz = np.zeros(3)
     max_xyz[0] = np.max(target_atoms_xyz[:, 0]) + cell_width*cw_factor
     max_xyz[1] = np.max(target_atoms_xyz[:, 1]) + cell_width*cw_factor
     max_xyz[2] = np.max(target_atoms_xyz[:, 2]) + cell_width*cw_factor
-    # min_xyz = np.amin(target_atoms_xyz, axis=0)
     min_xyz = np.zeros(3)
     min_xyz[0] = np.min(target_atoms_xyz[:, 0]) - cell_width*cw_factor
     min_xyz[1] = np.min(target_atoms_xyz[:, 1]) - cell_width*cw_factor
@@ -165,47 +117,36 @@ def build_3d_cube_grid(params, target_atoms_xyz, atoms_radius, cw_factor=1):
             for k in range(lengths[2]):
                 for x, v in enumerate(temp_grid[i][j][k]):
                     grid[i][j][k][x] = v
+    np.save(os.path.join(preprocessed_file_path, f"index_cube_min_xyz"), min_xyz)
+    np.save(os.path.join(preprocessed_file_path, f"index_cube_cell_width"), cell_width)
     return grid, min_xyz, cell_width, max_xyz
 
 
-def get_radius_list_from_nums(rad_dict, target_path, constant_radius):
-    if constant_radius is not None:
-        atom_number_list = np.arange(1, 40, 1, dtype=np.int32)
-        num_rad_list = np.zeros((len(atom_number_list), 2), dtype=np.float32)
-        for a, number in enumerate(atom_number_list):
-            num_rad_list[a][0] = number
-            num_rad_list[a][1] = constant_radius
-    else:
-        num_rad_list = [[details['type_number'], details['radius']] for details in rad_dict.values()]
-        num_rad_list = np.array(sorted(num_rad_list, key=lambda x: x[0]))
-    np.save(os.path.join(target_path, 'preprocessing_files', "minimum_radius_list"), num_rad_list)
-    return num_rad_list
+def prepare_preprocess_output(path_to_target, params_dict, original_config_path, overwrite):
+    numpy_output_path = os.path.join(path_to_target, 'preprocessed_target')
+    os.makedirs(numpy_output_path, exist_ok=True)
 
-
-def prepare_preprocess_output(path_to_target, params_dict, config_file_path):
-    numpy_output_path = os.path.join(path_to_target, 'preprocessing_files')
-    if not os.path.isdir(numpy_output_path):
-        os.mkdir(numpy_output_path)
-
-    config_file_name = f"config_{params_dict['PRELOAD_GRID_DISTANCE']}"
+    config_file_name = f"config_{params_dict['CLASH_DOT_DISTANCE']}"
     config_output = os.path.join(numpy_output_path, config_file_name + ".txt")
-    if os.path.isfile(config_output):
-        config_file_number = 1
-        while os.path.isfile(os.path.join(numpy_output_path, config_file_name + f'_{config_file_number}.txt')):
-            config_file_number += 1
-        config_output = os.path.join(numpy_output_path, config_file_name + f'_{config_file_number}.txt')
-    shutil.copyfile(config_file_path, config_output)
+    if os.path.exists(config_output):
+        if overwrite:
+            os.remove(config_output)
+            shutil.copyfile(original_config_path, config_output)
+        else:
+            print(f"(WARNING) Config file already exists and overwrite flag is missing: {config_output}")
+            return numpy_output_path
+    shutil.copyfile(original_config_path, config_output)
+    with open(config_output, "a") as config_file:
+        config_file.write(f"DATE_PREPARED {date.today().strftime("%d/%m/%Y")}")
     return numpy_output_path
 
 
-def load_ligand_test_dots(params, atom_coord_type_list):
-    """ This will load the binding site spheres, find the extreme values for x, y, z, then build a grid of points
-    and remove the ones that clash with the target atoms.
-    """
-    dot_division = params['DOT_DIVISION']
+def load_ligand_test_dots(params, binding_site_spheres):
+    """ This function uses the binding site spheres to make dots on which the ligand will be centered for testing poses"""
+    dot_division = params['LIGAND_TEST_DOT_SEPARATION']
     grid_coords = []
-    a = np.array(atom_coord_type_list)
-    # find min and max coords for box as well as remove or add sphere radius
+    a = np.array(binding_site_spheres)
+
     x = [round(np.min(a[:, 0]) - a[np.argmin(a[:, 0]), 3], 3), round(np.max(a[:, 0]) + a[np.argmax(a[:, 0]), 3], 3)]
     y = [round(np.min(a[:, 1]) - a[np.argmin(a[:, 1]), 3], 3), round(np.max(a[:, 1]) + a[np.argmax(a[:, 1]), 3], 3)]
     z = [round(np.min(a[:, 2]) - a[np.argmin(a[:, 2]), 3], 3), round(np.max(a[:, 2]) + a[np.argmax(a[:, 2]), 3], 3)]
@@ -222,9 +163,8 @@ def load_ligand_test_dots(params, atom_coord_type_list):
     return grid_coords
 
 
-def clean_binding_site_grid(params, target_grid, binding_site_grid, min_xyz, cell_width, target_atoms_xyz, target_path):
+def clean_binding_site_grid(target_grid, binding_site_grid, min_xyz, cell_width, target_atoms_xyz, ligand_test_dot_file_path):
     index = []
-    dot_division = params['DOT_DIVISION']
     for a, point in enumerate(binding_site_grid):
         grid_index = ((point - min_xyz) / cell_width).astype(np.int32)
         for i_offset in [-1, 0, 1]:
@@ -246,44 +186,22 @@ def clean_binding_site_grid(params, target_grid, binding_site_grid, min_xyz, cel
 
                                     break
     cleaned_binding_site_grid = np.delete(binding_site_grid, index, 0)
-    # write_test(cleaned_binding_site_grid, "cleaned grid", f'./temp/ligand_poses/', None, None)
-    np.save(os.path.join(target_path, 'preprocessing_files', f"cleaned_grid_{dot_division}"), cleaned_binding_site_grid)
-
-
-def write_dots_for_3d_cube(cell_width, min_xyz, max_xyz):
-    coord_list = []
-    name_list = []
-    for x in np.arange(min_xyz[0], max_xyz[0], cell_width):
-        for y in np.arange(min_xyz[1], max_xyz[1], cell_width):
-            for z in np.arange(min_xyz[2], max_xyz[2], cell_width):
-                coord_list.append([x, y, z])
-                if not name_list:
-                    name_list = ["O"]
-                elif name_list == ["O"]:
-                    name_list.append("N")
-                else:
-                    name_list.append("C")
-    # write_test(coord_list, "binding_grid_test", r"C:\Users\thoma\Desktop\rotation_fix", name_list, None)
+    # write_pdb(cleaned_binding_site_grid, "cleaned grid", f'./temp/ligand_poses/', None, None)
+    np.save(ligand_test_dot_file_path, cleaned_binding_site_grid)
 
 
 @njit
 def get_cf_list(target_grid, atom_type_range, target_atom_types, energy_matrix, number_types):
-    # test_dot = [[0, 0, 9]]
-    # test_dot = np.array(test_dot)
-    # test_dot = (test_dot * cell_width + min_xyz) - (cell_width/2)
-    # write_test(test_dot, "test_dot", r"C:\Users\thoma\Desktop\rotation_fix", None, None)
     target_grid_x = len(target_grid)
     target_grid_y = len(target_grid[0])
     target_grid_z = len(target_grid[0][0])
     result_array = np.zeros((target_grid_x, target_grid_y, target_grid_z, number_types))
     for x in np.arange(0, target_grid_x):
-        # print(f"{x}/{target_grid_x}")
         for y in np.arange(0, target_grid_y):
             for z in np.arange(0, target_grid_z):
                 grid_index = [x, y, z]
                 for counter, atom_type in enumerate(atom_type_range):
                     cf = 0.0
-                    # if atom_type != 3:
                     for i_offset in [-1, 0, 1]:
                         for j_offset in [-1, 0, 1]:
                             for k_offset in [-1, 0, 1]:
@@ -309,29 +227,19 @@ def get_cf_list(target_grid, atom_type_range, target_atom_types, energy_matrix, 
 
 
 @njit
-def get_clash_per_dot(x_range, y_range, z_range, target_grid, min_xyz, cell_width, target_atoms_xyz, max_size_array,
-                      total_coords, use_clash):
+def get_clash_per_dot(x_range, y_range, z_range, target_grid, min_xyz, cell_width, target_atoms_xyz, max_size_array):
     clash_list = np.zeros((max_size_array[0], max_size_array[1], max_size_array[2]), dtype=np.bool_)
     for a, x_value in enumerate(x_range):
         for b, y_value in enumerate(y_range):
             for c, z_value in enumerate(z_range):
                 ligand_atom = np.array([x_value, y_value, z_value], dtype=np.float32)
-                clash_list[a][b][c] = get_clash(ligand_atom, target_grid, min_xyz, cell_width, target_atoms_xyz,
-                                                use_clash)
+                clash_list[a][b][c] = get_clash_for_dot(ligand_atom, target_grid, min_xyz, cell_width, target_atoms_xyz)
     return clash_list
 
-
-def save_files(min_xyz, cell_width, preprocessed_file_path):
-    np.save(os.path.join(preprocessed_file_path, f"min_xyz"), min_xyz)
-    np.save(os.path.join(preprocessed_file_path, f"cell_width"), cell_width)
-
-
 @njit
-def get_clash(ligand_atom_coord, target_grid, min_xyz, cell_width, target_atoms_xyz, use_clash):
+def get_clash_for_dot(ligand_atom_coord, target_grid, min_xyz, cell_width, target_atoms_xyz):
     # TODO: test if clashes per radius associated to each type is better
-    # array_to_fill = np.full(type_to_test[:, 1].size, default_cf, dtype=np.float32)
     clash = False
-    # for counter, radius in enumerate(type_to_test):
     grid_index = ((ligand_atom_coord - min_xyz) / cell_width).astype(np.int32)
     for i_offset in [-1, 0, 1]:
         for j_offset in [-1, 0, 1]:
@@ -345,82 +253,70 @@ def get_clash(ligand_atom_coord, target_grid, min_xyz, cell_width, target_atoms_
                             if neighbour == -1:
                                 break
                             else:
-                                if use_clash is not None:
-                                    dist = np.linalg.norm(target_atoms_xyz[neighbour] - ligand_atom_coord)
-                                    if dist <= 2.0:
-                                        clash = True
-                                        return clash
+                                dist = np.linalg.norm(target_atoms_xyz[neighbour] - ligand_atom_coord)
+                                if dist <= 2.0:
+                                    clash = True
+                                    return clash
     return clash
 
 
-def preprocess_one_target(target, main_path, params_dict, energy_matrix, time_start, overwrite, run_getcleft,
-                          config_file_path, deps_path, ligand_name=None, verbose=True):
-    if verbose:
-        print(f"Target: {target}")
+def preprocess_one_target(target, main_path, params_dict, energy_matrix, time_start, overwrite, verbose=True, deps_folder=None):
+    root_software_path = Path(__file__).resolve().parents[1]
+    if not deps_folder:
+        deps_folder = os.path.join(root_software_path, 'deps')
+    config_file_path = os.path.join(deps_folder, 'config.txt')
     target_path = str(os.path.join(main_path, target))
     receptor_path = os.path.join(target_path, "receptor.mol2")
-    print(receptor_path)
+    use_clash = params_dict["USE_CLASH"]
     if not os.path.isfile(receptor_path):
         exit(f"Could not find receptor.mol2 file at path: {receptor_path}")
 
-    # ####################### GET BINDING SITE #######################
-    if verbose:
-        print("Finding Binding site")
-    if run_getcleft:
-        find_cleft_file(target_path, ligand_name)
-    
-    # ####################### BUILDING GRIDS #######################
-    if verbose:
-        print('Building grids')
-    preprocessed_file_path = prepare_preprocess_output(target_path, params_dict, config_file_path)
-    rad_dict = load_rad_dict(os.path.join(deps_path, "atom_type_radius.json"))
-    use_clash = params_dict["USE_CLASH"]
-    use_constant_radius = params_dict['CONSTANT_RADIUS']
-    grid_distance = params_dict['PRELOAD_GRID_DISTANCE']
-    precalculated_cf_box_padding = params_dict["CF_PRECALC_BOX_PADDING"]
-    dot_division = params_dict['DOT_DIVISION']
-    constant_radius = None
-    if use_constant_radius:
-        constant_radius = params_dict['ATOM_RADIUS']
+    # ####################### DEFINE CUBOID AROUND BINDING SITE #######################
+
+    rad_dict = load_rad_dict(os.path.join(deps_folder, "atom_type_radius.json"))
+    clash_grid_distance = params_dict['CLASH_DOT_DISTANCE']
+    bd_site_cuboid_padding = params_dict["BD_SITE_CUBOID_PADDING"]
+    dot_division = params_dict['LIGAND_TEST_DOT_SEPARATION']
+    number_of_atom_types = 39
+
     binding_site = find_cleft_file_simple(target_path)
-    radius_list = get_radius_list_from_nums(rad_dict, target_path, constant_radius)
     target_atoms_xyz, target_atoms_types, atoms_radius = load_atoms_mol2(receptor_path, rad_dict)
-    target_grid, min_xyz, cell_width, max_xyz = build_3d_cube_grid(params_dict, target_atoms_xyz, atoms_radius)
-    # write_dots_for_3d_cube(cell_width, min_xyz, max_xyz)
-    save_files(min_xyz, cell_width, preprocessed_file_path)
+    preprocessed_file_path = prepare_preprocess_output(target_path, params_dict, config_file_path, overwrite)
+    index_cubes, min_xyz, cell_width, max_xyz = build_index_cubes(params_dict, target_atoms_xyz, atoms_radius, preprocessed_file_path)
     binding_site_spheres = load_binding_site_pdb(binding_site)
-    x_range, y_range, z_range = load_binding_site_grid(grid_distance, np.array(binding_site_spheres), target_path,
-                                                       precalculated_cf_box_padding)
+    binding_site_x_range, binding_site_y_range, binding_site_z_range = make_binding_site_cuboid(clash_grid_distance,
+                                                                                                np.array(binding_site_spheres),
+                                                                                                bd_site_cuboid_padding,
+                                                                                                preprocessed_file_path)
 
     # ####################### PRECALCULATE CF #######################
-
-    if verbose:
-        print('Precalculating CF')
-    if not os.path.isfile(
-            os.path.join(preprocessed_file_path, f"cf_list_{grid_distance}.npy")) or overwrite:
-        max_size_array = np.array([len(x_range), len(y_range), len(z_range), len(radius_list)], dtype=np.int32)
-        total_coords = max_size_array[0] * max_size_array[1] * max_size_array[2]
-        atom_type_range = np.arange(1, len(radius_list)+1)
-
+    cf_array_path = os.path.join(preprocessed_file_path, "cf_list.npy")
+    clash_file_path = os.path.join(preprocessed_file_path, f"clash_list_{clash_grid_distance}.npy")
+    if not os.path.isfile(cf_array_path) or overwrite:
+        max_size_array = np.array([len(binding_site_x_range), len(binding_site_y_range), len(binding_site_z_range), number_of_atom_types], dtype=np.int32)
+        atom_type_range = np.arange(1, number_of_atom_types+1)
         if use_clash:
-            print('Getting clashes')
-            clash_list = get_clash_per_dot(x_range, y_range, z_range, target_grid, min_xyz, cell_width,
-                                           target_atoms_xyz, max_size_array, total_coords, constant_radius)
-            np.save(os.path.join(preprocessed_file_path, f"clash_list_{grid_distance}"), clash_list)
-        cfs_list = get_cf_list(target_grid, atom_type_range, target_atoms_types, energy_matrix, len(radius_list))
-        np.save(os.path.join(preprocessed_file_path, f"cf_list_{grid_distance}"), cfs_list)
+            if verbose:
+                print('Getting clashes')
+            clash_list = get_clash_per_dot(binding_site_x_range, binding_site_y_range, binding_site_z_range,
+                                           index_cubes, min_xyz, cell_width, target_atoms_xyz, max_size_array)
+            np.save(clash_file_path, clash_list)
+        if verbose:
+            print('Precalculating CF')
+        cfs_list = get_cf_list(index_cubes, atom_type_range, target_atoms_types, energy_matrix, number_of_atom_types)
+        np.save(cf_array_path, cfs_list)
     else:
-        print(f"CF already precalculated for {grid_distance} A between atoms")
+        print(f"CF already precalculated. Use -o flag if you wish to overwrite.")
 
-    # ####################### GENERATE AND CLEAN BINDING SITE GRID #######################
+    # ####################### GENERATE AND CLEAN LIGAND TEST DOTS #######################
 
-    if not os.path.isfile(os.path.join(preprocessed_file_path, f"cleaned_grid_{dot_division}.npy")) or overwrite:
+    ligand_test_dot_file_path = os.path.join(preprocessed_file_path, f"ligand_test_dots_{dot_division}.npy")
+    if not os.path.isfile(ligand_test_dot_file_path) or overwrite:
         original_grid = load_ligand_test_dots(params_dict, binding_site_spheres)
-        clean_binding_site_grid(params_dict, target_grid, original_grid, min_xyz, cell_width, target_atoms_xyz,
-                                target_path)
+        clean_binding_site_grid(index_cubes, original_grid, min_xyz, cell_width, target_atoms_xyz,
+                                ligand_test_dot_file_path)
     else:
         print(f"The file for binding site dots at {dot_division} A distance already exists")
-
     if verbose:
         total_run_time = timeit.default_timer() - time_start
         if total_run_time > 60.0:
@@ -438,39 +334,32 @@ def get_args():
                         help='Specify target(s) to analyse. If multiple: separate with comma no space')
     parser.add_argument('-o', '--overwrite', action='store_true',
                         help='specify if you want to overwrite pre existing files')
-    parser.add_argument("-c", '--run_getcleft', action='store_true',
-                                   help='Specify if you want to run GetCleft')
-    parser.add_argument("-l", '--ligand_name', type=str,
-                        help='Ligand for GetCleft format (no spaces ex: RES999A): residue, number, chain')
-    parser.add_argument("-d", '--deps_path', type=str,
-                        help='path to deps')
-    args = parser.parse_args()
-    if args.ligand_name and args.run_getcleft is None:
-        parser.error("-l (--ligand_name) requires -c (--run_getcleft).")
+    parser.add_argument("-d", '--deps_path', type=str, help='Path to deps')
 
+    args = parser.parse_args()
     path_to_targets = os.path.abspath(args.path_to_targets)
     if args.specific_target is None:
         target_list = next(os.walk(path_to_targets))[1]
     else:
         target_list = args.specific_target.split(',')
-    if args.deps_path is None:
-        deps_path=None
-    else:
-        deps_path = args.deps_path
     target_list = sorted(target_list)
-    main(path_to_targets, target_list, overwrite=args.overwrite, run_getcleft=args.run_getcleft, ligand_name=args.ligand_name, deps_path=deps_path)
+    deps_path = args.deps_path
+    main(path_to_targets, target_list, overwrite=args.overwrite, deps_path=deps_path)
 
 
-def main(path_to_targets, target_list, overwrite=False, run_getcleft=False, ligand_name=None, deps_path=os.path.join('.', 'deps')):
-    # print('WARNING randomly assigning atom type when calculating cf')
+def main(path_to_targets, target_list, overwrite=False, deps_path=None):
     root_software_path = Path(__file__).resolve().parents[1]
     os.chdir(root_software_path)
     time_start = timeit.default_timer()
-    print(deps_path)
-    config_file = os.path.join(deps_path, "config.txt")
-    params_dict = get_params_dict(config_file)
-    matrix_name = params_dict['PRECALC_MATRIX_NAME']
-    matrix_path = os.path.join(deps_path, fr"matrix/{matrix_name}.npy")
+    if deps_path is None:
+        deps_path = os.path.join('.', 'deps')
+    config_file_path = os.path.join(deps_path, 'config.txt')
+    params_dict = get_params_dict(config_file_path)
+    use_clash = params_dict["USE_CLASH"]
+    if use_clash:
+        print('Running in clean mode (ignoring poses with clashes)')
+    matrix_name = params_dict['MATRIX_NAME']
+    matrix_path = os.path.join(deps_path, 'matrix', f'{matrix_name}.npy')
     energy_matrix = np.load(matrix_path)
     verbose = True
     if len(target_list) > 1:
@@ -478,12 +367,23 @@ def main(path_to_targets, target_list, overwrite=False, run_getcleft=False, liga
         print('Preprocessing targets: ', target_list)
     else:
         print('Preprocessing target: ', target_list[0])
-    preprocess_one_target(target_list[0], path_to_targets, params_dict, energy_matrix, time_start, overwrite,
-                          run_getcleft, config_file, deps_path, ligand_name, verbose)
-    # with concurrent.futures.ProcessPoolExecutor(max_workers=32) as executor:
-    #     executor.map(preprocess_one_target, target_list, repeat(path_to_targets), repeat(params_dict),
-    #                  repeat(energy_matrix), repeat(time_start), repeat(overwrite), repeat(run_getcleft),
-    #                  repeat(ligand_name), repeat(verbose))
+
+    if len(target_list) == 1:
+        preprocess_one_target(target_list[0], path_to_targets, params_dict, energy_matrix, time_start, overwrite, verbose, deps_path)
+    else:
+        with concurrent.futures.ProcessPoolExecutor(max_workers=32) as executor:
+            futures = []
+            for target in target_list:
+                futures.append(
+                    executor.submit(preprocess_one_target, target, path_to_targets, params_dict, energy_matrix, time_start,
+                                    overwrite, verbose, deps_path))
+            for future in concurrent.futures.as_completed(futures):
+                try:
+                    future.result()
+                except Exception as e:
+                    print(f"Error in processing task: {e}")
+                    print("Traceback:")
+                    traceback.print_exc()
 
 
 if __name__ == "__main__":

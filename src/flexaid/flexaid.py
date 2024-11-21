@@ -164,7 +164,7 @@ class FlexAIDManager:
         cmd.disable('everything')
         true_result = 0
         cmd.delete(f'FlexAID_{self.binding_site_name}')
-        cmd.disable('NRGDock,GetCleft,Surfaces')
+        cmd.disable('NRGRank,GetCleft,Surfaces')
         results_group_name = f"flx_{self.ligand_name}_{self.binding_site_name}_{self.simulation_settings['number_chromosomes']}x{self.simulation_settings['number_generations']}"
         for file in result_files:
             if file.startswith('RESULT') and not file.endswith('INI.pdb') and file.endswith('.pdb'):

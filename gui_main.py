@@ -7,12 +7,12 @@ import shutil
 import subprocess
 from src.flexaid.flexaid import FlexAIDManager, stop_simulation, abort_simulation, pause_resume_simulation
 from src.getcleft import getcleft
-from src.nrgdock import nrgdock_on_target
+from src.nrgrank import nrgrank_on_target
 from src.getcleft import spheres
 import general_functions
 from src.surfaces import run_Surfaces
 from src.isomif import run_isomif
-from src.nrgdock import nrgdock_smiles_management
+from src.nrgrank import nrgrank_smiles_management
 import platform
 from PyQt5.QtWidgets import QWidget, QTableWidget
 from PyQt5.QtGui import QStandardItemModel
@@ -25,7 +25,7 @@ except ImportError:
 else:
     from src.modeller import run_modeller
 # TODO: when showing surfaces result hide everything else
-# TODO: clickable results in nrgdock table
+# TODO: clickable results in nrgrank table
 
 def test_binary(binary_folder_path, operating_system):
     all_files = os.listdir(binary_folder_path)
@@ -50,14 +50,14 @@ class Controller:
         self.operating_system = operating_system
         self.ligand_set_folder_path = ligand_set_folder_path
         self.color_list = color_list
-        # self.form.nrgdock_result_table.setSelectionMode(QTableWidget.MultiSelection)
+        # self.form.nrgrank_result_table.setSelectionMode(QTableWidget.MultiSelection)
         self.model = QStandardItemModel()
-        self.form.nrgdock_result_table.setModel(self.model)
+        self.form.nrgrank_result_table.setModel(self.model)
         self.setupConnections()
 
     def setupConnections(self):
         self.form.button_getcleft.clicked.connect(lambda: self.form.stackedWidget.setCurrentIndex(0))
-        self.form.button_nrgdock.clicked.connect(lambda: self.form.stackedWidget.setCurrentIndex(1))
+        self.form.button_nrgrank.clicked.connect(lambda: self.form.stackedWidget.setCurrentIndex(1))
         self.form.button_flexaid.clicked.connect(lambda: self.form.stackedWidget.setCurrentIndex(2))
         self.form.button_surfaces.clicked.connect(lambda: self.form.stackedWidget.setCurrentIndex(3))
         self.form.button_nrgten.clicked.connect(lambda: self.form.stackedWidget.setCurrentIndex(4))
@@ -83,20 +83,20 @@ class Controller:
         self.form.cleft_partition_crop_button.clicked.connect(lambda: spheres.crop_cleft('SPHERE', self.form.cleft_partition_radius_slider.value() / 100, self.form.temp_line_edit.text(), self.form.cleft_partition_select_object.currentText(), self.form.output_box, self.form.cleft_partition_radius_slider))
         self.form.cleft_partition_button_delete.clicked.connect(lambda: spheres.delete_sphere('SPHERE', self.form.cleft_partition_radius_slider))
 
-        # NRGDock:
-        self.form.nrgdock_target_refresh.clicked.connect(lambda: general_functions.refresh_dropdown_target(self.form.nrgdock_select_target, self.form.output_box))
-        self.form.nrgdock_select_target.currentIndexChanged.connect(lambda: general_functions.refresh_dropdown_bd_site(self.form.nrgdock_select_binding_site, self.form.nrgdock_select_target.currentText(), self.form.output_box))
-        self.form.nrgdock_ligand_set_refresh.clicked.connect(lambda: general_functions.refresh_folder(self.ligand_set_folder_path, self.form.nrgdock_select_ligand))
-        self.form.nrgdock_button_start.clicked.connect(self.run_nrgdock)
-        self.form.nrgdock_button_cancel.clicked.connect(self.abort_nrgdock)
-        self.form.nrgdock_result_browse_button.clicked.connect(lambda: general_functions.folder_browser(self.form.nrgdock_result_path, os.path.join(self.form.temp_line_edit.text(), 'NRGDock'), "CSV file (*.csv)"))
-        self.form.nrgdock_result_table.selectionModel().selectionChanged.connect(lambda: nrgdock_on_target.show_ligand_from_table(self.form.nrgdock_result_table, self.form.nrgdock_select_binding_site.currentText(), self.form.nrgdock_select_ligand.currentText()))
+        # NRGRank:
+        self.form.nrgrank_target_refresh.clicked.connect(lambda: general_functions.refresh_dropdown_target(self.form.nrgrank_select_target, self.form.output_box))
+        self.form.nrgrank_select_target.currentIndexChanged.connect(lambda: general_functions.refresh_dropdown_bd_site(self.form.nrgrank_select_binding_site, self.form.nrgrank_select_target.currentText(), self.form.output_box))
+        self.form.nrgrank_ligand_set_refresh.clicked.connect(lambda: general_functions.refresh_folder(self.ligand_set_folder_path, self.form.nrgrank_select_ligand))
+        self.form.nrgrank_button_start.clicked.connect(self.run_nrgrank)
+        self.form.nrgrank_button_cancel.clicked.connect(self.abort_nrgrank)
+        self.form.nrgrank_result_browse_button.clicked.connect(lambda: general_functions.folder_browser(self.form.nrgrank_result_path, os.path.join(self.form.temp_line_edit.text(), 'NRGRank'), "CSV file (*.csv)"))
+        self.form.nrgrank_result_table.selectionModel().selectionChanged.connect(lambda: nrgrank_on_target.show_ligand_from_table(self.form.nrgrank_result_table, self.form.nrgrank_select_binding_site.currentText(), self.form.nrgrank_select_ligand.currentText()))
 
-        # NRGDock ligand manager:
-        self.form.nrgdock_add_ligandset_button.clicked.connect(lambda: general_functions.folder_browser(self.form.nrgdock_add_ligand_file_path, self.ligand_set_folder_path, "Smiles Files (*.smi)"))
-        self.form.nrgdock_delete_ligand_set_refresh.clicked.connect(lambda: general_functions.refresh_folder(self.ligand_set_folder_path, self.form.nrgdock_delete_ligand_set_dropdown, ignore_defaults=True))
-        self.form.nrgdock_ligand_set_delete.clicked.connect(lambda: nrgdock_smiles_management.delete_ligand_set(self.form.nrgdock_delete_ligand_set_dropdown.currentText(), self.ligand_set_folder_path, self.form.output_box))
-        self.form.nrgdock_button_ligandset_add.clicked.connect(self.run_generate_conformers)
+        # NRGRank ligand manager:
+        self.form.nrgrank_add_ligandset_button.clicked.connect(lambda: general_functions.folder_browser(self.form.nrgrank_add_ligand_file_path, self.ligand_set_folder_path, "Smiles Files (*.smi)"))
+        self.form.nrgrank_delete_ligand_set_refresh.clicked.connect(lambda: general_functions.refresh_folder(self.ligand_set_folder_path, self.form.nrgrank_delete_ligand_set_dropdown, ignore_defaults=True))
+        self.form.nrgrank_ligand_set_delete.clicked.connect(lambda: nrgrank_smiles_management.delete_ligand_set(self.form.nrgrank_delete_ligand_set_dropdown.currentText(), self.ligand_set_folder_path, self.form.output_box))
+        self.form.nrgrank_button_ligandset_add.clicked.connect(self.run_generate_conformers)
 
 
         # FlexAID:
@@ -183,16 +183,16 @@ class Controller:
         else:
             self.getcleftrunner.run_task()
 
-    def run_nrgdock(self):
-        self.nrgdockrunner = nrgdock_on_target.NRGDockManager(self.form, install_dir, self.ligand_set_folder_path, self.model)
-        self.nrgdockrunner.run_nrgdock()
+    def run_nrgrank(self):
+        self.nrgrankrunner = nrgrank_on_target.NRGRankManager(self.form, install_dir, self.ligand_set_folder_path, self.model)
+        self.nrgrankrunner.run_nrgrank()
 
-    def abort_nrgdock(self):
-        self.nrgdockrunner.handle_thread_finished()
-        self.nrgdockrunner = None
+    def abort_nrgrank(self):
+        self.nrgrankrunner.handle_thread_finished()
+        self.nrgrankrunner = None
 
     def run_generate_conformers(self):
-        self.conformer_generator = nrgdock_smiles_management.ConfGeneratorManager(self.form, install_dir, self.ligand_set_folder_path)
+        self.conformer_generator = nrgrank_smiles_management.ConfGeneratorManager(self.form, install_dir, self.ligand_set_folder_path)
         self.conformer_generator.generate_conformer()
 
     def run_flexaid(self):
@@ -203,30 +203,26 @@ class Controller:
 class NRGSuitePlugin(QWidget):
     def __init__(self):
         super().__init__()
-        self.form = None
+        self.form = loadUi(os.path.join(install_dir, 'plugin.ui'), self)
         self.binary_suffix = None
         self.operating_system = None
         self.get_os()
         self.binary_folder_path = os.path.join(install_dir, 'bin', self.operating_system)
         test_binary(self.binary_folder_path, self.operating_system)
-        self.load_ui()
         self.get_folders()
         self.manage_dirs()
         self.check_modeller()
         self.form.stackedWidget.setCurrentIndex(0)
         self.form.flexaid_tab.setTabEnabled(2, False)
-        self.form.NRGDock_tabs.setTabEnabled(2, False)
+        self.form.NRGRank_tabs.setTabEnabled(2, False)
         general_functions.refresh_dropdown(self.form.cleft_select_object, self.form.output_box, no_warning=True)
-        general_functions.refresh_folder(self.ligand_set_folder_path, self.form.nrgdock_select_ligand)
-        self.form.nrgdock_cpu_usage_target.setCurrentText("75%")
+        general_functions.refresh_folder(self.ligand_set_folder_path, self.form.nrgrank_select_ligand)
+        self.form.nrgrank_cpu_usage_target.setCurrentText("75%")
         self.color_list = general_functions.load_color_list(os.path.join(install_dir, 'deps', 'getcleft', 'color_list.txt'))
-        self.form.nrgdock_progress_label.setText('')
-        self.form.nrgdock_loading_gif.setText('')
-        self.form.nrgdock_progress.hide()
+        self.form.nrgrank_progress_label.setText('')
+        self.form.nrgrank_loading_gif.setText('')
+        self.form.nrgrank_progress.hide()
         self.controller = Controller(self.form, self.binary_folder_path, self.binary_suffix, self.operating_system, self.ligand_set_folder_path, self.color_list)
-
-    def load_ui(self):
-        self.form = loadUi(os.path.join(install_dir, 'nrgdock_widget.ui'), self)
 
     def get_os(self):
         operating_system = platform.system().upper()
@@ -241,11 +237,11 @@ class NRGSuitePlugin(QWidget):
             exit('Unknown operating system')
 
     def get_folders(self):
-        self.ligand_set_folder_path = os.path.join(install_dir, 'nrgdock_ligand_sets')
+        self.ligand_set_folder_path = os.path.join(install_dir, 'nrgrank_ligand_sets')
         self.plugin_tmp_output_path = os.path.join(os.path.expanduser('~'), 'Documents', 'NRGSuite_Qt')
         self.temp_path = os.path.join(self.plugin_tmp_output_path, 'temp')
         self.form.temp_line_edit.setText(self.temp_path)
-        self.nrgdock_output_path = os.path.join(self.form.temp_line_edit.text(), 'NRGDock')
+        self.nrgrank_output_path = os.path.join(self.form.temp_line_edit.text(), 'NRGRank')
         self.surfaces_output_path = os.path.join(self.form.temp_line_edit.text(), 'Surfaces')
         self.modeller_save_path = os.path.join(self.form.temp_line_edit.text(), 'modeller')
         self.nrgten_save_path = os.path.join(self.form.temp_line_edit.text(), 'NRGTEN')
@@ -257,7 +253,7 @@ class NRGSuitePlugin(QWidget):
         os.mkdir(self.plugin_tmp_output_path)
         os.mkdir(self.form.temp_line_edit.text())
         os.mkdir(self.surfaces_output_path)
-        os.mkdir(self.nrgdock_output_path)
+        os.mkdir(self.nrgrank_output_path)
         os.mkdir(self.modeller_save_path)
         os.mkdir(self.nrgten_save_path)
         os.mkdir(self.isomif_save_path)

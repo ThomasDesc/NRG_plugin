@@ -1,32 +1,19 @@
 import os
 import numpy as np
-import sys
-install_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-sys.path.append(install_dir)
-from src.nrgdock.nrgdock import get_params_dict
+from nrgrank_general_functions import get_params_dict, get_radius_number, load_rad_dict
 import concurrent.futures
 from itertools import repeat
 import argparse
-import json
 from pathlib import Path
 import pickle
 
-
-def load_rad_dict(filepath):
-    with open(filepath, 'r') as file:
-        loaded_atom_data = json.load(file)
-    return loaded_atom_data
-
-
-def get_radius_number(letter_type, rad_dict):
-    letter_type = letter_type.upper().replace(' ', '')
-    try:
-        atm_info = [rad_dict[letter_type]['type_number'], rad_dict[letter_type]['radius']]
-    except KeyError:
-        atm_info = [39, 2.00]
-    atm_type_num = atm_info[0]
-    atm_rad = atm_info[1]
-    return atm_type_num, atm_rad
+def find_ligand_file_in_folder(folder_path):
+    ligand_file_list = []
+    filenames = next(os.walk(folder_path), (None, None, []))[2]
+    for filename in filenames:
+        if filename.endswith("ligands.mol2") or filename.endswith("final.mol2"):
+            ligand_file_list.append(os.path.join(folder_path, filename))
+    return ligand_file_list
 
 
 def load_atoms_mol2(filename, rad_dict, save_path, ligand_type='ligand'):
@@ -67,14 +54,12 @@ def load_atoms_mol2(filename, rad_dict, save_path, ligand_type='ligand'):
                     coord_start = 0
                 elif line.split()[1][0] != "H":
                     n_atoms += 1
-
     if max_atoms < n_atoms:
         max_atoms = n_atoms
 
     n_atom_array = np.zeros(n_molecules, dtype=np.int32)
     atoms_xyz = np.full((n_molecules, max_atoms, 3), 9999, dtype=np.float32)
     atoms_type = np.full((n_molecules, max_atoms), -1, dtype=np.int32)
-    # atoms_name = np.zeros((n_molecules, max_atoms), dtype=object)
 
     molecule_counter = -1
     atom_counter = 0
@@ -109,7 +94,6 @@ def load_atoms_mol2(filename, rad_dict, save_path, ligand_type='ligand'):
                         atoms_name_count[atm_name] += 1
                     else:
                         atoms_name_count[atm_name] = 1
-                    # atoms_name[molecule_counter][atom_counter] = f"{atm_name}{atoms_name_count[atm_name]}"
                     temp_atom_name_list.append(f"{atm_name}{atoms_name_count[atm_name]}")
                     atom_counter += 1
             else:
@@ -118,14 +102,13 @@ def load_atoms_mol2(filename, rad_dict, save_path, ligand_type='ligand'):
     atom_name_list.append(temp_atom_name_list)
     np.save(os.path.join(save_path, f"{ligand_type}_atom_xyz"), atoms_xyz)
     np.save(os.path.join(save_path, f"{ligand_type}_atom_type"), atoms_type)
-    # np.save(os.path.join(save_path, f"{ligand_type}_atom_name"), atoms_name)
-    # np.save(os.path.join(save_path, f"{ligand_type}_molecule_name"), molecule_names)
     with open(os.path.join(save_path, f"{ligand_type}_molecule_name.pkl"), 'wb') as f:
         pickle.dump(molecule_name_list, f)
     with open(os.path.join(save_path, f"{ligand_type}_atom_name.pkl"), 'wb') as f:
         pickle.dump(atom_name_list, f)
     np.save(os.path.join(save_path, f"{ligand_type}_atoms_num_per_ligand"), n_atom_array)
-    return n_unique_molecules
+    if ligand_type != 'ligand':
+        np.save(os.path.join(save_path, f"{ligand_type}_ligand_count"), np.array([n_unique_molecules]))
 
 
 def get_suffix(conf_num):
@@ -135,89 +118,68 @@ def get_suffix(conf_num):
     return suffix
 
 
-def preprocess_ligands_one_target(rad_dict, conf_num, target_path, command, ligand_path, custom_output_path,
-                                  ligand_type='ligand'):
-    print(f"Preprocessing ligands for {os.path.basename(target_path)}")
-
-    if command == "single_file":
-        ligand_list = [ligand_path]
-    elif command == 'folder':
-        filenames = next(os.walk(target_path), (None, None, []))[2]
-        ligand_list = []
-        for filename in filenames:
-            if filename.endswith("ligands.mol2") or filename.endswith("final.mol2"):
-                ligand_list.append(os.path.join(target_path, filename))
-    else:
-        exit("Error: user specified something other than single_file or folder")
-
-    for ligand in ligand_list:
-        suffix = get_suffix(conf_num)
-        np_array_savepath = os.path.join(target_path, f"preprocessed_ligands{suffix}")
-        if custom_output_path is not None:
-            np_array_savepath = custom_output_path
-        print("saving to: ", np_array_savepath)
-        if not os.path.exists(np_array_savepath):
-            os.makedirs(np_array_savepath)
-        n_unique_molecules = load_atoms_mol2(ligand, rad_dict, np_array_savepath, ligand_type)
-        if command == 'single_file':
-            return n_unique_molecules, np_array_savepath
+def preprocess_ligands_one_target(ligand_file_path, rad_dict, conf_num, ligand_type='ligand'):
+    verbose = False
+    suffix = get_suffix(conf_num)
+    target_folder = os.path.dirname(ligand_file_path)
+    output_folder = os.path.join(target_folder, f"preprocessed_ligands{suffix}")
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+    load_atoms_mol2(ligand_file_path, rad_dict, output_folder, ligand_type=ligand_type)
+    if verbose:
+        print("Files saved to: ", output_folder)
 
 
 def get_args():
-    target = None
-    target_path = None
-    ligand_path = None
-    custom_output_path = None
-
     parser = argparse.ArgumentParser()
-    subparser = parser.add_subparsers(dest='command')
-
-    folder = subparser.add_parser('folder')
-    folder.add_argument("-p", '--target_path', required=True, default=None, type=str,
-                        help='Path to folder containing target folders')
-    folder.add_argument("-t", '--target', default=None, type=str, help='Name of folder of specific target')
-
-    single_file = subparser.add_parser('single_file')
-    single_file.add_argument("-l", '--ligand_path', required=True, type=str, help='Path to ligand file')
-    single_file.add_argument("-o", '--output_path', type=str, help='Custom output path')
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument("-lp", '--ligand_path', type=str, help='Path to folder containing ligand folders')
+    group.add_argument("-fp", '--folder_path', type=str, help='Path to folder containing ligand files')
+    parser.add_argument("-lt", '--ligand_type', type=str, help='Ligand type (not required)')
+    parser.add_argument("-sd", '--subdirectories', action='store_true',
+                        help="Include subdirectories if target path is specified")
 
     args = parser.parse_args()
-    command = args.command
+    if args.ligand_path and args.subdirectories:
+        parser.error(
+            "Argument -sd (subdirectories) can only be used with -tp (target path), not with -lp (ligand path).")
+    if args.ligand_type and args.folder_path:
+        parser.error(
+            "Argument -lt (ligand type) can only be used with -lp (ligand path), not with -fp (folder path).")
 
-    if command == "folder":
-        target_path = args.target_path
-        target = args.target
-
-    if command == "single_file":
-        ligand_path = args.ligand_path
-        target_path = os.path.dirname(ligand_path)
-        custom_output_path = args.output_path
-
-    main(command, target, target_path, ligand_path, custom_output_path)
+    if args.folder_path:
+        folder_path = args.folder_path
+        subdirectories = args.subdirectories
+        main(folder_path=folder_path, subdirectories=subdirectories)
+    elif args.ligand_path:
+        ligand_file_path = args.ligand_path
+        ligand_type = args.ligand_type
+        main(ligand_file_path=ligand_file_path, ligand_type=ligand_type)
 
 
-def main(command, target, target_path, ligand_path, custom_output_path):
+def main(ligand_file_path=None, ligand_type='ligand', folder_path=None, subdirectories=None):
     root_software_path = Path(__file__).resolve().parents[1]
     os.chdir(root_software_path)
-    config_file = "./deps/config.txt"
+    deps_folder = os.path.join(root_software_path, 'deps')
+    config_file = os.path.join(deps_folder, 'config.txt')
     params_dict = get_params_dict(config_file)
-    rad_dict = load_rad_dict("./deps/atom_type_radius.json")
-    conf_num = params_dict["CONFORMER_NUMBER"]
-    target_path = os.path.normpath(target_path)
+    conf_num = params_dict["CONFORMERS_PER_MOLECULE"]
+    rad_dict = load_rad_dict(os.path.join(deps_folder, 'atom_type_radius.json'))
 
-    if command == "single_file":
-        preprocess_ligands_one_target(rad_dict, conf_num, target_path, command, ligand_path, custom_output_path)
-    elif command == "folder":
-        ligand_path = []
-        if target is not None:
-            final_target_path = [os.path.join(target_path, target)]
+    if ligand_file_path:
+        preprocess_ligands_one_target(ligand_file_path, rad_dict, conf_num, ligand_type=ligand_type)
+    elif folder_path:
+        if subdirectories:
+            ligand_file_list = []
+            folders = next(os.walk(folder_path))[1]
+            for folder in folders:
+                temp_ligand_file_list = find_ligand_file_in_folder(os.path.join(folder_path, folder))
+                ligand_file_list.extend(temp_ligand_file_list)
         else:
-            final_target_path = sorted(os.listdir(target_path))
-            for counter, target in enumerate(final_target_path):
-                final_target_path[counter] = os.path.join(target_path, target)
+            ligand_file_list = find_ligand_file_in_folder(folder_path)
         with concurrent.futures.ThreadPoolExecutor() as executor:
-            executor.map(preprocess_ligands_one_target, repeat(rad_dict), repeat(conf_num), final_target_path, repeat(command), repeat(ligand_path), repeat(custom_output_path))
-        # preprocess_ligands_one_target(rad_dict, conf_num, final_target_path[0], command, ligand_path, custom_output_path, ligand_type='active')
+            executor.map(preprocess_ligands_one_target, ligand_file_list, repeat(rad_dict), repeat(conf_num))
+        # preprocess_ligands_one_target(ligand_file_list[0], rad_dict, conf_num)
 
 
 if __name__ == "__main__":
