@@ -286,3 +286,13 @@ def load_color_list(color_list_path):
         rgb_tuple = tuple(map(int, rgb.strip('()').split(',')))
         list_of_dicts.append({'name': name, 'rgb': rgb_tuple})
     return list_of_dicts
+
+
+def get_group_of_object(object_name):
+    all_objects = cmd.get_names("all")  # Get all objects and groups in PyMOL
+    for pymol_object in all_objects:
+        if cmd.get_type(pymol_object) == "object:group":  # Check if it is a group
+            group_members = cmd.get_object_list(f'({pymol_object})') # Check objects in a group
+            if object_name in group_members:
+                return pymol_object
+    return None

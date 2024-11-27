@@ -5,7 +5,7 @@ install_dir = os.path.dirname(__file__)
 sys.path.append(install_dir)
 import shutil
 import subprocess
-from src.flexaid.flexaid import FlexAIDManager, stop_simulation, abort_simulation, pause_resume_simulation
+from src.flexaid.flexaid import FlexAIDManager, stop_simulation, abort_simulation, pause_resume_simulation, flexaid_show_ligand_from_table
 from src.getcleft import getcleft
 from src.nrgrank import nrgrank_on_target
 from src.getcleft import spheres
@@ -53,6 +53,7 @@ class Controller:
         # self.form.nrgrank_result_table.setSelectionMode(QTableWidget.MultiSelection)
         self.model = QStandardItemModel()
         self.form.nrgrank_result_table.setModel(self.model)
+        self.form.flexaid_result_table.setModel(self.model)
         self.setupConnections()
 
     def setupConnections(self):
@@ -98,7 +99,6 @@ class Controller:
         self.form.nrgrank_ligand_set_delete.clicked.connect(lambda: nrgrank_smiles_management.delete_ligand_set(self.form.nrgrank_delete_ligand_set_dropdown.currentText(), self.ligand_set_folder_path, self.form.output_box))
         self.form.nrgrank_button_ligandset_add.clicked.connect(self.run_generate_conformers)
 
-
         # FlexAID:
         self.form.flexaid_target_refresh.clicked.connect(lambda: general_functions.refresh_dropdown_target(self.form.flexaid_select_target,self.form.output_box))
         self.form.flexaid_select_target.currentIndexChanged.connect(lambda: general_functions.refresh_dropdown_bd_site(self.form.flexaid_select_binding_site, self.form.flexaid_select_target.currentText(), self.form.output_box))
@@ -107,6 +107,7 @@ class Controller:
         self.form.flexaid_button_pause.clicked.connect(lambda: pause_resume_simulation(self.form, self.flexaid_manager.run_specific_simulate_folder_path))
         self.form.flexaid_button_stop.clicked.connect(lambda: stop_simulation(self.form, self.flexaid_manager.run_specific_simulate_folder_path))
         self.form.flexaid_button_abort.clicked.connect(lambda: abort_simulation(self.form, self.flexaid_manager.run_specific_simulate_folder_path, self.flexaid_manager))
+        self.form.flexaid_result_table.selectionModel().selectionChanged.connect(lambda: flexaid_show_ligand_from_table(self.form))
 
         # Surfaces
         self.form.surfaces_refresh_object_1.clicked.connect(lambda: general_functions.refresh_dropdown(self.form.surface_select_object_1, self.form.output_box))
@@ -114,13 +115,10 @@ class Controller:
         self.form.surfaces_refresh_object_2.clicked.connect(lambda: general_functions.refresh_dropdown(self.form.surface_select_object_2, self.form.output_box, add_none=1))
         self.form.surfaces_refresh_object_2.clicked.connect(lambda: general_functions.refresh_dropdown(self.form.surface_select_ligand_object_2, self.form.output_box, lig=1, add_none=1))
         self.form.surfaces_button_run.clicked.connect(lambda: run_Surfaces.load_surfaces(self.form, self.form.temp_line_edit.text(), install_dir, self.binary_folder_path, self.binary_suffix))
-
         self.form.surface_select_individual_result.currentIndexChanged.connect(lambda: run_Surfaces.load_csv_data(self.form, os.path.join(
             os.path.join(self.form.temp_line_edit.text(), 'Surfaces'), self.form.surface_select_individual_result.currentText() + '.txt')))
-
         self.form.surface_select_cf_comparison.currentIndexChanged.connect(lambda: run_Surfaces.load_csv_data(self.form, os.path.join(
             os.path.join(self.form.temp_line_edit.text(), 'Surfaces'), self.form.surface_select_cf_comparison.currentText() + '.csv')))
-
         self.form.surfaces_refresh_result.clicked.connect(lambda: run_Surfaces.refresh_res(self.form, os.path.join(self.form.temp_line_edit.text(), 'Surfaces')))
         self.form.surfaces_refresh_result.clicked.connect(lambda: run_Surfaces.load_csv_data(self.form, os.path.join(self.form.temp_line_edit.text(), 'Surfaces', self.form.surface_select_cf_comparison.currentText() + '.csv')))
         self.form.surfaces_button_interface.clicked.connect(lambda: run_Surfaces.read_and_select_residues(os.path.join(self.form.temp_line_edit.text(), 'Surfaces', self.form.surface_select_individual_result.currentText() + '.txt'),
@@ -196,7 +194,7 @@ class Controller:
         self.conformer_generator.generate_conformer()
 
     def run_flexaid(self):
-        self.flexaid_manager = FlexAIDManager(self.form, self.binary_folder_path, self.binary_suffix, install_dir, self.color_list)
+        self.flexaid_manager = FlexAIDManager(self.form, self.binary_folder_path, self.binary_suffix, install_dir, self.color_list, self.model)
         self.flexaid_manager.start_run()
 
 

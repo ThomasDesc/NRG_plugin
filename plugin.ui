@@ -723,14 +723,14 @@ QFrame {
                  <string>General settings</string>
                 </property>
                 <layout class="QGridLayout" name="gridLayout_4">
-                 <item row="1" column="0">
-                  <widget class="QLabel" name="label_66">
+                 <item row="2" column="0">
+                  <widget class="QLabel" name="label_24">
                    <property name="text">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Save poses for top n results:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                    <string>Start screening at ligand:</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="3" column="2">
+                 <item row="4" column="2">
                   <widget class="QComboBox" name="nrgrank_cpu_usage_target">
                    <item>
                     <property name="text">
@@ -754,6 +754,13 @@ QFrame {
                    </item>
                   </widget>
                  </item>
+                 <item row="0" column="0">
+                  <widget class="QLabel" name="label_107">
+                   <property name="text">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Ligand rotaitons per axis:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   </property>
+                  </widget>
+                 </item>
                  <item row="1" column="2">
                   <widget class="QLineEdit" name="nrgrank_top_n_poses">
                    <property name="enabled">
@@ -773,10 +780,10 @@ QFrame {
                    </property>
                   </widget>
                  </item>
-                 <item row="0" column="0">
-                  <widget class="QLabel" name="label_107">
+                 <item row="1" column="0">
+                  <widget class="QLabel" name="label_66">
                    <property name="text">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Ligand rotaitons per axis:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Save poses for top n results:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                    </property>
                   </widget>
                  </item>
@@ -787,20 +794,6 @@ QFrame {
                    </property>
                    <property name="alignment">
                     <set>Qt::AlignCenter</set>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="2" column="0">
-                  <widget class="QLabel" name="label_24">
-                   <property name="text">
-                    <string>Start screening at ligand:</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="3" column="0">
-                  <widget class="QLabel" name="label_25">
-                   <property name="text">
-                    <string>CPU usage target:</string>
                    </property>
                   </widget>
                  </item>
@@ -826,6 +819,30 @@ QFrame {
                     </size>
                    </property>
                   </spacer>
+                 </item>
+                 <item row="4" column="0">
+                  <widget class="QLabel" name="label_25">
+                   <property name="text">
+                    <string>CPU usage target:</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="2" alignment="Qt::AlignHCenter">
+                  <widget class="QCheckBox" name="nrgrank_clean_checkbox">
+                   <property name="text">
+                    <string/>
+                   </property>
+                   <property name="checked">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="0">
+                  <widget class="QLabel" name="label_2">
+                   <property name="text">
+                    <string>Included poses with clashes</string>
+                   </property>
+                  </widget>
                  </item>
                 </layout>
                </widget>
@@ -1288,7 +1305,7 @@ QFrame {
              <enum>QTabWidget::Rounded</enum>
             </property>
             <property name="currentIndex">
-             <number>1</number>
+             <number>2</number>
             </property>
             <property name="usesScrollButtons">
              <bool>false</bool>
@@ -1663,36 +1680,7 @@ QFrame {
                </layout>
               </item>
               <item>
-               <widget class="QTableWidget" name="flexaid_result_table">
-                <property name="rowCount">
-                 <number>0</number>
-                </property>
-                <column>
-                 <property name="text">
-                  <string>Colour</string>
-                 </property>
-                </column>
-                <column>
-                 <property name="text">
-                  <string>TOP</string>
-                 </property>
-                </column>
-                <column>
-                 <property name="text">
-                  <string>CF</string>
-                 </property>
-                </column>
-                <column>
-                 <property name="text">
-                  <string>Fitness</string>
-                 </property>
-                </column>
-                <column>
-                 <property name="text">
-                  <string>Last RMSD</string>
-                 </property>
-                </column>
-               </widget>
+               <widget class="QTableView" name="flexaid_result_table"/>
               </item>
              </layout>
             </widget>

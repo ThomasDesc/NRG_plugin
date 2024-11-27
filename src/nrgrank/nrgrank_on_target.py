@@ -14,15 +14,6 @@ import general_functions
 # TODO: better folder management (store each run in a folder named by target, binding site, ligand set)
 # TODO: do not preprocess if new run uses same target and binding site
 
-def get_group_of_object(object_name):
-    all_objects = cmd.get_names("all")  # Get all objects and groups in PyMOL
-    for pymol_object in all_objects:
-        if pymol_object != 'NRGRank' and cmd.get_type(pymol_object) == "object:group":  # Check if it is a group
-            group_members = cmd.get_object_list(f'({pymol_object})') # Check objects in a group
-            if object_name in group_members:
-                return pymol_object
-    return None
-
 
 def show_ligand_from_table(table_object, binding_site, ligand_set):
     selected_indexes = table_object.selectionModel().selectedIndexes()
@@ -34,7 +25,7 @@ def show_ligand_from_table(table_object, binding_site, ligand_set):
             ligands_to_show.append(cell_text)
     if ligands_to_show:
         ligands_to_show = [f"{item}_{binding_site}_{ligand_set.replace(' ', '_')}" for item in ligands_to_show]
-        group_name = get_group_of_object(ligands_to_show[0])
+        group_name = general_functions.get_group_of_object(ligands_to_show[0])
         if not group_name:
             print('no group found')
             return
@@ -80,6 +71,11 @@ class NRGRankManager:
         for line_counter, line in enumerate(lines):
             if line.startswith('OUTPUT_POSE'):
                 lines[line_counter] = line.split(' ')[0] + ' True\n'
+            if line.startswith('USE_CLASH'):
+                if self.form.nrgrank_clean_checkbox.isChecked():
+                    lines[line_counter] = line.split(' ')[0] + ' True\n'
+                else:
+                    lines[line_counter] = line.split(' ')[0] + ' False\n'
             if line.startswith('ROTATIONS_PER_AXIS'):
                 number_of_rotations = self.form.nrgrank_ligand_rotations.text().strip()
                 if not number_of_rotations.isdigit():
@@ -94,7 +90,7 @@ class NRGRankManager:
 
     def run_nrgrank(self):
         nrgrank_output_path = os.path.join(self.form.temp_line_edit.text(), 'NRGRank')
-        n_poses_to_save = self.form.nrgrank_top_n_poses.text()
+        n_poses_to_save = int(self.form.nrgrank_top_n_poses.text())
         nrgrank_start_ligand = int(self.form.nrgrank_start_ligand.text())
         ligand_set_name = self.form.nrgrank_select_ligand.currentText().replace(' ', '_')
         target_name = self.form.nrgrank_select_target.currentText()
@@ -106,6 +102,9 @@ class NRGRankManager:
         binding_site_name = self.form.nrgrank_select_binding_site.currentText()
         if target_name == '':
             general_functions.output_message(self.form.output_box, 'No target object selected', 'warning')
+            return
+        if target_name not in cmd.get_object_list('all'):
+            general_functions.output_message(self.form.output_box, 'Target is not currently loaded in pymol', 'warning')
             return
         if binding_site_name == '':
             general_functions.output_message(self.form.output_box, 'No binding site object selected', 'warning')
@@ -219,18 +218,18 @@ class NRGRankThread(QThread):
                 process.terminate()
                 process.wait()
 
-
-    @staticmethod
-    def merge_csv(folder):
-        csv_output_path = os.path.join(folder, "nrgrank_result.csv")
-        csv_files = glob.glob(os.path.join(folder, "*.csv"))
+    def merge_csv(self):
+        csv_output_path = os.path.join(self.docking_result_folder, "nrgrank_result.csv")
+        if os.path.isfile(csv_output_path):
+            os.remove(csv_output_path)
+        csv_files = glob.glob(os.path.join(self.docking_result_folder, "*.csv"))
         merged_df = pd.concat((pd.read_csv(file) for file in csv_files), ignore_index=True)
         filtered_df = merged_df[merged_df['CF'] != 100000000]
         sorted_df = filtered_df.sort_values(by='CF')
         sorted_df.to_csv(csv_output_path, index=False)
         for file in csv_files:
             os.remove(file)
-        top_10_names = sorted_df['Name'].head(20).tolist()
+        top_10_names = sorted_df['Name'].head(self.nrgrank_top_n_poses).tolist()
         return top_10_names, csv_output_path
 
     @staticmethod
@@ -238,13 +237,13 @@ class NRGRankThread(QThread):
         ligand_files = glob.glob(os.path.join(ligand_poses_folder, "*.pdb"))
         top_n_name_set = set(top_n_name_list)
         for file in ligand_files:
-            file_name = os.path.splitext(os.path.basename(file))[0]
+            file_name = os.path.splitext(os.path.basename(file))[0].split('_')[0]
             if file_name not in top_n_name_set:
                 os.remove(file)
         nrg_result_group_name = f"nrg_{binding_site_name}_{ligand_set_name}"
         for name in top_n_name_list:
             pymol_object_name = f"{name}_{binding_site_name}_{ligand_set_name}"
-            file_path = os.path.join(ligand_poses_folder, name+"_0", f"{name}_0_pose_1.pdb")
+            file_path = os.path.join(ligand_poses_folder, f"{name}.pdb")
             if os.path.exists(file_path):
                 cmd.load(file_path, pymol_object_name)
                 cmd.group(nrg_result_group_name, pymol_object_name)
@@ -284,7 +283,7 @@ class NRGRankThread(QThread):
 
         if self.is_running:
             self.message_signal.emit('Screening has finished')
-            top_n_name_list, csv_output_path = self.merge_csv(self.docking_result_folder)
+            top_n_name_list, csv_output_path = self.merge_csv()
             ligand_pose_path = os.path.join(self.nrgrank_output_path, 'ligand_poses',  self.binding_site_name)
             self.manage_poses(top_n_name_list, ligand_pose_path, self.binding_site_name, self.target_name, self.ligand_set_name)
             self.finished_signal.emit()

@@ -1,12 +1,12 @@
-from PyQt5.QtCore import pyqtSignal, QThread
+from PyQt5.QtCore import pyqtSignal, QThread, Qt
 import general_functions
 import subprocess
 import os
-from PyQt5.QtWidgets import QTableWidgetItem
 from PyQt5.QtGui import QColor
 from pymol import cmd
 import datetime
 import time
+from PyQt5.QtGui import QStandardItem
 
 def pause_simulation(form, specific_simulation_path):
     with open(os.path.join(specific_simulation_path, '.pause'), 'a'):
@@ -38,9 +38,42 @@ def pause_resume_simulation(form, specific_simulation_path):
         resume_simulation(form, specific_simulation_path)
 
 
+def flexaid_show_ligand_from_table(form):
+    table_object = form.flexaid_result_table
+    binding_site = form.flexaid_select_binding_site.currentText()
+    ligand = form.flexaid_select_ligand.currentText()
+
+    selected_indexes = table_object.selectionModel().selectedIndexes()
+    ligands_to_show = []
+    setting_dictionary = {'number_chromosomes': int(form.input_num_chromosomes.text()),
+                          'number_generations': int(form.input_num_generations.text()),
+                          'max_results': int(form.flexaid_max_results.text())}
+    for index in selected_indexes:
+        cell_text = index.data()
+        column = index.column()
+        if column == 1:
+            ligands_to_show.append(str(int(cell_text) - 1))
+    if ligands_to_show:
+        if ligand.find('bd_site') != -1:
+            ligand = ligand.split('_')[0]
+        ligands_to_show = [f"RESULT_{item}_flx_{ligand}_{binding_site}_{setting_dictionary['number_chromosomes']}x{setting_dictionary['number_generations']}" for item in ligands_to_show]
+        group_name = general_functions.get_group_of_object(ligands_to_show[0])
+        if not group_name:
+            print('no group found')
+            return
+        else:
+            group_objects = cmd.get_object_list(f'({group_name})')
+            for group_object in group_objects:
+                if group_object not in ligands_to_show:
+                    cmd.disable(group_object)
+                else:
+                    cmd.enable(group_object)
+
+
 class FlexAIDManager:
-    def __init__(self, form, binary_folder_path, binary_suffix, install_dir, color_list):
+    def __init__(self, form, binary_folder_path, binary_suffix, install_dir, color_list, model):
         self.form = form
+        self.model = model
         self.flexaid_temp_path = os.path.join(self.form.temp_line_edit.text(), 'FlexAID')
         self.flexaid_simulation_folder = os.path.join(self.flexaid_temp_path, 'Simulation')
         os.makedirs(self.flexaid_temp_path, exist_ok=True)
@@ -58,7 +91,9 @@ class FlexAIDManager:
         self.form.generation_label.setText(f'Generation: 0/{self.max_generations}')
         self.flexaid_deps_path = os.path.join(install_dir, 'deps', 'flexaid')
         self.color_list = color_list
-        self.form.flexaid_result_table.setRowCount(0) # Resets the table each run
+        self.model.clear()
+        self.target_name = self.form.flexaid_select_target.currentText()
+        self.target_save_path = os.path.join(self.flexaid_temp_path, 'flexaid_target.pdb')
         self.threads = []
 
     def start_run(self):
@@ -77,9 +112,7 @@ class FlexAIDManager:
         self.colour_specific_cell(data)
 
     def start_flexaid_thread(self):
-        target_name = self.form.flexaid_select_target.currentText()
-        target_save_path = os.path.join(self.flexaid_temp_path, 'flexaid_target.pdb')
-        cmd.save(target_save_path, target_name)
+        cmd.save(self.target_save_path, self.target_name)
         self.ligand_name = self.form.flexaid_select_ligand.currentText()
         ligand_save_path = os.path.join(self.flexaid_temp_path, 'flexaid_ligand.pdb')
         cmd.save(ligand_save_path, self.ligand_name)
@@ -93,7 +126,7 @@ class FlexAIDManager:
         self.form.flexaid_tab.setTabEnabled(2, True)
         self.worker = FlexAIDWorkerThread(self.binary_folder_path, self.binary_suffix, self.install_dir,
                                           self.run_specific_simulate_folder_path, self.flexaid_temp_path,
-                                          target_save_path, ligand_save_path, binding_site_path, self.simulation_settings)
+                                          self.target_save_path, ligand_save_path, binding_site_path, self.simulation_settings)
         self.worker.finished.connect(self.flexaid_end_processes)
         self.threads.append(self.worker)
         self.worker.start()
@@ -104,20 +137,35 @@ class FlexAIDManager:
                               'max_results': int(self.form.flexaid_max_results.text())}
         return setting_dictionary
 
+
     def colour_specific_cell(self, data):
-        table_widget = self.form.flexaid_result_table
-        num_column = table_widget.columnCount()
-        row = int(data[0]) - 1
-        if row >= table_widget.rowCount():
-            table_widget.insertRow(row)
-        for column in range(num_column):
-            if column == 0:
-                item = QTableWidgetItem()
-                r, g, b = self.color_list[row]["rgb"]
-                item.setBackground(QColor(r, g, b))
-            else:
-                item = QTableWidgetItem(str(data[column-1]))
-            table_widget.setItem(row, column, item)
+        table_headers = ['Colour', 'TOP', 'CF', 'Fitness', 'Last RMSD']
+        self.model.clear()
+        self.model.setHorizontalHeaderLabels(table_headers)
+        for row in data:
+            item_list = []
+            for header in table_headers:
+                if header == 'Colour':
+                    item = QStandardItem()
+                    r, g, b = self.color_list[row['TOP'] - 1]["rgb"]
+                    item.setBackground(QColor(r, g, b))
+                else:
+                    row_item = row[header]
+                    if type(row_item) == float:
+                        row_item = f"{row_item:.2f}"
+                    else:
+                        row_item = str(row_item)
+                    item = QStandardItem(row_item)
+                item.setTextAlignment(Qt.AlignCenter)
+                item_list.append(item)
+            self.model.appendRow(item_list)
+        self.form.flexaid_result_table.setModel(self.model)
+        self.form.flexaid_result_table.resizeColumnsToContents()
+        padding = 20
+        for column in range(self.form.flexaid_result_table.model().columnCount()):
+            current_width = self.form.flexaid_result_table.columnWidth(column)
+            self.form.flexaid_result_table.setColumnWidth(column, current_width + padding)
+
 
     def final_table_update(self):
         try:
@@ -126,16 +174,24 @@ class FlexAIDManager:
         except FileNotFoundError:
             general_functions.output_message(self.form.output_box, f"No result file: {os.path.join(self.run_specific_simulate_folder_path, 'result.cad')}", 'error')
         result_counter = 1
+        data = []
         for line in lines:
             if line.startswith('Cluster'):
                 line = line.split(':')[-1].strip().split(' ')
                 cf = float(line[1].split('=')[-1])
-                data = (result_counter, cf, 'N/A', 'N/A')
-                self.colour_specific_cell(data)
+                rmsd = 'N/A'
+                if self.rmsd:
+                    with open(os.path.join(self.run_specific_simulate_folder_path, f'RESULT_{result_counter-1}.pdb'), 'r') as result_file:
+                        lines = result_file.readlines()
+                        for line in lines:
+                            if 'RMSD to' in line:
+                                rmsd = float(line.split()[1])
+                data.append({'Colour': result_counter - 1, 'TOP': result_counter, 'CF': cf, 'Fitness': 'N/A', 'Last RMSD': rmsd})
                 result_counter += 1
+        self.colour_specific_cell(data)
+
 
     def quit_workers(self):
-        print('Started terminating threads')
         for worker in self.threads:
             worker.stop()
             worker.quit()
@@ -150,8 +206,6 @@ class FlexAIDManager:
         self.load_show_flexaid_result()
         self.form.flexaid_progress.setValue(self.max_generations)
         self.form.generation_label.setText(f'Generation: {self.max_generations}/{self.max_generations}')
-        if self.rmsd:
-            self.show_rmsd()
 
     def toggle_buttons(self, true_false):
         self.form.flexaid_button_pause.setEnabled(true_false)
@@ -160,40 +214,29 @@ class FlexAIDManager:
 
     def load_show_flexaid_result(self):
         result_files = next(os.walk(self.run_specific_simulate_folder_path), (None, None, []))[2]
-        result_files = sorted(result_files)
+        result_files = [file for file in result_files if file.startswith('RESULT') and not file.endswith('INI.pdb') and file.endswith('.pdb')]
+        result_files = sorted(result_files, key=lambda s: int(s.split('_')[1].split('.')[0]))
         cmd.disable('everything')
         true_result = 0
         cmd.delete(f'FlexAID_{self.binding_site_name}')
-        cmd.disable('NRGRank,GetCleft,Surfaces')
+        cmd.disable(f'{self.target_name},NRGRank,GetCleft,Surfaces')
+        if self.ligand_name.find('bd_site') != -1:
+            self.ligand_name = self.ligand_name.split('_')[0]
         results_group_name = f"flx_{self.ligand_name}_{self.binding_site_name}_{self.simulation_settings['number_chromosomes']}x{self.simulation_settings['number_generations']}"
         for file in result_files:
-            if file.startswith('RESULT') and not file.endswith('INI.pdb') and file.endswith('.pdb'):
-                file_path = os.path.join(self.run_specific_simulate_folder_path, file)
-                file_name = os.path.splitext(os.path.basename(file_path))[0]
-                cmd.load(file_path, f"{os.path.basename(file_path[:-4])}_{results_group_name}")
-                color_name = self.color_list[true_result]['name']
-                cmd.color(color_name, f"{file_name} and resn LIG")
-                cmd.group(results_group_name, f"{os.path.basename(file_path[:-4])}_{results_group_name}")
-                true_result += 1
+            file_path = os.path.join(self.run_specific_simulate_folder_path, file)
+            molecule_name = f"{os.path.basename(file_path[:-4])}_{results_group_name}"
+            cmd.load(file_path, molecule_name)
+            color_name = self.color_list[true_result]['name']
+            cmd.color('white', molecule_name)
+            cmd.color(color_name, f"{molecule_name} and resn LIG")
+            cmd.group(results_group_name, molecule_name)
+            true_result += 1
         cmd.group('FlexAID', results_group_name)
-
-    def show_rmsd(self):
-        table = self.form.flexaid_result_table
-        last_column = table.columnCount() - 1
-        rmsd_list = []
-        for i in range(self.simulation_settings['max_results']):
-            with open(os.path.join(self.run_specific_simulate_folder_path, f'RESULT_{i}.pdb'), 'r') as t1:
-                lines = t1.readlines()
-                for line in lines:
-                    if 'RMSD to' in line:
-                        rmsd_list.append(line.split()[1])
-                        break
-        for row in range(self.simulation_settings['max_results']):
-            table.setItem(row, last_column, QTableWidgetItem(rmsd_list[row]))
 
 
 class FileUpdaterThread(QThread):
-    update_signal = pyqtSignal(int, tuple)
+    update_signal = pyqtSignal(int, list)
 
     def __init__(self, update_file_path):
         super(FileUpdaterThread, self).__init__()
@@ -212,16 +255,25 @@ class FileUpdaterThread(QThread):
             time.sleep(0.01)
 
     def read_update(self):
-        with open(self.update_file_path, "r") as f:
-            for line_counter, line in enumerate(f):
-                if line_counter > 1 and self.current_generation % 10 == 0:
-                    line = line.split()
-                    top_number = int(line[0]) + 1
-                    cf = line[-5]
-                    fitness = line[-1]
-                    rmsd = 'N/A'
-                    data = (top_number, cf, fitness, rmsd)
-                    self.update_signal.emit(self.current_generation, data)
+        data = []
+        if self.current_generation % 10 == 0:
+            with open(self.update_file_path, "r") as f:
+                for line_counter, line in enumerate(f):
+                    if line_counter > 1:
+                        line = line.split()
+                        top_number = int(line[0]) + 1
+                        cf = ''
+                        for item in line:
+                            if item.startswith('cf='):
+                                cf = item.split('=')[-1]
+                                if cf == '':
+                                    cf = line[-5]
+                                break
+                        cf = float(cf)
+                        fitness = float(line[-1])
+                        rmsd = 'N/A'
+                        data.append({'Colour': top_number - 1, 'TOP': top_number, 'CF': cf, 'Fitness': fitness, 'Last RMSD': rmsd})
+            self.update_signal.emit(self.current_generation, data)
         for _ in range(5):
             try:
                 os.remove(self.update_file_path)
