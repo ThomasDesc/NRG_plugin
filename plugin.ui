@@ -246,7 +246,7 @@ QPushButton:checked{
          <string notr="true">font-size:20;</string>
         </property>
         <property name="currentIndex">
-         <number>2</number>
+         <number>0</number>
         </property>
         <widget class="QWidget" name="getcleft_page">
          <layout class="QVBoxLayout" name="verticalLayout_10">
@@ -1305,7 +1305,7 @@ QFrame {
              <enum>QTabWidget::Rounded</enum>
             </property>
             <property name="currentIndex">
-             <number>2</number>
+             <number>1</number>
             </property>
             <property name="usesScrollButtons">
              <bool>false</bool>
@@ -1531,6 +1531,9 @@ QFrame {
               </item>
               <item>
                <widget class="QGroupBox" name="groupBox_2">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
                 <property name="title">
                  <string>Add custom binding site to list</string>
                 </property>
