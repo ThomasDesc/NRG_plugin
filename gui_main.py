@@ -135,7 +135,7 @@ class Controller:
             lambda: run_NRGTEN.dynamical_signature(self.form.NRGten_select_target_object_1.currentText(),
                                                    self.form.NRGten_select_ligand_object_1.currentText(),
                                                    self.form.NRGten_select_target_object_2.currentText(),
-                                                   self.form.NRGten_dynasig_beta_value.text(), install_dir,
+                                                   self.form.NRGten_dynasig_beta.text(), install_dir,
                                                    self.form.temp_line_edit.text()))
         self.form.NRGten_conf_ensem_run.clicked.connect(
             lambda: run_NRGTEN.conformational_ensemble(self.form.NRGten_select_target_object_1.currentText(),
@@ -161,18 +161,17 @@ class Controller:
             lambda: general_functions.refresh_dropdown(self.form.ISOMIF_select_target_object_2, self.form.output_box, add_none=1))
 
         self.form.ISOMIF_cleft_refresh_object_1.clicked.connect(
-            lambda: general_functions.refresh_dropdown(self.form.ISOMIF_select_cleft_object_1, self.form.output_box, filter_for='sph'))
+            lambda: general_functions.refresh_dropdown_bd_site(self.form.ISOMIF_select_cleft_object_1, self.form.ISOMIF_select_target_object_1.currentText(), self.form.output_box))
         self.form.ISOMIF_cleft_refresh_object_1.clicked.connect(
             lambda: general_functions.refresh_dropdown(self.form.ISOMIF_select_ligand_object_1, self.form.output_box, lig=1, add_none=1))
 
         self.form.ISOMIF_cleft_refresh_object_2.clicked.connect(
-            lambda: general_functions.refresh_dropdown(self.form.ISOMIF_select_cleft_object_2, self.form.output_box, filter_for='sph', add_none=1))
+            lambda: general_functions.refresh_dropdown_bd_site(self.form.ISOMIF_select_cleft_object_2, self.form.ISOMIF_select_target_object_2.currentText(), self.form.output_box, add_none=True))
         self.form.ISOMIF_cleft_refresh_object_2.clicked.connect(
             lambda: general_functions.refresh_dropdown(self.form.ISOMIF_select_ligand_object_2, self.form.output_box, lig=1, add_none=1))
 
         self.form.ISOMIF_run.clicked.connect(
-            lambda: run_isomif.mif_plot(self.form, self.form.output_box, self.binary_folder_path, self.binary_suffix, self.operating_system,
-                                        install_dir))
+            lambda: run_isomif.mif_plot(self.form, self.binary_folder_path, self.binary_suffix, install_dir))
     def run_getcleft(self):
         try:
             self.getcleftrunner = getcleft.GetCleftRunner(self.form, self.binary_folder_path, self.binary_suffix, install_dir, self.color_list)

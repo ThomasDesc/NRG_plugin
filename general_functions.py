@@ -119,7 +119,7 @@ def show_save_dialog(self,temp_path,save=1):
                 show_popup(self,dir_path,temp_path,0)
 
 
-def refresh_dropdown_bd_site(dropdown_to_refresh, target, output_box):
+def refresh_dropdown_bd_site(dropdown_to_refresh, target, output_box, add_none=False):
     #TODO: ADD button to add all binding site objects.
     if target is None or target == '':
         return
@@ -132,8 +132,11 @@ def refresh_dropdown_bd_site(dropdown_to_refresh, target, output_box):
             else:
                 dropdown_to_refresh.clear()
                 binding_sites = sorted(binding_sites)
+                if add_none:
+                    binding_sites.insert(0, 'None')
                 dropdown_to_refresh.addItems(binding_sites)
                 dropdown_to_refresh.setCurrentText(binding_sites[0])
+
 
 def refresh_dropdown_target(dropdown_to_refresh, output_box):
     objects_to_ignore = []
@@ -172,18 +175,16 @@ def refresh_dropdown(dropdown_to_refresh, output_box, filter_for='', no_warning=
             list_pymol_objects=list_pymol_objects_filtered
     if lig:
         list_pymol_objects = cmd.get_names('selections')
-    if add_none:
-        list_pymol_objects.append('None')
     if filter_for:
         list_pymol_objects = [x for x in list_pymol_objects if filter_for in x]
-        if add_none:
-            list_pymol_objects.append('None')
     if type(exclude) == list:
         list_pymol_objects = [item for item in list_pymol_objects if all(ex not in item for ex in exclude)]
     if type(exclude) == str:
         list_pymol_objects = [item for item in list_pymol_objects if exclude not in item]
     if len(list_pymol_objects) == 0 and no_warning is False:
         output_message(output_box, 'No objects found', 'warning')
+    if add_none:
+        list_pymol_objects.insert(0, 'None')
     dropdown_to_refresh.clear()
     list_pymol_objects = sorted(list_pymol_objects)
     dropdown_to_refresh.addItems(list_pymol_objects)

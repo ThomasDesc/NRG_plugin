@@ -177,7 +177,7 @@ def dynamical_signature(target, lig, target_2, beta, main_folder_path, temp_path
             cmd.load(output_file[:-4] + '_dynasig.pdb')
             cmd.spectrum(selection=key_base + '_dynasig', palette='blue_white_red', expression='q', minimum=-1,
                          maximum=1)
-            cmd.cartoon('putty', selection=key_base+ '_dynasig.pdb')
+            cmd.cartoon('putty', selection=key_base+ '_dynasig')
     else:
         cmd.save(target_file, target)
         b_fact_dict = run_dynamical_signature(target_file, beta, main_folder_path, temp_path)[1]
