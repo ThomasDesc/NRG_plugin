@@ -64,6 +64,7 @@ class Controller:
         self.form.button_nrgten.clicked.connect(lambda: self.form.stackedWidget.setCurrentIndex(4))
         self.form.button_modeller.clicked.connect(lambda: self.form.stackedWidget.setCurrentIndex(5))
         self.form.button_ISOMIF.clicked.connect(lambda: self.form.stackedWidget.setCurrentIndex(6))
+        self.form.button_settings.clicked.connect(lambda: self.form.stackedWidget.setCurrentIndex(7))
 
         # Save/load session
         self.form.button_save.clicked.connect(lambda: general_functions.show_save_dialog(self.form, self.form.temp_line_edit.text()))
@@ -86,7 +87,7 @@ class Controller:
 
         # NRGRank:
         self.form.nrgrank_target_refresh.clicked.connect(lambda: general_functions.refresh_dropdown_target(self.form.nrgrank_select_target, self.form.output_box))
-        self.form.nrgrank_select_target.currentIndexChanged.connect(lambda: general_functions.refresh_dropdown_bd_site(self.form.nrgrank_select_binding_site, self.form.nrgrank_select_target.currentText(), self.form.output_box))
+        self.form.nrgrank_select_target.currentIndexChanged.connect(lambda: general_functions.refresh_dropdown_bd_site(self.form.nrgrank_select_binding_site, self.form.nrgrank_select_target.currentText(), self.form.output_box, show_all_objects=self.form.show_all_obj_bd_checkbox.isChecked()))
         self.form.nrgrank_ligand_set_refresh.clicked.connect(lambda: general_functions.refresh_folder(self.ligand_set_folder_path, self.form.nrgrank_select_ligand))
         self.form.nrgrank_button_start.clicked.connect(self.run_nrgrank)
         self.form.nrgrank_button_cancel.clicked.connect(self.abort_nrgrank)
@@ -101,7 +102,7 @@ class Controller:
 
         # FlexAID:
         self.form.flexaid_target_refresh.clicked.connect(lambda: general_functions.refresh_dropdown_target(self.form.flexaid_select_target,self.form.output_box))
-        self.form.flexaid_select_target.currentIndexChanged.connect(lambda: general_functions.refresh_dropdown_bd_site(self.form.flexaid_select_binding_site, self.form.flexaid_select_target.currentText(), self.form.output_box))
+        self.form.flexaid_select_target.currentIndexChanged.connect(lambda: general_functions.refresh_dropdown_bd_site(self.form.flexaid_select_binding_site, self.form.flexaid_select_target.currentText(), self.form.output_box, show_all_objects=self.form.show_all_obj_bd_checkbox.isChecked()))
         self.form.flexaid_ligand_refresh.clicked.connect(lambda: general_functions.refresh_dropdown(self.form.flexaid_select_ligand, self.form.output_box))
         self.form.flexaid_button_start.clicked.connect(self.run_flexaid)
         self.form.flexaid_button_pause.clicked.connect(lambda: pause_resume_simulation(self.form, self.flexaid_manager.run_specific_simulate_folder_path))
@@ -161,12 +162,12 @@ class Controller:
             lambda: general_functions.refresh_dropdown(self.form.ISOMIF_select_target_object_2, self.form.output_box, add_none=1))
 
         self.form.ISOMIF_cleft_refresh_object_1.clicked.connect(
-            lambda: general_functions.refresh_dropdown_bd_site(self.form.ISOMIF_select_cleft_object_1, self.form.ISOMIF_select_target_object_1.currentText(), self.form.output_box))
+            lambda: general_functions.refresh_dropdown_bd_site(self.form.ISOMIF_select_cleft_object_1, self.form.ISOMIF_select_target_object_1.currentText(), self.form.output_box, show_all_objects=self.form.show_all_obj_bd_checkbox.isChecked()))
         self.form.ISOMIF_cleft_refresh_object_1.clicked.connect(
             lambda: general_functions.refresh_dropdown(self.form.ISOMIF_select_ligand_object_1, self.form.output_box, lig=1, add_none=1))
 
         self.form.ISOMIF_cleft_refresh_object_2.clicked.connect(
-            lambda: general_functions.refresh_dropdown_bd_site(self.form.ISOMIF_select_cleft_object_2, self.form.ISOMIF_select_target_object_2.currentText(), self.form.output_box, add_none=True))
+            lambda: general_functions.refresh_dropdown_bd_site(self.form.ISOMIF_select_cleft_object_2, self.form.ISOMIF_select_target_object_2.currentText(), self.form.output_box, add_none=True, show_all_objects=self.form.show_all_obj_bd_checkbox.isChecked()))
         self.form.ISOMIF_cleft_refresh_object_2.clicked.connect(
             lambda: general_functions.refresh_dropdown(self.form.ISOMIF_select_ligand_object_2, self.form.output_box, lig=1, add_none=1))
 

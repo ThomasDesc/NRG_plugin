@@ -119,43 +119,57 @@ def show_save_dialog(self,temp_path,save=1):
                 show_popup(self,dir_path,temp_path,0)
 
 
-def refresh_dropdown_bd_site(dropdown_to_refresh, target, output_box, add_none=False):
-    #TODO: ADD button to add all binding site objects.
-    if target is None or target == '':
-        return
+def refresh_dropdown_bd_site(dropdown_to_refresh, target, output_box, add_none=False, show_all_objects=False):
+    if show_all_objects:
+        pymol_objects = sorted(cmd.get_object_list('all'))
+        if add_none:
+            pymol_objects.insert(1, 'None')
+        dropdown_to_refresh.clear()
+        dropdown_to_refresh.addItems(pymol_objects)
+        dropdown_to_refresh.setCurrentText(pymol_objects[0])
     else:
-        loaded_objects = cmd.get_names(type='objects', enabled_only=0)
-        if f'gc_{target}' in loaded_objects:
-            binding_sites = cmd.get_object_list(f'(gc_{target})')
-            if not binding_sites or len(binding_sites) == 0:
-                output_message(output_box, f'No binding sites found for {target}', 'warning')
+        if target is None or target == '':
+            return
+        else:
+            loaded_objects = cmd.get_names(type='objects', enabled_only=0)
+            if f'gc_{target}' in loaded_objects:
+                binding_sites = cmd.get_object_list(f'(gc_{target})')
+                print('item: ', binding_sites)
+                print('type: ', type(binding_sites))
+                if not binding_sites or len(binding_sites) == 0:
+                    output_message(output_box, f'No binding sites found for {target}', 'warning')
+                else:
+                    dropdown_to_refresh.clear()
+                    binding_sites = sorted(binding_sites)
+                    if add_none:
+                        binding_sites.insert(1, 'None')
+                    dropdown_to_refresh.addItems(binding_sites)
+                    dropdown_to_refresh.setCurrentText(binding_sites[0])
             else:
-                dropdown_to_refresh.clear()
-                binding_sites = sorted(binding_sites)
-                if add_none:
-                    binding_sites.insert(0, 'None')
-                dropdown_to_refresh.addItems(binding_sites)
-                dropdown_to_refresh.setCurrentText(binding_sites[0])
+                output_message(output_box, f'No binding sites found for {target}. You may want to enable "show all objects as binding sites" under settings', 'warning')
 
 
 def refresh_dropdown_target(dropdown_to_refresh, output_box):
     objects_to_ignore = []
     all_objects = cmd.get_names("all")  # Get all objects and groups in PyMOL
-    for pymol_object in all_objects:
-        if cmd.get_type(pymol_object) == "object:group":  # Check if it is a group
-            objects_to_ignore.append(pymol_object)
-            group_members = cmd.get_object_list(f'({pymol_object})')
-            for member in group_members:
-                objects_to_ignore.append(member)
-    objects_to_display = []
-    for pymol_object in all_objects:
-        if pymol_object not in objects_to_ignore:
-            objects_to_display.append(pymol_object)
-    dropdown_to_refresh.clear()
-    objects_to_display = sorted(objects_to_display)
-    dropdown_to_refresh.addItems(objects_to_display)
-    if len(objects_to_display) > 0:
-        dropdown_to_refresh.setCurrentText(objects_to_display[0])
+    if len(all_objects) == 0:
+        output_message(output_box, f'No object found', 'warning')
+    else:
+        for pymol_object in all_objects:
+            if cmd.get_type(pymol_object) == "object:group":  # Check if it is a group
+                objects_to_ignore.append(pymol_object)
+                group_members = cmd.get_object_list(f'({pymol_object})')
+                for member in group_members:
+                    objects_to_ignore.append(member)
+        objects_to_display = []
+        for pymol_object in all_objects:
+            if pymol_object not in objects_to_ignore:
+                objects_to_display.append(pymol_object)
+        dropdown_to_refresh.clear()
+        objects_to_display = sorted(objects_to_display)
+        dropdown_to_refresh.addItems(objects_to_display)
+        if len(objects_to_display) > 0:
+            dropdown_to_refresh.setCurrentText(objects_to_display[0])
 
 
 
@@ -183,10 +197,10 @@ def refresh_dropdown(dropdown_to_refresh, output_box, filter_for='', no_warning=
         list_pymol_objects = [item for item in list_pymol_objects if exclude not in item]
     if len(list_pymol_objects) == 0 and no_warning is False:
         output_message(output_box, 'No objects found', 'warning')
-    if add_none:
-        list_pymol_objects.insert(0, 'None')
-    dropdown_to_refresh.clear()
     list_pymol_objects = sorted(list_pymol_objects)
+    if add_none:
+        list_pymol_objects.insert(1, 'None')
+    dropdown_to_refresh.clear()
     dropdown_to_refresh.addItems(list_pymol_objects)
     if len(list_pymol_objects) > 0:
         dropdown_to_refresh.setCurrentText(list_pymol_objects[0])

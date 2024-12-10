@@ -3,7 +3,6 @@ import re
 import os
 
 # Originally By Matthieu Chartier adapted to python by Thomas DesCoteaux
-# Description
 # This program generates the mifView pml files
 
 probesInt = []
