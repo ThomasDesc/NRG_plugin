@@ -214,4 +214,5 @@ def model_mutations(form, temp_path):
                         sm(target_file,res[1],amino_list[res_1],res[2],temp_path)
                         cmd.load(target_file[:-4]+amino_list[res_1]+res[1]+'.pdb',target+'_mutants',state=count)
                         count+=1
+    cmd.group("Single Mutants",target+'_mutants')
 
