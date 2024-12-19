@@ -65,6 +65,7 @@ class Controller:
         self.form.button_modeller.clicked.connect(lambda: self.form.stackedWidget.setCurrentIndex(5))
         self.form.button_ISOMIF.clicked.connect(lambda: self.form.stackedWidget.setCurrentIndex(6))
         self.form.button_settings.clicked.connect(lambda: self.form.stackedWidget.setCurrentIndex(7))
+        self.form.button_home.clicked.connect(lambda: self.form.stackedWidget.setCurrentIndex(8))
 
         # Save/load session
         self.form.button_save.clicked.connect(lambda: general_functions.show_save_dialog(self.form, self.form.temp_line_edit.text()))

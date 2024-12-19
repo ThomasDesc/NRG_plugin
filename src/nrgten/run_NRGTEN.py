@@ -181,7 +181,9 @@ def dynamical_signature(target, lig, target_2, beta, main_folder_path, temp_path
             cmd.cartoon('putty', selection=key_base+ '_dynasig')
     else:
         cmd.save(target_file, target)
-        b_fact_dict = run_dynamical_signature(target_file, beta, main_folder_path, temp_path)[1]
+        dyna_sig= run_dynamical_signature(target_file, beta, main_folder_path, temp_path)
+        b_fact_dict =  dyna_sig[1]
+        svib_ref= dyna_sig[3]
         cmd.disable(target)
         cmd.load(target_file[:-4] + '_dynasig.pdb')
         cmd.spectrum(selection=os.path.basename(target_file[:-4] + '_dynasig.pdb')[:-4], palette='blue_white_red',
@@ -191,6 +193,7 @@ def dynamical_signature(target, lig, target_2, beta, main_folder_path, temp_path
         diff_list=[]
         plots = []
         all_signatures=[[],[]]
+        svib_list=[]
 
         for state in range(cmd.count_states(target_2)):
             output_file = os.path.join(temp_path,'NRGTEN' ,f'{target_2}_{state}.pdb')
@@ -204,6 +207,7 @@ def dynamical_signature(target, lig, target_2, beta, main_folder_path, temp_path
             dyna_ob = run_dynamical_signature(output_file, beta, main_folder_path, temp_path)
             dyna_sig_no_lig = dyna_ob[1]
             model_no_lig = dyna_ob[2]
+            svib_list.append(dyna_ob[3]-svib_ref)
             _, filename = os.path.split(output_file)
             key_base, _ = os.path.splitext(filename)
 
@@ -216,7 +220,7 @@ def dynamical_signature(target, lig, target_2, beta, main_folder_path, temp_path
 
             #plt.plot(dyna_sig_no_lig, label=diff)
 
-            plots.append(go.Scatter(x=prep_labels(model_no_lig.get_mass_labels()), y=dyna_sig_no_lig, mode='lines', name=f'Diff {diff}'))
+            plots.append(go.Scatter(x=prep_labels(model_no_lig.get_mass_labels()), y=dyna_sig_no_lig, mode='lines', name=f'Diff {diff}'),)
             all_signatures[0].append(dyna_sig_no_lig)
             all_signatures[1].append(f'{target_2}_{diff}')
             write_b_factor(key_base, dyna_sig_no_lig, temp_path, model_no_lig.get_mass_labels())
@@ -244,7 +248,7 @@ def dynamical_signature(target, lig, target_2, beta, main_folder_path, temp_path
 
         for i in range(len(plots)):
             button = dict(
-                label=f"Diff {diff_list[i]}",
+                label=f"Diff {diff_list[i]}, DeltaSvib: {svib_list[i]:.2e}",
                 method="update",
                 args=[{"visible": [j == i for j in range(len(plots))]}]  # Toggle visibility
             )
