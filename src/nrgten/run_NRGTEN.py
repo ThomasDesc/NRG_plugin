@@ -163,6 +163,7 @@ def dynamical_signature(target, lig, target_2, beta, main_folder_path, temp_path
             dyna_ob = run_dynamical_signature(output_file, beta, main_folder_path, temp_path)
             dyna_sig_no_lig = dyna_ob[1]
             model_no_lig = dyna_ob[2]
+            svib_nl=dyna_ob[3]
 
             # Use os.path.split() and os.path.splitext()
             _, filename = os.path.split(output_file)
@@ -281,8 +282,9 @@ def run_dynamical_signature(target_file, beta, main_folder_path, temp_path):
     target, _ = os.path.splitext(filename)
     model = encom_model(target_file, main_folder_path, temp_path)
     dyna_sig = model.compute_bfactors_boltzmann(beta=float(beta))
+    svib=model.compute_vib_entropy(beta=float(beta))
     b_fact_dict = write_b_factor(target, dyna_sig, temp_path, model.get_mass_labels())
-    return [b_fact_dict, dyna_sig, model]
+    return [b_fact_dict, dyna_sig, model, svib]
 
 
 def conformational_ensemble(target, modes_list, step, max_conf, max_disp, opt, main_folder_path, temp_path,form):

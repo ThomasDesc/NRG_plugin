@@ -1,11 +1,16 @@
 from ctypes.wintypes import tagMSG
-
 from pymol import cmd
 import os
 import sys
 from general_functions import output_message
 import subprocess
 import time
+import matplotlib as plt
+import pandas as pd
+import numpy as np
+from scipy.stats import norm
+import plotly.graph_objects as go
+
 
 def get_residue_string(selection_name):
     residue_info = {'resn': '', 'resi': '', 'chain': ''}
@@ -121,3 +126,58 @@ def mif_plot(form, binary_folder_path, binary_suffix, install_dir):
                 for line in result_file:
                     if 'REMARK CLIQUE' in line:
                         output_message(form.output_box,f'IsoMIF results: {line[15:]}','valid')
+                        plot_dist(float(line.split()[17]),isomif_deps_path,target_1,target_2)
+
+
+def calculate_p_value(measurement, data):
+    mean=np.mean(data)
+    std_dev=np.std(data)
+    # Calculate the z-score
+    z_score = (measurement - mean) / std_dev
+    print(z_score)
+
+
+    # Calculate p-values
+    p_value_two_tailed = 2 * (1 - norm.cdf(abs(z_score)))
+
+
+    return (z_score, p_value_two_tailed,norm.cdf(abs(z_score)))
+
+
+def plot_dist(measure,isomif_deps_path,target_1,target_2):
+    data = pd.read_csv(os.path.join(isomif_deps_path,"all_data_IsoMIF.csv"))
+    data = data[data.iloc[:, 1] > 0]
+    filtered_sm = data[data.iloc[:, -1] == False]
+
+    z_score, p_value, n_dist = calculate_p_value(measure, filtered_sm['TANIM'])
+
+    if p_value < 0.001:
+        p_value = "<0.001"
+    else:
+        p_value = f'{p_value:.2e}'
+
+    xmin = 0
+    xmax = 0.6
+    x_ax = np.linspace(xmin, xmax, 100)
+    p = norm.pdf(x_ax, np.mean(filtered_sm["TANIM"]), np.std(filtered_sm["TANIM"])) * 21
+
+    # Histogram
+    fig = go.Figure()
+    fig.add_trace(go.Histogram(x=filtered_sm["TANIM"], marker_color='gray', nbinsx=50, name='distribuition'))
+
+    # Mean line
+    fig.add_trace(
+        go.Scatter(x=[np.mean(filtered_sm["TANIM"]), np.mean(filtered_sm["TANIM"])], y=[0, 300], mode='lines',
+                   line=dict(color='black'), name=f'Mean: {np.mean(filtered_sm["TANIM"]):.2f}'))
+
+    # Measure line
+    fig.add_trace(go.Scatter(x=[measure, measure], y=[0, 300], mode='lines', line=dict(color='orange'),
+                             name=f'TANIM:{measure:.2f} \n p-value: {p_value}\n z-score: {z_score:.2f}'))
+
+    fig.update_layout(title=f'Tanimoto distribution for DUD-E targets of different families: {target_1}-{target_2}',
+                      xaxis_title='Tanimoto',
+                      yaxis_title='Frequency',
+                      xaxis=dict(range=[xmin, xmax]))
+
+    fig.show()
+
