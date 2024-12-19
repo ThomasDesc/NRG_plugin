@@ -157,6 +157,7 @@ def dynamical_signature(target, lig, target_2, beta, main_folder_path, temp_path
         cmd.spectrum(selection=os.path.basename(target_file[:-4] + '_dynasig.pdb')[:-4], palette='blue_white_red',
                      expression='q')
         cmd.cartoon('putty',selection=os.path.basename(target_file[:-4] + '_dynasig.pdb')[:-4])
+        cmd.group('NRGTEN',os.path.basename(target_file[:-4] + '_dynasig.pdb')[:-4])
         if lig != 'None':
             output_file = os.path.join(temp_path,'NRGTEN', f'no_lig_{target}.pdb')
             remove_selection_and_save(target, lig, output_file)
@@ -179,6 +180,7 @@ def dynamical_signature(target, lig, target_2, beta, main_folder_path, temp_path
             cmd.spectrum(selection=key_base + '_dynasig', palette='blue_white_red', expression='q', minimum=-1,
                          maximum=1)
             cmd.cartoon('putty', selection=key_base+ '_dynasig')
+            cmd.group('NRGTEN', key_base+ '_dynasig')
     else:
         cmd.save(target_file, target)
         dyna_sig= run_dynamical_signature(target_file, beta, main_folder_path, temp_path)
@@ -189,6 +191,7 @@ def dynamical_signature(target, lig, target_2, beta, main_folder_path, temp_path
         cmd.spectrum(selection=os.path.basename(target_file[:-4] + '_dynasig.pdb')[:-4], palette='blue_white_red',
                      expression='q')
         cmd.cartoon('putty', selection=os.path.basename(target_file[:-4] + '_dynasig.pdb')[:-4])
+        cmd.group('NRGTEN', os.path.basename(target_file[:-4] + '_dynasig.pdb')[:-4])
         object_list = []
         diff_list=[]
         plots = []
@@ -273,6 +276,7 @@ def dynamical_signature(target, lig, target_2, beta, main_folder_path, temp_path
                          minimum=-1, maximum=1)
             cmd.cartoon('putty', selection=f'{target_2}_dynasigdif_{state}')
         create_group(f'{target_2}_dynasigdif', object_list)
+        cmd.group('NRGTEN',f'{target_2}_dynasigdif')
 
 
 def create_group(group_name, object_list):
